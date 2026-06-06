@@ -1,0 +1,75 @@
+:root {
+  /* ---- Paleta de marca (constante en ambos temas) ---- */
+  --brand-50: #eef4ff;
+  --brand-500: #4f6bff;
+  --brand-600: #3b54e6;
+  --brand-700: #2c40bd;
+  --accent: #00d4b8;
+
+  /* ---- Acento "Recursos" (escalón 1) ---- */
+  --resource-1: #ff6b6b; /* coral */
+  --resource-2: #ffa94d; /* ámbar */
+  --resource-3: #ffd43b; /* dorado */
+  --resource-grad: linear-gradient(
+    135deg,
+    var(--resource-1),
+    var(--resource-2) 55%,
+    var(--resource-3)
+  );
+
+  /* ---- Estados ---- */
+  --success: #18a957;
+  --warning: #e2a600;
+  --danger: #e5484d;
+
+  /* ---- Tipografía ---- */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: "Sora", var(--font-sans);
+
+  /* Escala FLUIDA (responsive sin media queries) */
+  --fs-xs: clamp(0.72rem, 0.68rem + 0.2vw, 0.8rem);
+  --fs-sm: clamp(0.85rem, 0.8rem + 0.25vw, 0.95rem);
+  --fs-base: clamp(1rem, 0.95rem + 0.3vw, 1.1rem);
+  --fs-lg: clamp(1.1rem, 1rem + 0.5vw, 1.35rem);
+  --fs-xl: clamp(1.4rem, 1.1rem + 1.2vw, 2rem);
+  --fs-2xl: clamp(1.9rem, 1.4rem + 2.4vw, 3rem);
+  --fs-3xl: clamp(2.4rem, 1.6rem + 4vw, 4.5rem); /* hero */
+
+  /* ---- Espaciado (escala 4px) ---- */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-12: 3rem;
+  --sp-16: 4rem;
+  --sp-24: 6rem;
+
+  /* ---- Layout / contenedor ---- */
+  --container: 1120px;
+  --gutter: clamp(1rem, 4vw, 2rem); /* margen lateral responsive */
+
+  /* ---- Breakpoints (documentados; se usan en media queries) ---- */
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+
+  /* ---- Radios y sombras base ---- */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.25rem;
+  --radius-full: 999px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.1);
+
+  /* ---- Glass (blur constante) ---- */
+  --glass-blur: 14px;
+
+  /* ---- Motion ---- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 150ms;
+  --dur: 280ms;
+  --dur-slow: 600ms;
+}
