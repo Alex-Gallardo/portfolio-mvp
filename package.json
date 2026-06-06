@@ -12,6 +12,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "next": "16.2.7",
     "react": "19.2.4",
     "react-dom": "19.2.4"
@@ -27,6 +28,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.3",
+    "prisma": "^6.19.3",
     "typescript": "^5"
   },
   "lint-staged": {
