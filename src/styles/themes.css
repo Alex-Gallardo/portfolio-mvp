@@ -1,0 +1,33 @@
+/* ===== Tema CLARO (por defecto, sin atributo) ===== */
+:root {
+  --bg: #fafafa;
+  --bg-elev: #ffffff;
+  --fg: #0e0e11;
+  --fg-muted: #5b5b66;
+  --border: #e6e6ec;
+
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.35);
+
+  --shadow-glow: 0 0 40px rgba(79, 107, 255, 0.25);
+
+  --resource-soft: #fff4ec; /* fondo suave de la sección recursos */
+  --resource-glow: 0 10px 40px rgba(255, 107, 107, 0.3);
+}
+
+/* ===== Tema OSCURO (cuando <html data-theme="dark">) ===== */
+[data-theme="dark"] {
+  --bg: #0a0a0f;
+  --bg-elev: #14141c;
+  --fg: #f4f4f8;
+  --fg-muted: #9b9bab;
+  --border: #23232e;
+
+  --glass-bg: rgba(20, 20, 28, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.08);
+
+  --shadow-glow: 0 0 60px rgba(79, 107, 255, 0.35);
+
+  --resource-soft: #1f1410; /* fondo cálido oscuro */
+  --resource-glow: 0 10px 48px rgba(255, 107, 107, 0.4);
+}
