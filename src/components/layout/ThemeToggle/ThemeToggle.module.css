@@ -1,0 +1,42 @@
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px; /* target táctil accesible */
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--bg-elev);
+  color: var(--fg);
+  cursor: pointer;
+  position: relative;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+.toggle:hover {
+  border-color: var(--brand-500);
+}
+
+.icon {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transform: scale(0.6) rotate(-90deg);
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+/* El tema del botón decide qué icono se muestra (CSS puro, sin tocar atributos por JS) */
+.toggle[data-theme="light"] .sun,
+.toggle[data-theme="dark"] .moon {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
