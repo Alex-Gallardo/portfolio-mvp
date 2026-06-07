@@ -1,0 +1,45 @@
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: var(--bg);
+  pointer-events: none; /* nunca intercepta clics */
+}
+
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.55;
+  will-change: transform;
+}
+
+.aurora::before {
+  background: radial-gradient(circle, var(--brand-500), transparent 60%);
+  top: -10%;
+  left: -10%;
+  animation: drift1 18s var(--ease) infinite alternate;
+}
+
+.aurora::after {
+  background: radial-gradient(circle, var(--accent), transparent 60%);
+  bottom: -15%;
+  right: -10%;
+  animation: drift2 22s var(--ease) infinite alternate;
+}
+
+@keyframes drift1 {
+  to {
+    transform: translate(15vw, 10vh) scale(1.15);
+  }
+}
+@keyframes drift2 {
+  to {
+    transform: translate(-12vw, -8vh) scale(1.1);
+  }
+}
