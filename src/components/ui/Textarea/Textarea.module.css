@@ -1,0 +1,51 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--fg);
+}
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--bg-elev);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  resize: vertical;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease);
+}
+.textarea::placeholder {
+  color: var(--fg-muted);
+  opacity: 0.7;
+}
+.textarea:focus-visible {
+  outline: none;
+  border-color: var(--brand-500);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 25%, transparent);
+}
+.textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--bg);
+}
+.textareaError {
+  border-color: var(--danger);
+}
+.error {
+  font-size: var(--fs-xs);
+  color: var(--danger);
+}
+.hint {
+  font-size: var(--fs-xs);
+  color: var(--fg-muted);
+}

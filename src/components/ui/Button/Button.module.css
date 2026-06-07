@@ -1,0 +1,110 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 44px; /* target táctil accesible */
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease),
+    filter var(--dur-fast) var(--ease);
+}
+.button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Tamaños */
+.sm {
+  padding: var(--sp-2) var(--sp-3);
+  font-size: var(--fs-sm);
+  min-height: 38px;
+}
+.md {
+  padding: var(--sp-3) var(--sp-6);
+  font-size: var(--fs-base);
+}
+.lg {
+  padding: var(--sp-4) var(--sp-8);
+  font-size: var(--fs-lg);
+}
+
+/* Variantes */
+.primary {
+  background: var(--brand-500);
+  color: #fff;
+}
+.primary:hover:not(:disabled) {
+  background: var(--brand-600);
+  box-shadow: var(--shadow-md);
+}
+
+.secondary {
+  background: var(--bg-elev);
+  color: var(--fg);
+  border-color: var(--border);
+}
+.secondary:hover:not(:disabled) {
+  border-color: var(--brand-500);
+  color: var(--brand-600);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--fg-muted);
+}
+.ghost:hover:not(:disabled) {
+  background: var(--bg-elev);
+  color: var(--fg);
+}
+
+.glass {
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+  color: var(--fg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  box-shadow: var(--shadow-sm);
+}
+.glass:hover:not(:disabled) {
+  box-shadow: var(--shadow-md);
+}
+
+/* ⭐ resource — el llamativo del escalón 1 */
+.resource {
+  background: var(--resource-grad);
+  color: #fff;
+  box-shadow: var(--resource-glow);
+}
+.resource:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: scale(1.02);
+}
+
+/* Spinner de loading */
+.spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+}
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
