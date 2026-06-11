@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   useForm,
   type DefaultValues,
@@ -19,6 +19,7 @@ interface AdminFormProps<T extends FieldValues> {
   defaultValues: DefaultValues<T>;
   action: (values: T) => Promise<ActionResult>;
   submitLabel?: string;
+  children?: ReactNode;
 }
 
 export function AdminForm<T extends FieldValues>({
@@ -27,6 +28,7 @@ export function AdminForm<T extends FieldValues>({
   defaultValues,
   action,
   submitLabel = "Guardar",
+  children,
 }: AdminFormProps<T>) {
   const [serverError, setServerError] = useState<string | null>(null);
   const {
@@ -93,6 +95,8 @@ export function AdminForm<T extends FieldValues>({
           </div>
         );
       })}
+
+      {children}
 
       {serverError ? <p className={styles.error}>{serverError}</p> : null}
 
