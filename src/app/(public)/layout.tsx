@@ -1,4 +1,6 @@
 import { AuroraBackground, NavGlass, Footer } from "@/components/layout";
+// import { DownloadModal } from "@/features/resources/DownloadModal/DownloadModal";
+import { DownloadModal } from "@/features/resources/DownloadModal/DownloadModal";
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -6,6 +8,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <AuroraBackground />
       <NavGlass />
       <main>{children}</main>
+      <DownloadModal />
       <Footer />
     </>
   );

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { DownloadButton } from "@/features/resources/DownloadButton";
 
-export const revalidate = 60; // ISR
+export const revalidate = 60;
 
 export default async function RecursosPage() {
   const resources = await prisma.resource.findMany({
@@ -17,9 +18,10 @@ export default async function RecursosPage() {
       ) : (
         <ul>
           {resources.map((r) => (
-            <li key={r.id}>
-              <strong>{r.title}</strong> — {r.summary} ({r.files.length} archivo
-              {r.files.length === 1 ? "" : "s"})
+            <li key={r.id} style={{ marginBottom: "var(--sp-4)" }}>
+              <strong>{r.title}</strong> — {r.summary}
+              <br />
+              <DownloadButton resourceSlug={r.slug} resourceTitle={r.title} />
             </li>
           ))}
         </ul>

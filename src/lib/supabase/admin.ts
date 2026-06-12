@@ -12,8 +12,11 @@ export async function createSignedUrl(
   bucket: string,
   path: string,
   expiresIn = 60,
+  download?: string | boolean,
 ): Promise<string> {
-  const { data, error } = await supabaseAdmin.storage.from(bucket).createSignedUrl(path, expiresIn);
+  const { data, error } = await supabaseAdmin.storage
+    .from(bucket)
+    .createSignedUrl(path, expiresIn, download !== undefined ? { download } : undefined);
   if (error || !data) {
     throw new Error(error?.message ?? "No se pudo generar la URL firmada");
   }

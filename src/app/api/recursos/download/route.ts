@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
   // URL firmada temporal del bucket privado (válida 60s)
   let signedUrl: string;
   try {
-    signedUrl = await createSignedUrl("files", file.storagePath, 60);
+    signedUrl = await createSignedUrl("files", file.storagePath, 60, file.fileName);
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "No se pudo generar la descarga" },
