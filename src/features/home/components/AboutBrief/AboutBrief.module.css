@@ -1,0 +1,28 @@
+.about {
+  max-width: var(--container);
+  margin: var(--sp-16) auto;
+  padding-inline: var(--gutter);
+}
+.inner {
+  max-width: 48rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  align-items: flex-start;
+}
+.h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+}
+.text {
+  color: var(--fg-muted);
+  font-size: var(--fs-lg);
+}
+.link {
+  color: var(--brand-600);
+  font-weight: 600;
+  text-decoration: none;
+}
+.link:hover {
+  text-decoration: underline;
+}

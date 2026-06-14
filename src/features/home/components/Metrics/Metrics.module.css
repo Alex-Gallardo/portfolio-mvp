@@ -1,0 +1,38 @@
+.metrics {
+  max-width: var(--container);
+  margin: var(--sp-24) auto;
+  padding-inline: var(--gutter);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sp-8);
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.value {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  color: var(--brand-600);
+}
+.label {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+/* Reveal nativo (usa el @keyframes fade-up global de animations.css) */
+@supports (animation-timeline: view()) {
+  .item {
+    animation: fade-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 25%;
+  }
+}

@@ -1,0 +1,40 @@
+.band {
+  max-width: var(--container);
+  margin: var(--sp-24) auto var(--sp-16);
+  padding-inline: var(--gutter);
+}
+.inner {
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--brand-600), var(--brand-500));
+  box-shadow: var(--shadow-glow);
+  padding: var(--sp-16) var(--sp-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  align-items: center;
+  text-align: center;
+  color: #fff;
+}
+.h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+}
+.sub {
+  opacity: 0.9;
+}
+.btn {
+  margin-top: var(--sp-2);
+  background: #fff;
+  color: var(--brand-700);
+  font-weight: 700;
+  text-decoration: none;
+  padding: var(--sp-3) var(--sp-6);
+  border-radius: var(--radius-full);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: transform var(--dur-fast) var(--ease);
+}
+.btn:hover {
+  transform: translateY(-2px);
+}
