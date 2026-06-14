@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -5,6 +6,8 @@ import { getPublishedServices } from "@/features/services/queries";
 import { getPublishedProjects } from "@/features/projects/queries";
 import { getPublishedPosts } from "@/features/blog/queries";
 import { getLatestResources } from "@/features/resources/queries";
+import { getContentBlocks, getSectionsConfig } from "@/features/content/queries";
+import { resolveBlock, orderSections } from "@/features/content/resolve";
 
 import { ServiceCard } from "@/features/services/components/ServiceCard/ServiceCard";
 import { ProjectCard } from "@/features/projects/components/ProjectCard/ProjectCard";
@@ -31,6 +34,20 @@ import styles from "./page.module.css";
 
 export const revalidate = 3600;
 
+const HOME_SECTIONS = [
+  "hero",
+  "about",
+  "stack",
+  "resources",
+  "projects",
+  "services",
+  "posts",
+  "metrics",
+  "social",
+  "crypto",
+  "closing",
+] as const;
+
 export const metadata: Metadata = {
   title: "Inicio",
   description:
@@ -39,13 +56,32 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [services, projects, resourcesRaw, posts] = await Promise.all([
+  const [services, projects, resourcesRaw, posts, content, sectionsCfg] = await Promise.all([
     getPublishedServices(),
     getPublishedProjects(),
     getLatestResources(6),
     getPublishedPosts(),
+    getContentBlocks("home"),
+    getSectionsConfig("home"),
   ]);
 
+  // --- texto editable (con fallback) ---
+  const hero = resolveBlock(content, "home.hero", {
+    title: "Construyo experiencias web rápidas que posicionan y convierten.",
+    body: "Desarrollo, diseño y SEO técnico para que tu marca destaque en buscadores y en la era de la IA.",
+  });
+  const about = resolveBlock(content, "home.about", {
+    title: "Hola, soy [Nombre]",
+    body: "Dev full-stack enfocado en performance y experiencia. Diseño y construyo productos web rápidos, accesibles y pensados para crecer.",
+  });
+  const tResources = resolveBlock(content, "home.resources", {
+    title: "Recursos gratis recién lanzados",
+  });
+  const tProjects = resolveBlock(content, "home.projects", { title: "Proyectos destacados" });
+  const tServices = resolveBlock(content, "home.services", { title: "Servicios" });
+  const tPosts = resolveBlock(content, "home.posts", { title: "Del blog" });
+
+  // --- datos mapeados (igual que antes) ---
   const serviceItems: ServiceListItem[] = services.slice(0, 4).map((s) => ({
     id: s.id,
     slug: s.slug,
@@ -113,38 +149,33 @@ export default async function HomePage() {
     ],
   };
 
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
-      <HeroHome />
-      <AboutBrief />
-      <StackBand />
-
-      {resourceItems.length > 0 ? (
+  // --- registro de secciones (clave → nodo) ---
+  const sections: Record<string, React.ReactNode> = {
+    hero: <HeroHome title={hero.title ?? undefined} subtitle={hero.body || undefined} />,
+    about: <AboutBrief title={about.title ?? undefined} body={about.body || undefined} />,
+    stack: <StackBand />,
+    resources:
+      resourceItems.length > 0 ? (
         <section className={styles.section}>
           <header className={styles.head}>
-            <h2 className={styles.h2}>Recursos gratis recién lanzados</h2>
+            <h2 className={styles.h2}>{tResources.title}</h2>
             <Link href="/recursos" className={styles.seeAll} data-track="home-resources-all">
               Ver todos →
             </Link>
           </header>
           <Carousel
-            ariaLabel="Recursos gratis recién lanzados"
+            ariaLabel={tResources.title ?? "Recursos"}
             items={resourceItems}
             getKey={(r) => r.slug}
             renderItem={(r) => <ResourceCard resource={r} />}
           />
         </section>
-      ) : null}
-
-      {projectItems.length > 0 ? (
+      ) : null,
+    projects:
+      projectItems.length > 0 ? (
         <section className={styles.section}>
           <header className={styles.head}>
-            <h2 className={styles.h2}>Proyectos destacados</h2>
+            <h2 className={styles.h2}>{tProjects.title}</h2>
             <Link href="/proyectos" className={styles.seeAll}>
               Ver todos →
             </Link>
@@ -155,12 +186,12 @@ export default async function HomePage() {
             ))}
           </div>
         </section>
-      ) : null}
-
-      {serviceItems.length > 0 ? (
+      ) : null,
+    services:
+      serviceItems.length > 0 ? (
         <section className={styles.section}>
           <header className={styles.head}>
-            <h2 className={styles.h2}>Servicios</h2>
+            <h2 className={styles.h2}>{tServices.title}</h2>
             <Link href="/servicios" className={styles.seeAll}>
               Ver todos →
             </Link>
@@ -171,29 +202,41 @@ export default async function HomePage() {
             ))}
           </div>
         </section>
-      ) : null}
-
-      {postItems.length > 0 ? (
+      ) : null,
+    posts:
+      postItems.length > 0 ? (
         <section className={styles.section}>
           <header className={styles.head}>
-            <h2 className={styles.h2}>Del blog</h2>
+            <h2 className={styles.h2}>{tPosts.title}</h2>
             <Link href="/blog" className={styles.seeAll}>
               Ver todo →
             </Link>
           </header>
           <Carousel
-            ariaLabel="Artículos recientes"
+            ariaLabel={tPosts.title ?? "Artículos"}
             items={postItems}
             getKey={(p) => p.slug}
             renderItem={(p) => <PostCard post={p} />}
           />
         </section>
-      ) : null}
+      ) : null,
+    metrics: <Metrics />,
+    social: <SocialProof />,
+    crypto: <CryptoBand />,
+    closing: <ClosingCta />,
+  };
 
-      <Metrics />
-      <SocialProof />
-      <CryptoBand />
-      <ClosingCta />
+  const order = orderSections([...HOME_SECTIONS], sectionsCfg);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {order.map((key) => (
+        <Fragment key={key}>{sections[key]}</Fragment>
+      ))}
     </>
   );
 }

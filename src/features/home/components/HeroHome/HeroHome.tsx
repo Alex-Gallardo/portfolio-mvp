@@ -1,16 +1,21 @@
 import Link from "next/link";
 import styles from "./HeroHome.module.css";
 
-export function HeroHome() {
+interface HeroHomeProps {
+  title?: string;
+  subtitle?: string;
+}
+
+export function HeroHome({ title, subtitle }: HeroHomeProps) {
   return (
     <section className={styles.hero}>
       <div className={`${styles.inner} u-fade-up`}>
         <h1 className={styles.title}>
-          Construyo experiencias web rápidas que posicionan y convierten.
+          {title ?? "Construyo experiencias web rápidas que posicionan y convierten."}
         </h1>
         <p className={styles.sub}>
-          Desarrollo, diseño y SEO técnico para que tu marca destaque en buscadores y en la era de
-          la IA.
+          {subtitle ??
+            "Desarrollo, diseño y SEO técnico para que tu marca destaque en buscadores y en la era de la IA."}
         </p>
         <div className={styles.actions}>
           <Link href="/#contacto" className={styles.primary} data-track="home-hero-primary">

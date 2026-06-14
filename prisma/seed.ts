@@ -310,10 +310,17 @@ async function main() {
     },
   });
 
-  // 7) CONTENT BLOCKS (textos .md editables desde el admin)
+  // 7) CONTENT BLOCKS (textos editables desde el admin)
+  // ⚠️ Las claves DEBEN coincidir con las que leen las páginas del S5-T4:
+  //   - Home:   home.hero, home.about, home.resources, home.projects, home.services, home.posts
+  //   - About:  about.hero, about.resources, about.posts, about.projects
+  //   - Crypto: crypto.hero
+  // Los bloques con body "" son solo títulos de sección (el cuerpo no se usa);
+  // existen para que el editor del S6-T5 ya tenga con qué trabajar.
   console.log("🧱 Creando bloques de contenido…");
   await prisma.contentBlock.createMany({
     data: [
+      // --- HOME ---
       {
         key: "home.hero",
         page: "home",
@@ -322,12 +329,42 @@ async function main() {
         order: 0,
       },
       {
-        key: "about.bio",
+        key: "home.about",
+        page: "home",
+        title: "Hola, soy [Nombre]",
+        body: "Dev full-stack enfocado en performance y experiencia. Diseño y construyo productos web rápidos, accesibles y pensados para crecer.",
+        order: 1,
+      },
+      {
+        key: "home.resources",
+        page: "home",
+        title: "Recursos gratis recién lanzados",
+        body: "",
+        order: 2,
+      },
+      { key: "home.projects", page: "home", title: "Proyectos destacados", body: "", order: 3 },
+      { key: "home.services", page: "home", title: "Servicios", body: "", order: 4 },
+      { key: "home.posts", page: "home", title: "Del blog", body: "", order: 5 },
+
+      // --- ABOUT ---
+      {
+        key: "about.hero", // antes era "about.bio"; el AboutHero lee "about.hero"
         page: "about",
-        title: "Sobre mí",
-        body: "Soy [Nombre], dev full-stack enfocado en performance y experiencia.",
+        title: "Soy [Nombre], dev full-stack",
+        body: "Enfocado en performance y experiencia. Diseño y construyo productos web rápidos, accesibles y pensados para crecer.",
         order: 0,
       },
+      {
+        key: "about.resources",
+        page: "about",
+        title: "Recursos gratis recién lanzados",
+        body: "",
+        order: 1,
+      },
+      { key: "about.posts", page: "about", title: "Últimos artículos", body: "", order: 2 },
+      { key: "about.projects", page: "about", title: "Últimos proyectos", body: "", order: 3 },
+
+      // --- CRYPTO ---
       {
         key: "crypto.hero",
         page: "crypto",
@@ -335,6 +372,8 @@ async function main() {
         body: "Interfaces claras para un mundo complejo.",
         order: 0,
       },
+      // ⚠️ No consumido aún: el FAQ se sirve desde features/crypto/faq.ts (constante TS),
+      // no desde content_blocks. Se conserva por si más adelante mueves el FAQ a la DB.
       {
         key: "crypto.faq.1",
         page: "crypto",
@@ -345,7 +384,7 @@ async function main() {
     ],
   });
 
-  // 8) SITE SETTINGS (branding, copies, navegación, social, seo)
+  // 8) SITE SETTINGS (branding, copies, navegación, social, seo + secciones)
   console.log("⚙️  Creando ajustes del sitio…");
   await prisma.siteSetting.createMany({
     data: [
@@ -393,6 +432,52 @@ async function main() {
           description: "Desarrollo, diseño y SEO técnico con Next.js.",
           ogImage: "/images/og-default.png",
         },
+      },
+
+      // --- S5-T4: orden + visibilidad de secciones por página ---
+      // getSectionsConfig("home"|"about"|"crypto") lee estas claves.
+      // Las claves de cada item DEBEN coincidir con las del registro `sections`
+      // de cada page.tsx. No ocultes "hero": lleva el único <h1>.
+      {
+        key: "sections.home",
+        value: [
+          { key: "hero", visible: true, order: 0 },
+          { key: "about", visible: true, order: 1 },
+          { key: "stack", visible: true, order: 2 },
+          { key: "resources", visible: true, order: 3 },
+          { key: "projects", visible: true, order: 4 },
+          { key: "services", visible: true, order: 5 },
+          { key: "posts", visible: true, order: 6 },
+          { key: "metrics", visible: true, order: 7 },
+          { key: "social", visible: true, order: 8 },
+          { key: "crypto", visible: true, order: 9 },
+          { key: "closing", visible: true, order: 10 },
+        ],
+      },
+      {
+        key: "sections.about",
+        value: [
+          { key: "hero", visible: true, order: 0 },
+          { key: "timeline", visible: true, order: 1 },
+          { key: "skills", visible: true, order: 2 },
+          { key: "tech", visible: true, order: 3 },
+          { key: "values", visible: true, order: 4 },
+          { key: "method", visible: true, order: 5 },
+          { key: "achievements", visible: true, order: 6 },
+          { key: "resources", visible: true, order: 7 },
+          { key: "posts", visible: true, order: 8 },
+          { key: "projects", visible: true, order: 9 },
+        ],
+      },
+      {
+        key: "sections.crypto",
+        value: [
+          { key: "hero", visible: true, order: 0 },
+          { key: "education", visible: true, order: 1 },
+          { key: "projects", visible: true, order: 2 },
+          { key: "faq", visible: true, order: 3 },
+          { key: "cta", visible: true, order: 4 },
+        ],
       },
     ],
   });

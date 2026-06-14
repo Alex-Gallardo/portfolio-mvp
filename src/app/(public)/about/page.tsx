@@ -1,9 +1,12 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
 import { getPublishedPosts } from "@/features/blog/queries";
 import { getPublishedProjects } from "@/features/projects/queries";
 import { getLatestResources } from "@/features/resources/queries";
+import { getContentBlocks, getSectionsConfig } from "@/features/content/queries";
+import { resolveBlock, orderSections } from "@/features/content/resolve";
 
 import { PostCard } from "@/features/blog/components/PostCard/PostCard";
 import { ProjectCard } from "@/features/projects/components/ProjectCard/ProjectCard";
@@ -28,6 +31,19 @@ import styles from "./about.module.css";
 
 export const revalidate = 3600;
 
+const ABOUT_SECTIONS = [
+  "hero",
+  "timeline",
+  "skills",
+  "tech",
+  "values",
+  "method",
+  "achievements",
+  "resources",
+  "posts",
+  "projects",
+] as const;
+
 export const metadata: Metadata = {
   title: "Sobre mí",
   description: "Dev full-stack enfocado en performance, experiencia y conversión.",
@@ -35,11 +51,23 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const [resourcesRaw, posts, projects] = await Promise.all([
+  const [resourcesRaw, posts, projects, content, sectionsCfg] = await Promise.all([
     getLatestResources(6),
     getPublishedPosts(),
     getPublishedProjects(),
+    getContentBlocks("about"),
+    getSectionsConfig("about"),
   ]);
+
+  const hero = resolveBlock(content, "about.hero", {
+    title: "Soy [Nombre], dev full-stack",
+    body: "Enfocado en performance y experiencia. Diseño y construyo productos web rápidos, accesibles y pensados para crecer.",
+  });
+  const tResources = resolveBlock(content, "about.resources", {
+    title: "Recursos gratis recién lanzados",
+  });
+  const tPosts = resolveBlock(content, "about.posts", { title: "Últimos artículos" });
+  const tProjects = resolveBlock(content, "about.projects", { title: "Últimos proyectos" });
 
   const resourceItems: ResourceCardData[] = resourcesRaw.map((r) => ({
     slug: r.slug,
@@ -85,42 +113,36 @@ export default async function AboutPage() {
     ],
   };
 
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
-      <AboutHero />
-      <Timeline />
-      <Skills />
-      <TechMarquee />
-      <Values />
-      <WorkMethod />
-      <Achievements />
-
-      {resourceItems.length > 0 ? (
+  const sections: Record<string, React.ReactNode> = {
+    hero: <AboutHero title={hero.title ?? undefined} bio={hero.body || undefined} />,
+    timeline: <Timeline />,
+    skills: <Skills />,
+    tech: <TechMarquee />,
+    values: <Values />,
+    method: <WorkMethod />,
+    achievements: <Achievements />,
+    resources:
+      resourceItems.length > 0 ? (
         <section className={styles.section}>
           <header className={styles.head}>
-            <h2 className={styles.h2}>Recursos gratis recién lanzados</h2>
+            <h2 className={styles.h2}>{tResources.title}</h2>
             <Link href="/recursos" className={styles.seeAll} data-track="about-resources-all">
               Ver todos →
             </Link>
           </header>
           <Carousel
-            ariaLabel="Recursos gratis recién lanzados"
+            ariaLabel={tResources.title ?? "Recursos"}
             items={resourceItems}
             getKey={(r) => r.slug}
             renderItem={(r) => <ResourceCard resource={r} />}
           />
         </section>
-      ) : null}
-
-      {postItems.length > 0 ? (
+      ) : null,
+    posts:
+      postItems.length > 0 ? (
         <section className={styles.section}>
           <header className={styles.head}>
-            <h2 className={styles.h2}>Últimos artículos</h2>
+            <h2 className={styles.h2}>{tPosts.title}</h2>
             <Link href="/blog" className={styles.seeAll}>
               Ver todo →
             </Link>
@@ -131,12 +153,12 @@ export default async function AboutPage() {
             ))}
           </div>
         </section>
-      ) : null}
-
-      {projectItems.length > 0 ? (
+      ) : null,
+    projects:
+      projectItems.length > 0 ? (
         <section className={styles.section}>
           <header className={styles.head}>
-            <h2 className={styles.h2}>Últimos proyectos</h2>
+            <h2 className={styles.h2}>{tProjects.title}</h2>
             <Link href="/proyectos" className={styles.seeAll}>
               Ver todos →
             </Link>
@@ -147,7 +169,20 @@ export default async function AboutPage() {
             ))}
           </div>
         </section>
-      ) : null}
+      ) : null,
+  };
+
+  const order = orderSections([...ABOUT_SECTIONS], sectionsCfg);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {order.map((key) => (
+        <Fragment key={key}>{sections[key]}</Fragment>
+      ))}
     </>
   );
 }
