@@ -2,14 +2,13 @@
 
 import { AdminTable } from "@/features/admin/AdminTable/AdminTable";
 import { type ActionResult } from "@/features/admin/types";
-import { type Service } from "@prisma/client";
-import { serviceColumns } from "./columns";
+import { serviceColumns, type ServiceRow } from "./columns";
 
 export function ServicesTable({
   rows,
   onDelete,
 }: {
-  rows: Service[];
+  rows: ServiceRow[];
   onDelete: (id: string) => Promise<ActionResult>;
 }) {
   return (
