@@ -1,6 +1,9 @@
 import { z } from "zod";
-import { type Post } from "@prisma/client";
+// import { type Post } from "@prisma/client";
 import { type FieldConfig } from "@/features/admin/types";
+// --- AÑADIR estos imports arriba, junto a los existentes ---
+import { type Post, type PostAttachment } from "@prisma/client";
+import { type FileItem } from "@/features/admin/FileRepeater/types";
 
 export const postSchema = z.object({
   title: z.string().min(1, "El título es obligatorio"),
@@ -63,3 +66,30 @@ export const postFields: FieldConfig<PostFormValues>[] = [
   { name: "tags", label: "Tags (separados por coma)", type: "text", placeholder: "nextjs, seo" },
   { name: "readMinutes", label: "Minutos de lectura", type: "number" },
 ];
+
+const attachmentItemSchema = z.object({
+  id: z.string(),
+  label: z.string().min(1, "Cada archivo necesita una etiqueta"),
+  storagePath: z.string().min(1, "Falta subir un archivo en alguna fila"),
+  fileName: z.string(),
+  mimeType: z.string(),
+  sizeBytes: z.number(),
+});
+
+// Payload completo (se valida en el servidor). Sin .min(1): los adjuntos son opcionales.
+export const postFullSchema = postSchema.extend({
+  files: z.array(attachmentItemSchema),
+});
+export type PostFullValues = z.infer<typeof postFullSchema>;
+
+// PostAttachment no tiene mimeType ni sizeBytes en la DB → rellenamos con defaults vacíos.
+export function toAttachmentItems(attachments: PostAttachment[]): FileItem[] {
+  return attachments.map((a) => ({
+    id: a.id,
+    label: a.label,
+    storagePath: a.storagePath,
+    fileName: a.fileName,
+    mimeType: "",
+    sizeBytes: 0,
+  }));
+}

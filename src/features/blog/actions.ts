@@ -5,11 +5,11 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { runValidated } from "@/features/admin/crud";
 import { type ActionResult } from "@/features/admin/types";
-import { postSchema, type PostFormValues } from "./schema";
+import { postFullSchema, type PostFullValues } from "./schema";
 
 const REVALIDATE = ["/admin/posts", "/blog"];
 
-function toData(v: PostFormValues) {
+function toData(v: PostFullValues) {
   return {
     title: v.title,
     slug: v.slug,
@@ -28,23 +28,67 @@ function toData(v: PostFormValues) {
 
 export async function createPost(raw: unknown): Promise<ActionResult> {
   const res = await runValidated(
-    postSchema,
+    postFullSchema,
     raw,
     async (data) => {
-      await prisma.post.create({ data: toData(data) });
+      await prisma.post.create({
+        data: {
+          ...toData(data),
+          attachments: {
+            create: data.files.map((f, index) => ({
+              label: f.label,
+              storagePath: f.storagePath,
+              fileName: f.fileName,
+              order: index,
+            })),
+          },
+        },
+      });
     },
     REVALIDATE,
   );
   if (!res.ok) return res;
-  redirect("/admin/posts"); // fuera del try/catch: redirect() lanza una señal especial
+  redirect("/admin/posts");
 }
 
 export async function updatePost(id: string, raw: unknown): Promise<ActionResult> {
   const res = await runValidated(
-    postSchema,
+    postFullSchema,
     raw,
     async (data) => {
-      await prisma.post.update({ where: { id }, data: toData(data) });
+      const existing = await prisma.postAttachment.findMany({
+        where: { postId: id },
+        select: { id: true },
+      });
+      const existingIds = new Set(existing.map((f) => f.id));
+      const incomingIds = new Set(data.files.map((f) => f.id));
+      const toDelete = [...existingIds].filter((fid) => !incomingIds.has(fid));
+
+      await prisma.$transaction([
+        prisma.post.update({ where: { id }, data: toData(data) }),
+        ...toDelete.map((fid) => prisma.postAttachment.delete({ where: { id: fid } })),
+        ...data.files.map((f, index) =>
+          existingIds.has(f.id)
+            ? prisma.postAttachment.update({
+                where: { id: f.id },
+                data: {
+                  label: f.label,
+                  storagePath: f.storagePath,
+                  fileName: f.fileName,
+                  order: index,
+                },
+              })
+            : prisma.postAttachment.create({
+                data: {
+                  postId: id,
+                  label: f.label,
+                  storagePath: f.storagePath,
+                  fileName: f.fileName,
+                  order: index,
+                },
+              }),
+        ),
+      ]);
     },
     REVALIDATE,
   );
