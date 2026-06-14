@@ -1,0 +1,58 @@
+.section {
+  margin: var(--sp-24) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+}
+.h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  text-align: center;
+  padding-inline: var(--gutter);
+}
+.viewport {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.track {
+  display: flex;
+  gap: var(--sp-4);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+.track:hover {
+  animation-play-state: paused;
+}
+.chip {
+  flex: 0 0 auto;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: var(--sp-2) var(--sp-6);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  transition:
+    transform var(--dur-fast) var(--ease),
+    border-color var(--dur-fast);
+}
+.chip:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand-500);
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+    flex-wrap: wrap;
+    width: auto;
+    justify-content: center;
+  }
+}
