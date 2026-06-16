@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 // UUID fijo del admin. Cuando montes Supabase Auth (S2-T3), crea el usuario
 // admin con ESTE MISMO id en auth.users para que el Profile y el usuario coincidan.
-const ADMIN_ID = "00000000-0000-4000-8000-000000000001";
+const ADMIN_ID = "782e9298-8401-4577-9500-5423c64a49f7";
 
 // Borra todo en orden hijo → padre para no romper claves foráneas.
 // Esto hace el seed re-ejecutable (puedes correrlo las veces que quieras).
