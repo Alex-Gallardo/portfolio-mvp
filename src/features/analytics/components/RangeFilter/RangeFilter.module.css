@@ -1,0 +1,29 @@
+.filter {
+  display: inline-flex;
+  gap: var(--sp-1);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: var(--sp-1);
+}
+.item {
+  text-decoration: none;
+  color: var(--fg-muted);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-full);
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  transition:
+    color var(--dur-fast),
+    background var(--dur-fast);
+}
+.item:hover {
+  color: var(--fg);
+}
+.active {
+  background: var(--brand-500);
+  color: #fff;
+}
