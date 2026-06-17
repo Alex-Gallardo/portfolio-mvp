@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 
@@ -25,4 +26,15 @@ export async function isStaff() {
 export async function isAdmin() {
   const profile = await getProfile();
   return profile?.role === "ADMIN";
+}
+
+/**
+ * Guard para Server Components / Route Handlers: corta si no hay admin.
+ * Devuelve el profile (con rol ADMIN garantizado) si todo va bien.
+ */
+export async function requireAdmin() {
+  const profile = await getProfile();
+  if (!profile) redirect("/login");
+  if (profile.role !== "ADMIN") redirect("/admin");
+  return profile;
 }
