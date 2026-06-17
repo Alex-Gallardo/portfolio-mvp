@@ -1,0 +1,96 @@
+.wrap {
+  width: 100%;
+}
+.error {
+  color: var(--danger);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--sp-3);
+}
+.empty {
+  color: var(--fg-muted);
+  padding: var(--sp-8);
+  text-align: center;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.th {
+  text-align: left;
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg-muted);
+  padding: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+}
+.td {
+  padding: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+  color: var(--fg);
+}
+.action {
+  color: var(--brand-500);
+  text-decoration: none;
+  margin-right: var(--sp-4);
+}
+.action:hover {
+  text-decoration: underline;
+}
+.actionDanger {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--danger);
+  cursor: pointer;
+  font: inherit;
+}
+.actionDanger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Móvil: la tabla se convierte en cards apiladas */
+/* @media (max-width: 767px) {
+  .table, .th, .td, .tr, tbody, thead, tr { display: block; }
+  .th { display: none; }
+  .tr {
+    margin-bottom: var(--sp-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--sp-2);
+  }
+  .td { border: none; display: flex; justify-content: space-between; gap: var(--sp-4); }
+  .td::before { content: attr(data-label); font-weight: 600; color: var(--fg-muted); }
+} */
+
+/* Móvil: la tabla se convierte en cards apiladas */
+@media (max-width: 767px) {
+  .table,
+  .table tbody,
+  .table tr,
+  .td {
+    display: block;
+  }
+  .table thead {
+    display: none; /* oculta la cabecera en móvil */
+  }
+  .table tr {
+    margin-bottom: var(--sp-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--sp-2);
+  }
+  .td {
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-4);
+  }
+  .td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--fg-muted);
+  }
+}

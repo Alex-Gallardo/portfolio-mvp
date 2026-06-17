@@ -1,0 +1,39 @@
+.link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  height: 100%;
+}
+.card:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+.icon {
+  font-size: var(--fs-2xl);
+  line-height: 1;
+}
+.title {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+}
+.summary {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+  flex: 1;
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+.price {
+  font-weight: 600;
+  color: var(--brand-600);
+  font-size: var(--fs-sm);
+}

@@ -1,0 +1,52 @@
+.funnel {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.escalon {
+  flex: 0 0 auto;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--brand-600);
+  background: var(--brand-50);
+  border-radius: var(--radius-full);
+  padding: 2px var(--sp-2);
+}
+.label {
+  flex: 1;
+  font-weight: 600;
+}
+.value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.barTrack {
+  height: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.bar {
+  height: 100%;
+  background: var(--resource-grad);
+  border-radius: var(--radius-full);
+  transition: width var(--dur) var(--ease);
+}
+.rate {
+  font-size: var(--fs-xs);
+  color: var(--fg-muted);
+}

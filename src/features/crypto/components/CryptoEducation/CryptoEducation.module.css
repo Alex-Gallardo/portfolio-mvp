@@ -1,0 +1,104 @@
+.section {
+  max-width: var(--container);
+  margin: var(--sp-24) auto;
+  padding-inline: var(--gutter);
+}
+.h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  margin-bottom: var(--sp-12);
+  text-align: center;
+}
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+}
+.visual {
+  /* móvil: no sticky, solo una tarjeta arriba */
+  display: none;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 18%, var(--bg-elev)),
+    var(--bg-elev)
+  );
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  transition: all var(--dur) var(--ease);
+}
+.icon {
+  font-size: 5rem;
+  line-height: 1;
+}
+.cardTitle {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  text-align: center;
+  padding-inline: var(--sp-6);
+}
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-6);
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  transition:
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+.stepActive {
+  border-color: var(--border);
+  background: var(--bg-elev);
+}
+.stepIcon {
+  font-size: var(--fs-2xl);
+  line-height: 1;
+}
+.stepTitle {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+}
+.stepText {
+  color: var(--fg-muted);
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    flex-direction: row;
+    gap: var(--sp-16);
+    align-items: flex-start;
+  }
+  .visual {
+    display: block;
+    flex: 0 0 40%;
+    position: sticky;
+    top: 18vh;
+  }
+  .steps {
+    flex: 1;
+    gap: var(--sp-24);
+    padding-block: 20vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steps {
+    padding-block: 0;
+    gap: var(--sp-8);
+  }
+}

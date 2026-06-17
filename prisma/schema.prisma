@@ -1,3 +1,8 @@
+// ─────────────────────────────────────────────────────────────
+//  Portfolio MVP — schema.prisma (Ticket S2-T1)
+//  Prisma 6.19 · PostgreSQL (Supabase)
+// ─────────────────────────────────────────────────────────────
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -6,4 +11,341 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+}
+
+// ─────────────────────────────────────────────────────────────
+//  ENUMS
+// ─────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MessageStatus {
+  NEW
+  READ
+  REPLIED
+  SPAM
+}
+
+// Categorías de recursos (para filtrar el hub del escalón 1)
+enum ResourceCategory {
+  APPS
+  WEB
+  BLOCKCHAIN
+  DISENO
+  IA
+  MARKETING
+  OTRO
+}
+
+enum EventType {
+  PAGEVIEW
+  CLICK
+  SCROLL_DEPTH
+  CONVERSION
+  OUTBOUND
+  DOWNLOAD // ⭐ descarga de recurso
+  LEAD_CAPTURE // ⭐ email captado
+}
+
+// ─────────────────────────────────────────────────────────────
+//  PERFIL (1:1 con auth.users de Supabase)
+// ─────────────────────────────────────────────────────────────
+
+model Profile {
+  id        String     @id @db.Uuid // = auth.users.id
+  email     String     @unique
+  fullName  String?
+  role      Role       @default(EDITOR)
+  createdAt DateTime   @default(now())
+  posts     Post[]
+  projects  Project[]
+  resources Resource[]
+}
+
+// ─────────────────────────────────────────────────────────────
+//  CONTENIDO
+// ─────────────────────────────────────────────────────────────
+
+model Category {
+  id    String @id @default(cuid())
+  name  String @unique
+  slug  String @unique
+  posts Post[]
+}
+
+model Post {
+  id             String           @id @default(cuid())
+  slug           String           @unique
+  title          String
+  excerpt        String?
+  content        String // Markdown / MDX
+  coverUrl       String?
+  status         ContentStatus    @default(DRAFT)
+  tags           String[]
+  readMinutes    Int?             @default(3)
+  // SEO
+  seoTitle       String?
+  seoDescription String?
+  ogImage        String?
+  publishedAt    DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  author         Profile?         @relation(fields: [authorId], references: [id])
+  authorId       String?          @db.Uuid
+  categories     Category[]
+  attachments    PostAttachment[] // archivos ilimitados (descargas opcionales del post)
+
+  @@index([status, publishedAt])
+}
+
+model Service {
+  id             String              @id @default(cuid())
+  slug           String              @unique
+  title          String
+  summary        String
+  content        String
+  icon           String?
+  priceFrom      Decimal?            @db.Decimal(10, 2)
+  features       String[]
+  status         ContentStatus       @default(PUBLISHED)
+  order          Int                 @default(0)
+  // SEO
+  seoTitle       String?
+  seoDescription String?
+  ogImage        String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  attachments    ServiceAttachment[] // archivos ilimitados (briefs, ejemplos…)
+}
+
+model Project {
+  id             String         @id @default(cuid())
+  slug           String         @unique
+  title          String
+  summary        String
+  content        String
+  coverUrl       String?
+  liveUrl        String?
+  repoUrl        String?
+  stack          String[]
+  featured       Boolean        @default(false)
+  status         ContentStatus  @default(PUBLISHED)
+  order          Int            @default(0)
+  // SEO
+  seoTitle       String?
+  seoDescription String?
+  ogImage        String?
+  author         Profile?       @relation(fields: [authorId], references: [id])
+  authorId       String?        @db.Uuid
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  images         ProjectImage[] // galería con imágenes ilimitadas ("agregar +")
+}
+
+// ⭐⭐ Resource (recurso gratis descargable, escalón 1)
+model Resource {
+  id             String             @id @default(cuid())
+  slug           String             @unique
+  title          String
+  summary        String
+  content        String // descripción larga (markdown)
+  coverUrl       String?
+  category       ResourceCategory   @default(OTRO)
+  status         ContentStatus      @default(PUBLISHED)
+  featured       Boolean            @default(false)
+  order          Int                @default(0)
+  // SEO
+  seoTitle       String?
+  seoDescription String?
+  ogImage        String?
+  // captura de leads
+  requireEmail   Boolean            @default(true) // exige email antes de descargar
+  // métricas desnormalizadas para listados rápidos
+  downloadCount  Int                @default(0)
+  author         Profile?           @relation(fields: [authorId], references: [id])
+  authorId       String?            @db.Uuid
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  files          ResourceFile[] // ⭐ archivos descargables ILIMITADOS ("agregar +")
+  downloads      ResourceDownload[]
+  leads          Lead[]
+
+  @@index([status, order])
+  @@index([category, status])
+}
+
+// ─────────────────────────────────────────────────────────────
+//  ARCHIVOS ILIMITADOS POR ENTIDAD
+// ─────────────────────────────────────────────────────────────
+
+// ⭐ Un recurso puede tener N archivos (PDFs, plantillas, .zip…). Sin límite.
+model ResourceFile {
+  id            String             @id @default(cuid())
+  resource      Resource           @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  resourceId    String
+  label         String // "Plantilla en Figma", "PDF guía", "Checklist .docx"
+  storagePath   String // ruta en Supabase Storage
+  fileName      String
+  mimeType      String?
+  sizeBytes     Int?
+  order         Int                @default(0)
+  downloadCount Int                @default(0) // medible por archivo
+  createdAt     DateTime           @default(now())
+  downloads     ResourceDownload[]
+
+  @@index([resourceId, order])
+}
+
+// Galería de proyecto: imágenes ilimitadas
+model ProjectImage {
+  id        String   @id @default(cuid())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
+  url       String
+  alt       String?
+  caption   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([projectId, order])
+}
+
+// Attachments genéricos para posts y servicios (archivos ilimitados)
+model PostAttachment {
+  id          String   @id @default(cuid())
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId      String
+  label       String
+  storagePath String
+  fileName    String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([postId, order])
+}
+
+model ServiceAttachment {
+  id          String   @id @default(cuid())
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  serviceId   String
+  label       String
+  storagePath String
+  fileName    String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([serviceId, order])
+}
+
+// ─────────────────────────────────────────────────────────────
+//  CAPTACIÓN DE LEADS Y DESCARGAS MEDIBLES (escalón 1)
+// ─────────────────────────────────────────────────────────────
+
+// ⭐ El activo #1 de la escalera de valor: correos captados (escalón 1)
+model Lead {
+  id               String             @id @default(cuid())
+  email            String             @unique
+  name             String?
+  consent          Boolean            @default(true) // aceptación explícita (GDPR-friendly)
+  sourceResource   Resource?          @relation(fields: [sourceResourceId], references: [id])
+  sourceResourceId String?
+  utmSource        String?
+  utmMedium        String?
+  utmCampaign      String?
+  createdAt        DateTime           @default(now())
+  downloads        ResourceDownload[]
+
+  @@index([createdAt])
+}
+
+// ⭐ Cada descarga se registra (qué recurso, qué archivo, qué lead) → medible
+model ResourceDownload {
+  id         String       @id @default(cuid())
+  resource   Resource     @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  resourceId String
+  file       ResourceFile @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  fileId     String
+  lead       Lead?        @relation(fields: [leadId], references: [id])
+  leadId     String?
+  referrer   String?
+  createdAt  DateTime     @default(now())
+
+  @@index([resourceId, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────
+//  CONTACTO, CONFIGURACIÓN Y CONTENIDO EDITABLE
+// ─────────────────────────────────────────────────────────────
+
+model ContactMessage {
+  id         String        @id @default(cuid())
+  name       String
+  email      String
+  message    String
+  sourcePage String?
+  status     MessageStatus @default(NEW)
+  createdAt  DateTime      @default(now())
+
+  @@index([status, createdAt])
+}
+
+// Configuración global editable desde /admin/ajustes (branding, copies, social…)
+model SiteSetting {
+  key       String   @id // ej: "branding", "copies.home", "navigation", "social"
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// ⭐ Bloques de texto en Markdown editables desde el admin (textos .md por sección)
+model ContentBlock {
+  id        String   @id @default(cuid())
+  key       String   @unique // ej: "home.hero", "about.bio", "crypto.faq.1"
+  page      String // "home" | "about" | "crypto" | ...
+  title     String?
+  body      String // contenido en Markdown
+  order     Int      @default(0)
+  visible   Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+
+  @@index([page, order])
+}
+
+// ─────────────────────────────────────────────────────────────
+//  ANALÍTICA PASIVA
+// ─────────────────────────────────────────────────────────────
+
+model AnalyticsSession {
+  id        String           @id @default(cuid())
+  device    String? // mobile | tablet | desktop
+  browser   String?
+  os        String?
+  country   String?
+  city      String?
+  firstSeen DateTime         @default(now())
+  lastSeen  DateTime         @default(now())
+  events    AnalyticsEvent[]
+}
+
+model AnalyticsEvent {
+  id        String           @id @default(cuid())
+  session   AnalyticsSession @relation(fields: [sessionId], references: [id])
+  sessionId String
+  type      EventType
+  path      String
+  element   String? // selector o data-track del clic
+  label     String? // texto / contexto (ej: slug del recurso descargado)
+  referrer  String?
+  createdAt DateTime         @default(now())
+
+  @@index([type, createdAt])
+  @@index([path, createdAt])
 }

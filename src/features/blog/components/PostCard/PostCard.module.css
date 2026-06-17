@@ -1,0 +1,50 @@
+.link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0; /* anulamos el padding de Card para que la portada pegue a los bordes */
+  height: 100%;
+}
+.card:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+.cover,
+.coverPlaceholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+.coverPlaceholder {
+  background: linear-gradient(135deg, var(--brand-50), var(--border));
+}
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-6);
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+.title {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  line-height: 1.25;
+}
+.excerpt {
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+.meta {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--fg-muted);
+}

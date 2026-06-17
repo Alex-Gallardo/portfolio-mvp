@@ -17,6 +17,9 @@
     var(--resource-3)
   );
 
+  --resource-soft: #fff4ec;
+  --resource-glow: 0 10px 40px rgba(255, 107, 107, 0.3);
+
   /* ---- Estados ---- */
   --success: #18a957;
   --warning: #e2a600;

@@ -1,0 +1,25 @@
+.track {
+  display: flex;
+  gap: var(--sp-6);
+  list-style: none;
+  margin: 0;
+  padding: var(--sp-4) 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.slide {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  width: clamp(260px, 78vw, 340px);
+  display: flex;
+}
+.slide > * {
+  width: 100%;
+}
+@media (min-width: 1024px) {
+  .slide {
+    width: 340px;
+  }
+}
