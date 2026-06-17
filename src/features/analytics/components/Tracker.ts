@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { track } from "../traker";
+import { track } from "../tracker";
 
 const MILESTONES = [25, 50, 75, 100];
 

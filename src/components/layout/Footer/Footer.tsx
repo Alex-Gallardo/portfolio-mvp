@@ -1,5 +1,6 @@
 import Link from "next/link";
 import styles from "./Footer.module.css";
+import { ContactSection } from "@/features/contact/components/ContactSection/ContactSection";
 
 const NAV = [
   { href: "/", label: "Home" },
@@ -28,6 +29,7 @@ export function Footer() {
 
   return (
     <footer className={styles.footer}>
+      <ContactSection />
       <div className={`container ${styles.grid}`}>
         {/* Marca + tagline + redes */}
         <div className={styles.brandCol}>
@@ -79,10 +81,13 @@ export function Footer() {
           </ul>
         </nav>
 
-        {/* Placeholder del formulario (se implementa en el S6-T4) */}
+        {/* CTA al formulario de arriba (ContactSection con id="contacto") */}
         <div className={styles.col}>
           <h2 className={styles.colTitle}>¿Tienes una idea?</h2>
-          <p className={styles.tagline}>Cuéntamela. (Formulario próximamente.)</p>
+          <p className={styles.tagline}>Cuéntamela y te respondo con un plan claro.</p>
+          <Link href="/#contacto" className={styles.link} data-track="footer-contact">
+            Escríbeme →
+          </Link>
         </div>
       </div>
 
