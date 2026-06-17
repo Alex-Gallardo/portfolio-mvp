@@ -11,8 +11,45 @@ import { PostContent } from "@/features/blog/components/PostContent/PostContent"
 import { Toc } from "@/features/blog/components/Toc/Toc";
 import { ResourceCta } from "@/features/blog/components/ResourceCta/ResourceCta";
 import styles from "./post.module.css";
+import { type Metadata } from "next";
+import { prisma } from "@/lib/prisma";
+import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await prisma.post.findUnique({
+    where: { slug },
+    select: {
+      title: true,
+      excerpt: true,
+      coverUrl: true,
+      status: true,
+      seoTitle: true,
+      seoDescription: true,
+      ogImage: true,
+      publishedAt: true,
+      updatedAt: true,
+    },
+  });
+  if (!post || post.status !== "PUBLISHED") {
+    return buildMetadata({ title: "Artículo no encontrado", noIndex: true });
+  }
+  return buildMetadata({
+    title: post.seoTitle ?? post.title,
+    description: post.seoDescription ?? post.excerpt ?? undefined,
+    path: `/blog/${slug}`,
+    image: post.ogImage ?? post.coverUrl,
+    type: "article",
+    publishedTime: post.publishedAt?.toISOString(),
+    modifiedTime: post.updatedAt.toISOString(),
+  });
+}
 
 export async function generateStaticParams() {
   const slugs = await getPublishedSlugs();

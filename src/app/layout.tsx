@@ -1,12 +1,23 @@
 import type { Metadata } from "next";
+import { getSeo } from "@/features/settings/queries";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "Portfolio MVP",
-  description: "Portafolio profesional con foco en SEO, performance y conversión.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getSeo();
+  const titleBase = seo.titleBase?.trim() || "Portfolio MVP";
+  const description =
+    seo.description?.trim() || "Portafolio profesional con foco en SEO, performance y conversión.";
 
-// Script mínimo que corre ANTES de pintar: evita el flash de tema incorrecto.
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: { default: titleBase, template: `%s · ${titleBase}` },
+    description,
+    openGraph: { siteName: titleBase, locale: "es_ES", type: "website" },
+    twitter: { card: "summary_large_image" },
+  };
+}
+
 const themeScript = `
 (function() {
   try {

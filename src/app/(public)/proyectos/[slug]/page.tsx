@@ -12,8 +12,40 @@ import { ProjectCta } from "@/features/projects/components/ProjectCta/ProjectCta
 import { ProjectCard } from "@/features/projects/components/ProjectCard/ProjectCard";
 import { type ProjectListItem } from "@/features/projects/types";
 import styles from "./project.module.css";
+import { type Metadata } from "next";
+import { prisma } from "@/lib/prisma";
+import { buildMetadata } from "@/lib/seo";
 
 export const revalidate = 3600;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await prisma.project.findUnique({
+    where: { slug },
+    select: {
+      title: true,
+      summary: true,
+      coverUrl: true,
+      status: true,
+      seoTitle: true,
+      seoDescription: true,
+      ogImage: true,
+    },
+  });
+  if (!project || project.status !== "PUBLISHED") {
+    return buildMetadata({ title: "Proyecto no encontrado", noIndex: true });
+  }
+  return buildMetadata({
+    title: project.seoTitle ?? project.title,
+    description: project.seoDescription ?? project.summary,
+    path: `/proyectos/${slug}`,
+    image: project.ogImage ?? project.coverUrl,
+  });
+}
 
 export async function generateStaticParams() {
   const slugs = await getPublishedProjectSlugs();

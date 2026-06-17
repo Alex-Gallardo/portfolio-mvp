@@ -12,6 +12,7 @@ import { CATEGORY_LABELS } from "@/features/resources/categories";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { type ResourceCategory } from "@prisma/client";
 import styles from "./detalle.module.css";
+import { buildMetadata } from "@/lib/seo";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -23,14 +24,27 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const resource = await prisma.resource.findUnique({ where: { slug } });
+  const resource = await prisma.resource.findUnique({
+    where: { slug },
+    select: {
+      title: true,
+      summary: true,
+      coverUrl: true,
+      status: true,
+      seoTitle: true,
+      seoDescription: true,
+      ogImage: true,
+    },
+  });
   if (!resource || resource.status !== "PUBLISHED") {
-    return { title: "Recurso no encontrado" };
+    return buildMetadata({ title: "Recurso no encontrado", noIndex: true });
   }
-  return {
+  return buildMetadata({
     title: resource.seoTitle ?? resource.title,
     description: resource.seoDescription ?? resource.summary,
-  };
+    path: `/recursos/${slug}`,
+    image: resource.ogImage ?? resource.coverUrl,
+  });
 }
 
 type RelatedSource = {
