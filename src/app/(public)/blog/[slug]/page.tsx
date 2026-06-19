@@ -13,7 +13,8 @@ import { ResourceCta } from "@/features/blog/components/ResourceCta/ResourceCta"
 import styles from "./post.module.css";
 import { type Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { buildMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildMetadata, blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -78,6 +79,19 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
+  const breadcrumbLd = breadcrumbJsonLd([
+    { name: "Home", path: "/" },
+    { name: "Blog", path: "/blog" },
+    { name: post.title, path: `/blog/${slug}` },
+  ]);
+  const postLd = blogPostingJsonLd({
+    title: post.title,
+    path: `/blog/${slug}`,
+    image: post.coverUrl,
+    authorName: post.author?.fullName,
+    datePublished: post.publishedAt?.toISOString(),
+  });
+
   const { html, toc } = await renderMarkdown(post.content);
   const categoryIds = post.categories.map((c) => c.id);
   const [related, resource] = await Promise.all([
@@ -89,6 +103,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   return (
     <main className={styles.wrap}>
+      <JsonLd data={breadcrumbLd} />
+      <JsonLd data={postLd} />
       <article className={styles.layout}>
         <div className={styles.content}>
           <header className={styles.header}>

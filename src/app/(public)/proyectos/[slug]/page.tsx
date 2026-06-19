@@ -15,6 +15,8 @@ import styles from "./project.module.css";
 import { type Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { buildMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { creativeWorkJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -57,6 +59,19 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
 
+  const breadcrumbLd = breadcrumbJsonLd([
+    { name: "Home", path: "/" },
+    { name: "Proyectos", path: "/proyectos" },
+    { name: project.title, path: `/proyectos/${slug}` },
+  ]);
+  const projectLd = creativeWorkJsonLd({
+    type: "CreativeWork",
+    name: project.title,
+    description: project.summary,
+    path: `/proyectos/${slug}`,
+    image: project.coverUrl,
+  });
+
   const { html } = await renderMarkdown(project.content);
   const relatedRaw = await getRelatedProjects(project.id);
   const related: ProjectListItem[] = relatedRaw.map((p) => ({
@@ -71,6 +86,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
   return (
     <main className={styles.wrap}>
+      <JsonLd data={breadcrumbLd} />
+      <JsonLd data={projectLd} />
       <nav className={styles.breadcrumb} aria-label="Migas de pan">
         <Link href="/">Home</Link> / <Link href="/proyectos">Proyectos</Link> /{" "}
         <span aria-current="page">{project.title}</span>

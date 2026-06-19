@@ -27,6 +27,10 @@ import { Values } from "@/features/about/components/Values/Values";
 import { WorkMethod } from "@/features/about/components/WorkMethod/WorkMethod";
 import { Achievements } from "@/features/about/components/Achievements/Achievements";
 
+import { getBranding, getSocial } from "@/features/settings/queries";
+import { personJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+
 import styles from "./about.module.css";
 
 export const revalidate = 3600;
@@ -51,13 +55,17 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const [resourcesRaw, posts, projects, content, sectionsCfg] = await Promise.all([
-    getLatestResources(6),
-    getPublishedPosts(),
-    getPublishedProjects(),
-    getContentBlocks("about"),
-    getSectionsConfig("about"),
-  ]);
+  const [resourcesRaw, posts, projects, content, sectionsCfg, branding, social] = await Promise.all(
+    [
+      getLatestResources(6),
+      getPublishedPosts(),
+      getPublishedProjects(),
+      getContentBlocks("about"),
+      getSectionsConfig("about"),
+      getBranding(),
+      getSocial(),
+    ],
+  );
 
   const hero = resolveBlock(content, "about.hero", {
     title: "Soy [Nombre], dev full-stack",
@@ -98,20 +106,28 @@ export default async function AboutPage() {
 
   const projectItems: ProjectListItem[] = projects.slice(0, 3);
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tudominio.com";
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: "[Tu Nombre]",
+  // const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tudominio.com";
+  // const jsonLd = {
+  //   "@context": "https://schema.org",
+  //   "@type": "Person",
+  //   name: "[Tu Nombre]",
+  //   jobTitle: "Desarrollador full-stack",
+  //   description: "Dev full-stack enfocado en performance, experiencia y conversión.",
+  //   url: `${siteUrl}/about`,
+  //   sameAs: [
+  //     "https://github.com/tuusuario",
+  //     "https://www.linkedin.com/in/tuusuario",
+  //     "https://x.com/tuusuario",
+  //   ],
+  // };
+
+  const sameAs = [social.github, social.linkedin, social.x].filter(Boolean) as string[];
+  const personLd = personJsonLd({
+    name: branding.name,
     jobTitle: "Desarrollador full-stack",
-    description: "Dev full-stack enfocado en performance, experiencia y conversión.",
-    url: `${siteUrl}/about`,
-    sameAs: [
-      "https://github.com/tuusuario",
-      "https://www.linkedin.com/in/tuusuario",
-      "https://x.com/tuusuario",
-    ],
-  };
+    sameAs,
+    url: `/about`,
+  });
 
   const sections: Record<string, React.ReactNode> = {
     hero: <AboutHero title={hero.title ?? undefined} bio={hero.body || undefined} />,
@@ -176,10 +192,7 @@ export default async function AboutPage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={personLd} />
       {order.map((key) => (
         <Fragment key={key}>{sections[key]}</Fragment>
       ))}
