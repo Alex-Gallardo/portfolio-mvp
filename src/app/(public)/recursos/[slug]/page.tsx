@@ -43,7 +43,8 @@ export async function generateMetadata({
     title: resource.seoTitle ?? resource.title,
     description: resource.seoDescription ?? resource.summary,
     path: `/recursos/${slug}`,
-    image: resource.ogImage ?? resource.coverUrl,
+    // image: resource.ogImage ?? resource.coverUrl,
+    hasDynamicOgImage: true,
   });
 }
 

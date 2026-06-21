@@ -9,11 +9,6 @@ export function absoluteUrl(path = "/"): string {
   return new URL(path, SITE_URL).toString();
 }
 
-/** Coacciona cualquier valor a string no vacío, o undefined. Blinda contra la forma de getSeo(). */
-// function str(v: unknown): string | undefined {
-//   return typeof v === "string" && v.trim().length > 0 ? v : undefined;
-// }
-
 type BuildMetadataInput = {
   title?: string;
   description?: string;
@@ -23,6 +18,8 @@ type BuildMetadataInput = {
   noIndex?: boolean;
   publishedTime?: string;
   modifiedTime?: string;
+  /** La ruta tiene opengraph-image.tsx (OG generada): no emitimos og:image aquí. */
+  hasDynamicOgImage?: boolean;
 };
 
 export async function buildMetadata(input: BuildMetadataInput = {}): Promise<Metadata> {
@@ -35,7 +32,7 @@ export async function buildMetadata(input: BuildMetadataInput = {}): Promise<Met
     (seo.description?.trim() || "Desarrollo, diseño y SEO técnico para que tu marca destaque.");
 
   const url = absoluteUrl(input.path ?? "/");
-  const ogSource = input.image ?? (seo.ogImage?.trim() || null);
+  const ogSource = input.hasDynamicOgImage ? null : (input.image ?? (seo.ogImage?.trim() || null));
   const ogImage = ogSource ? absoluteUrl(ogSource) : undefined;
 
   const fullTitle = input.title ? `${input.title} · ${titleBase}` : titleBase;
