@@ -1,0 +1,18 @@
+# Alexander Gallardo [Tu marca]
+
+> Portafolio de Alexander Gallardo, desarrollador full-stack enfocado en performance, SEO técnico y conversión.
+
+## Qué hago
+- Desarrollo web rápido (Next.js, TypeScript).
+- Diseño UX/UI limpio y accesible.
+- SEO técnico y posicionamiento para buscadores y agentes de IA.
+
+## Enlaces clave
+- Sobre mí: [https://tudominio.com/about](https://tudominio.com/about)
+- Servicios: [https://tudominio.com/servicios](https://tudominio.com/servicios)
+- Proyectos: [https://tudominio.com/proyectos](https://tudominio.com/proyectos)
+- Recursos gratis (plantillas, checklists, guías): [https://tudominio.com/recursos](https://tudominio.com/recursos)
+- Blog: [https://tudominio.com/blog](https://tudominio.com/blog)
+
+## Contacto
+- Email / formulario: [https://tudominio.com/#contacto](https://tudominio.com/#contacto)

@@ -11,8 +11,47 @@ import { PostContent } from "@/features/blog/components/PostContent/PostContent"
 import { Toc } from "@/features/blog/components/Toc/Toc";
 import { ResourceCta } from "@/features/blog/components/ResourceCta/ResourceCta";
 import styles from "./post.module.css";
+import { type Metadata } from "next";
+import { prisma } from "@/lib/prisma";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildMetadata, blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 export const revalidate = 3600;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await prisma.post.findUnique({
+    where: { slug },
+    select: {
+      title: true,
+      excerpt: true,
+      coverUrl: true,
+      status: true,
+      seoTitle: true,
+      seoDescription: true,
+      ogImage: true,
+      publishedAt: true,
+      updatedAt: true,
+    },
+  });
+  if (!post || post.status !== "PUBLISHED") {
+    return buildMetadata({ title: "Artículo no encontrado", noIndex: true });
+  }
+  return buildMetadata({
+    title: post.seoTitle ?? post.title,
+    description: post.seoDescription ?? post.excerpt ?? undefined,
+    path: `/blog/${slug}`,
+    // image: post.ogImage ?? post.coverUrl,
+    hasDynamicOgImage: true,
+    type: "article",
+    publishedTime: post.publishedAt?.toISOString(),
+    modifiedTime: post.updatedAt.toISOString(),
+  });
+}
 
 export async function generateStaticParams() {
   const slugs = await getPublishedSlugs();
@@ -41,6 +80,19 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
+  const breadcrumbLd = breadcrumbJsonLd([
+    { name: "Home", path: "/" },
+    { name: "Blog", path: "/blog" },
+    { name: post.title, path: `/blog/${slug}` },
+  ]);
+  const postLd = blogPostingJsonLd({
+    title: post.title,
+    path: `/blog/${slug}`,
+    image: post.coverUrl,
+    authorName: post.author?.fullName,
+    datePublished: post.publishedAt?.toISOString(),
+  });
+
   const { html, toc } = await renderMarkdown(post.content);
   const categoryIds = post.categories.map((c) => c.id);
   const [related, resource] = await Promise.all([
@@ -52,6 +104,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   return (
     <main className={styles.wrap}>
+      <JsonLd data={breadcrumbLd} />
+      <JsonLd data={postLd} />
       <article className={styles.layout}>
         <div className={styles.content}>
           <header className={styles.header}>

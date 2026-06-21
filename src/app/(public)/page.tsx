@@ -30,6 +30,10 @@ import { SocialProof } from "@/features/home/components/SocialProof/SocialProof"
 import { CryptoBand } from "@/features/home/components/CryptoBand/CryptoBand";
 import { ClosingCta } from "@/features/home/components/ClosingCta/ClosingCta";
 
+import { getBranding, getSocial } from "@/features/settings/queries";
+import { personJsonLd, websiteJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+
 import styles from "./page.module.css";
 
 export const revalidate = 3600;
@@ -56,14 +60,17 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [services, projects, resourcesRaw, posts, content, sectionsCfg] = await Promise.all([
-    getPublishedServices(),
-    getPublishedProjects(),
-    getLatestResources(6),
-    getPublishedPosts(),
-    getContentBlocks("home"),
-    getSectionsConfig("home"),
-  ]);
+  const [services, projects, resourcesRaw, posts, content, sectionsCfg, branding, social] =
+    await Promise.all([
+      getPublishedServices(),
+      getPublishedProjects(),
+      getLatestResources(6),
+      getPublishedPosts(),
+      getContentBlocks("home"),
+      getSectionsConfig("home"),
+      getBranding(),
+      getSocial(),
+    ]);
 
   // --- texto editable (con fallback) ---
   const hero = resolveBlock(content, "home.hero", {
@@ -125,29 +132,36 @@ export default async function HomePage() {
     readMinutes: p.readMinutes ?? 3,
   }));
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tudominio.com";
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Person",
-        name: "[Tu Nombre]",
-        jobTitle: "Desarrollador full-stack",
-        url: siteUrl,
-        sameAs: ["https://github.com/tuusuario", "https://www.linkedin.com/in/tuusuario"],
-      },
-      {
-        "@type": "WebSite",
-        name: "[Tu Marca]",
-        url: siteUrl,
-        potentialAction: {
-          "@type": "SearchAction",
-          target: `${siteUrl}/blog?buscar={search_term_string}`,
-          "query-input": "required name=search_term_string",
-        },
-      },
-    ],
-  };
+  // const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tudominio.com";
+  // const jsonLd = {
+  //   "@context": "https://schema.org",
+  //   "@graph": [
+  //     {
+  //       "@type": "Person",
+  //       name: "[Tu Nombre]",
+  //       jobTitle: "Desarrollador full-stack",
+  //       url: siteUrl,
+  //       sameAs: ["https://github.com/tuusuario", "https://www.linkedin.com/in/tuusuario"],
+  //     },
+  //     {
+  //       "@type": "WebSite",
+  //       name: "[Tu Marca]",
+  //       url: siteUrl,
+  //       potentialAction: {
+  //         "@type": "SearchAction",
+  //         target: `${siteUrl}/blog?buscar={search_term_string}`,
+  //         "query-input": "required name=search_term_string",
+  //       },
+  //     },
+  //   ],
+  // };
+  const sameAs = [social.github, social.linkedin, social.x].filter(Boolean) as string[];
+  const personLd = personJsonLd({
+    name: branding.name,
+    jobTitle: "Desarrollador full-stack",
+    sameAs,
+  });
+  const websiteLd = websiteJsonLd({ name: branding.name });
 
   // --- registro de secciones (clave → nodo) ---
   const sections: Record<string, React.ReactNode> = {
@@ -230,10 +244,8 @@ export default async function HomePage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={personLd} />
+      <JsonLd data={websiteLd} />
       {order.map((key) => (
         <Fragment key={key}>{sections[key]}</Fragment>
       ))}

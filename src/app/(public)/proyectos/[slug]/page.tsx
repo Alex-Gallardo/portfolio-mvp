@@ -12,8 +12,43 @@ import { ProjectCta } from "@/features/projects/components/ProjectCta/ProjectCta
 import { ProjectCard } from "@/features/projects/components/ProjectCard/ProjectCard";
 import { type ProjectListItem } from "@/features/projects/types";
 import styles from "./project.module.css";
+import { type Metadata } from "next";
+import { prisma } from "@/lib/prisma";
+import { buildMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { creativeWorkJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 export const revalidate = 3600;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await prisma.project.findUnique({
+    where: { slug },
+    select: {
+      title: true,
+      summary: true,
+      coverUrl: true,
+      status: true,
+      seoTitle: true,
+      seoDescription: true,
+      ogImage: true,
+    },
+  });
+  if (!project || project.status !== "PUBLISHED") {
+    return buildMetadata({ title: "Proyecto no encontrado", noIndex: true });
+  }
+  return buildMetadata({
+    title: project.seoTitle ?? project.title,
+    description: project.seoDescription ?? project.summary,
+    path: `/proyectos/${slug}`,
+    // image: project.ogImage ?? project.coverUrl,
+    hasDynamicOgImage: true,
+  });
+}
 
 export async function generateStaticParams() {
   const slugs = await getPublishedProjectSlugs();
@@ -24,6 +59,19 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   if (!project) notFound();
+
+  const breadcrumbLd = breadcrumbJsonLd([
+    { name: "Home", path: "/" },
+    { name: "Proyectos", path: "/proyectos" },
+    { name: project.title, path: `/proyectos/${slug}` },
+  ]);
+  const projectLd = creativeWorkJsonLd({
+    type: "CreativeWork",
+    name: project.title,
+    description: project.summary,
+    path: `/proyectos/${slug}`,
+    image: project.coverUrl,
+  });
 
   const { html } = await renderMarkdown(project.content);
   const relatedRaw = await getRelatedProjects(project.id);
@@ -39,6 +87,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ slug: 
 
   return (
     <main className={styles.wrap}>
+      <JsonLd data={breadcrumbLd} />
+      <JsonLd data={projectLd} />
       <nav className={styles.breadcrumb} aria-label="Migas de pan">
         <Link href="/">Home</Link> / <Link href="/proyectos">Proyectos</Link> /{" "}
         <span aria-current="page">{project.title}</span>
