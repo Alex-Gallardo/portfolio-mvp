@@ -9,12 +9,14 @@ export const alt = "Proyecto";
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const [project, branding] = await Promise.all([
-    prisma.project.findUnique({ where: { slug }, select: { title: true } }),
+    prisma.project.findUnique({ where: { slug }, select: { title: true, stack: true } }),
     getBranding(),
   ]);
+  const stack = project?.stack ?? [];
   return renderOgImage({
     title: project?.title ?? "Proyecto",
     label: "Proyecto",
     brand: branding.name,
+    metric: stack.length ? stack.slice(0, 3).join(" · ") : undefined,
   });
 }

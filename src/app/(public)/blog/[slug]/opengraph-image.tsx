@@ -9,8 +9,13 @@ export const alt = "Artículo del blog";
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const [post, branding] = await Promise.all([
-    prisma.post.findUnique({ where: { slug }, select: { title: true } }),
+    prisma.post.findUnique({ where: { slug }, select: { title: true, readMinutes: true } }),
     getBranding(),
   ]);
-  return renderOgImage({ title: post?.title ?? "Artículo", label: "Blog", brand: branding.name });
+  return renderOgImage({
+    title: post?.title ?? "Artículo",
+    label: "Blog",
+    brand: branding.name,
+    metric: `${post?.readMinutes ?? 3} min de lectura`,
+  });
 }
