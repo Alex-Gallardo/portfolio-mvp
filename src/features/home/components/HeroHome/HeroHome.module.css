@@ -2,16 +2,27 @@
   min-height: 88vh;
   display: grid;
   place-items: center;
-  text-align: center;
   padding: var(--sp-24) var(--gutter) var(--sp-16);
 }
+
 .inner {
-  max-width: 56rem;
+  width: 100%;
+  max-width: var(--container);
+  display: grid;
+  grid-template-columns: 1fr; /* móvil: una sola columna */
+  gap: var(--sp-12);
+  align-items: center;
+}
+
+/* ---- Columna de texto ---- */
+.content {
   display: flex;
   flex-direction: column;
   gap: var(--sp-6);
+  text-align: center; /* móvil: centrado */
   align-items: center;
 }
+
 .title {
   font-family: var(--font-display);
   font-size: var(--fs-3xl);
@@ -19,11 +30,13 @@
   letter-spacing: -0.02em;
   max-width: 20ch;
 }
+
 .sub {
   color: var(--fg-muted);
   font-size: var(--fs-lg);
   max-width: 50ch;
 }
+
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -31,6 +44,8 @@
   justify-content: center;
   margin-top: var(--sp-2);
 }
+
+/* ---- Botones (tamaño intacto) ---- */
 .primary,
 .secondary {
   text-decoration: none;
@@ -61,4 +76,169 @@
 }
 .secondary:hover {
   transform: translateY(-2px);
+}
+
+/* ---- Columna visual (carrusel slide) ---- */
+.visual {
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  max-width: 34rem;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  overflow: hidden; /* recorta el track → nunca hay huecos visibles */
+}
+
+/* Glow base sutil del marco */
+.frame::before {
+  content: "";
+  position: absolute;
+  inset: -25%;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 30% 30%, var(--brand-500), transparent 60%),
+    radial-gradient(circle at 70% 70%, var(--accent), transparent 60%);
+  opacity: 0.14;
+  filter: blur(40px);
+}
+
+/* Track: dos celdas contiguas [siguiente, actual]; se desliza con translateX */
+.track {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 200%;
+  height: 100%;
+  will-change: transform;
+}
+.animate {
+  transition: transform var(--dur-slow) var(--ease);
+}
+.slide {
+  position: relative;
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100%;
+}
+.single {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.img {
+  object-fit: cover;
+}
+
+/* Placeholder con degradado distinto por slide (visible al rotar) */
+.placeholder {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+.placeholder::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.85;
+}
+.variant0::before {
+  background:
+    radial-gradient(circle at 35% 30%, var(--brand-500), transparent 62%),
+    radial-gradient(circle at 70% 75%, var(--brand-700), transparent 60%);
+}
+.variant1::before {
+  background:
+    radial-gradient(circle at 30% 35%, var(--accent), transparent 62%),
+    radial-gradient(circle at 75% 70%, var(--brand-500), transparent 60%);
+}
+.variant2::before {
+  background:
+    radial-gradient(circle at 32% 30%, var(--resource-1), transparent 62%),
+    radial-gradient(circle at 72% 72%, var(--resource-2), transparent 60%);
+}
+
+.icon {
+  position: relative;
+  z-index: 1;
+  width: 28%;
+  height: auto;
+  color: #fff;
+  opacity: 0.85;
+}
+
+/* ---- Desktop: texto izquierda, visual derecha ---- */
+@media (min-width: 1024px) {
+  .inner {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--sp-16);
+  }
+  .content {
+    text-align: left;
+    align-items: flex-start;
+  }
+  .actions {
+    justify-content: flex-start;
+  }
+}
+
+/* ---- Animaciones de entrada (solo si el usuario las permite) ---- */
+.reveal {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    animation: heroReveal var(--dur-slow) var(--ease) both;
+  }
+  .title.reveal {
+    animation-delay: 60ms;
+  }
+  .visual.reveal {
+    animation-delay: 160ms;
+  }
+  .sub.reveal {
+    animation-delay: 200ms;
+  }
+  .actions.reveal {
+    animation-delay: 320ms;
+  }
+
+  /* Flotación sutil del icono del placeholder */
+  .icon {
+    animation: heroFloat 5s ease-in-out 800ms infinite;
+  }
+}
+
+@keyframes heroReveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }

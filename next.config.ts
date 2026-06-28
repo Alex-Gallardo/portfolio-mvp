@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "**.supabase.co" }, // tu bucket público "media"
       { protocol: "https", hostname: "picsum.photos" }, // portadas del seed (pruebas)
+      { protocol: "https", hostname: "i.pinimg.com" }, // ← añadido
     ],
   },
 };
