@@ -12,14 +12,20 @@ export function ProjectCard({ project }: { project: ProjectListItem }) {
       data-track={`project-card:${project.slug}`}
     >
       <Card interactive className={styles.card}>
-        {project.coverUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={project.coverUrl} alt="" className={styles.cover} loading="lazy" />
-        ) : (
-          <div className={styles.coverPlaceholder} aria-hidden="true" />
-        )}
+        <div className={styles.media}>
+          {project.coverUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={project.coverUrl} alt="" className={styles.cover} loading="lazy" />
+          ) : (
+            <div className={styles.coverPlaceholder} aria-hidden="true" />
+          )}
+          {project.featured ? (
+            <span className={styles.featured}>
+              <Badge variant="brand">Destacado</Badge>
+            </span>
+          ) : null}
+        </div>
         <div className={styles.body}>
-          {project.featured ? <Badge variant="brand">Destacado</Badge> : null}
           <h3 className={styles.title}>{project.title}</h3>
           <p className={styles.summary}>{project.summary}</p>
           {project.stack.length > 0 ? (

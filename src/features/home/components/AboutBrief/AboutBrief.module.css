@@ -1,10 +1,21 @@
+/* Fondo sólido a todo el ancho (sin aspecto de card, sin aurora) */
 .about {
-  max-width: var(--container);
-  margin: var(--sp-16) auto;
-  padding-inline: var(--gutter);
+  background: var(--bg);
+  padding-block: var(--sp-16);
 }
+
 .inner {
-  max-width: 48rem;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: grid;
+  grid-template-columns: 1fr; /* móvil: apilado */
+  gap: var(--sp-8);
+  align-items: center;
+}
+
+/* ---- Texto (sin card, sin animación) ---- */
+.content {
   display: flex;
   flex-direction: column;
   gap: var(--sp-4);
@@ -17,12 +28,138 @@
 .text {
   color: var(--fg-muted);
   font-size: var(--fs-lg);
+  max-width: 42rem;
 }
-.link {
-  color: var(--brand-600);
-  font-weight: 600;
+
+/* ---- La ÚNICA card: visual de la derecha (enlace + hover) ---- */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
   text-decoration: none;
+  color: var(--brand-600);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-4);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+  will-change: transform;
 }
-.link:hover {
-  text-decoration: underline;
+.card:hover,
+.card:focus-visible {
+  transform: translateX(8px);
+  box-shadow: var(--shadow-md);
+}
+.card:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 3px;
+}
+
+/* ---- Carrusel dentro de la card ---- */
+.thumb {
+  position: relative;
+  overflow: hidden; /* recorta el track → nunca hay huecos */
+  display: block;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+/* Track: dos celdas contiguas [siguiente, actual] */
+.track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  width: 200%;
+  height: 100%;
+  will-change: transform;
+}
+.animate {
+  transition: transform var(--dur-slow) var(--ease);
+}
+.slide {
+  position: relative;
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100%;
+  display: block;
+}
+.single {
+  position: absolute;
+  inset: 0;
+}
+.img {
+  object-fit: cover;
+}
+
+/* Placeholder por slide (stand-in de imagen, distinto por índice) */
+.placeholder {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+.placeholder::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.9;
+}
+.variant0::before {
+  background:
+    radial-gradient(circle at 35% 30%, var(--brand-500), transparent 62%),
+    radial-gradient(circle at 70% 75%, var(--brand-700), transparent 60%);
+}
+.variant1::before {
+  background:
+    radial-gradient(circle at 30% 35%, var(--accent), transparent 62%),
+    radial-gradient(circle at 75% 70%, var(--brand-500), transparent 60%);
+}
+.variant2::before {
+  background:
+    radial-gradient(circle at 32% 30%, var(--resource-1), transparent 62%),
+    radial-gradient(circle at 72% 72%, var(--resource-2), transparent 60%);
+}
+.icon {
+  position: relative;
+  z-index: 1;
+  width: 24%;
+  height: auto;
+  color: #fff;
+  opacity: 0.85;
+}
+
+.cta {
+  font-weight: 600;
+}
+
+/* ---- Desktop: texto izquierda, card derecha ---- */
+@media (min-width: 768px) {
+  .inner {
+    grid-template-columns: 1.4fr 1fr;
+    gap: var(--sp-12);
+  }
+}
+
+/* ---- Entrada: comienza en visibilidad 0 (solo opacidad, no choca con el hover) ---- */
+.reveal {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    animation: aboutReveal var(--dur-slow) var(--ease) 120ms both;
+  }
+}
+@keyframes aboutReveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

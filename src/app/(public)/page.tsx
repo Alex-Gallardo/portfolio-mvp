@@ -168,16 +168,16 @@ export default async function HomePage() {
     hero: (
       <HeroHome
         title={hero.title ?? undefined}
-        subtitle={hero.body || undefined}
+        subtitle={hero.body}
         slides={[
-          {
-            src: "https://i.pinimg.com/control1/736x/46/db/2b/46db2b447e3aee207b1a9856c0950749.jpg",
-            alt: "Proyecto 1",
-          },
-          {
-            src: "https://i.pinimg.com/1200x/87/fa/32/87fa32dd77e2d25d8e44799fb2b95223.jpg",
-            alt: "Proyecto 2",
-          },
+          { src: "/hero/dia-1.webp", alt: "Equipo trabajando bajo cielo despejado" },
+          { src: "/hero/dia-2.webp", alt: "La escena con torres de libros" },
+          { src: "/hero/dia-3.webp", alt: "La escena floreciendo en un prado" },
+        ]}
+        slidesDark={[
+          { src: "/hero/noche-1.webp", alt: "Equipo trabajando bajo cielo estrellado" },
+          { src: "/hero/noche-2.webp", alt: "La escena nocturna con torres de libros" },
+          { src: "/hero/noche-3.webp", alt: "La escena nocturna floreciendo" },
         ]}
       />
     ),

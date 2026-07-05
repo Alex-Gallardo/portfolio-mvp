@@ -1,13 +1,17 @@
+/* Fondo transparente: deja ver la aurora detrás */
 .section {
   max-width: var(--container);
   margin: var(--sp-24) auto;
   padding-inline: var(--gutter);
+  background: transparent;
+  text-align: center;
 }
 .h2 {
   font-family: var(--font-display);
   font-size: var(--fs-2xl);
   margin-bottom: var(--sp-8);
 }
+
 .grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -18,17 +22,63 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 .group {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
+  gap: var(--sp-4);
+  align-items: center;
 }
 .cat {
   font-family: var(--font-display);
-  font-size: var(--fs-lg);
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fg-muted);
+  font-weight: 600;
 }
+
 .chips {
   display: flex;
   flex-wrap: wrap;
+  gap: var(--sp-3);
+  justify-content: center;
+}
+
+/* Card tipo píldora (dot + texto) con animación al hover */
+.chip {
+  display: inline-flex;
+  align-items: center;
   gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-full);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--fg);
+  cursor: default;
+  transition:
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+  will-change: transform;
+}
+.chip:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--chip-accent, var(--brand-500));
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: none;
+  border-radius: var(--radius-full);
+  background: var(--chip-accent, var(--brand-500));
+  transition: transform var(--dur-fast) var(--ease);
+}
+.chip:hover .dot {
+  transform: scale(1.35);
 }
