@@ -29,6 +29,7 @@ export function ResourceCard({ resource }: { resource: ResourceCardData }) {
             sizes="(max-width: 768px) 100vw, 33vw"
             className={styles.cover}
           />
+          <span className={styles.sheen} aria-hidden="true" />
           <span className={styles.badgeFloat}>{categoryLabel}</span>
         </Link>
       ) : (
@@ -44,25 +45,46 @@ export function ResourceCard({ resource }: { resource: ResourceCardData }) {
         <p className={styles.summary}>{resource.summary}</p>
 
         <p className={styles.meta}>
-          <svg
-            className={styles.metaIcon}
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <path d="M14 2v6h6" />
-          </svg>
-          <span>
-            {resource.fileCount} archivo{resource.fileCount === 1 ? "" : "s"}
-            {resource.downloadCount > 0
-              ? ` · descargado ${resource.downloadCount} ${resource.downloadCount === 1 ? "vez" : "veces"}`
-              : ""}
+          <span className={styles.chip}>
+            <svg
+              className={styles.chipIcon}
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <path d="M14 2v6h6" />
+            </svg>
+            <span>
+              {resource.fileCount} archivo{resource.fileCount === 1 ? "" : "s"}
+            </span>
           </span>
+
+          {resource.downloadCount > 0 ? (
+            <span className={`${styles.chip} ${styles.chipWarm}`}>
+              <svg
+                className={styles.chipIcon}
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <path d="m7 10 5 5 5-5" />
+                <path d="M12 15V3" />
+              </svg>
+              <span>
+                descargado {resource.downloadCount} {resource.downloadCount === 1 ? "vez" : "veces"}
+              </span>
+            </span>
+          ) : null}
         </p>
       </div>
 

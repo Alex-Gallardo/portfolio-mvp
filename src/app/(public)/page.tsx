@@ -132,29 +132,6 @@ export default async function HomePage() {
     readMinutes: p.readMinutes ?? 3,
   }));
 
-  // const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tudominio.com";
-  // const jsonLd = {
-  //   "@context": "https://schema.org",
-  //   "@graph": [
-  //     {
-  //       "@type": "Person",
-  //       name: "[Tu Nombre]",
-  //       jobTitle: "Desarrollador full-stack",
-  //       url: siteUrl,
-  //       sameAs: ["https://github.com/tuusuario", "https://www.linkedin.com/in/tuusuario"],
-  //     },
-  //     {
-  //       "@type": "WebSite",
-  //       name: "[Tu Marca]",
-  //       url: siteUrl,
-  //       potentialAction: {
-  //         "@type": "SearchAction",
-  //         target: `${siteUrl}/blog?buscar={search_term_string}`,
-  //         "query-input": "required name=search_term_string",
-  //       },
-  //     },
-  //   ],
-  // };
   const sameAs = [social.github, social.linkedin, social.x].filter(Boolean) as string[];
   const personLd = personJsonLd({
     name: branding.name,
@@ -185,7 +162,7 @@ export default async function HomePage() {
     stack: <StackBand />,
     resources:
       resourceItems.length > 0 ? (
-        <section className={styles.section}>
+        <section className={styles.fullSection}>
           <header className={styles.head}>
             <h2 className={styles.h2}>{tResources.title}</h2>
             <Link href="/recursos" className={styles.seeAll} data-track="home-resources-all">
@@ -202,7 +179,7 @@ export default async function HomePage() {
       ) : null,
     projects:
       projectItems.length > 0 ? (
-        <section className={styles.section}>
+        <section className={styles.fullSection}>
           <header className={styles.head}>
             <h2 className={styles.h2}>{tProjects.title}</h2>
             <Link href="/proyectos" className={styles.seeAll}>
@@ -234,7 +211,7 @@ export default async function HomePage() {
       ) : null,
     posts:
       postItems.length > 0 ? (
-        <section className={styles.section}>
+        <section className={styles.fullSection}>
           <header className={styles.head}>
             <h2 className={styles.h2}>{tPosts.title}</h2>
             <Link href="/blog" className={styles.seeAll}>
