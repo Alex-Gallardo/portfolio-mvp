@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { getSeo } from "@/features/settings/queries";
 import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
+  // La configuración SEO vive en el CMS y no debe consultarse durante el build.
+  await connection();
   const seo = await getSeo();
   const titleBase = seo.titleBase?.trim() || "Portfolio MVP";
   const description =

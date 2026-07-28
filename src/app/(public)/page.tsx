@@ -163,34 +163,38 @@ export default async function HomePage() {
     resources:
       resourceItems.length > 0 ? (
         <section className={styles.fullSection}>
-          <header className={styles.head}>
-            <h2 className={styles.h2}>{tResources.title}</h2>
-            <Link href="/recursos" className={styles.seeAll} data-track="home-resources-all">
-              Ver todos →
-            </Link>
-          </header>
-          <Carousel
-            ariaLabel={tResources.title ?? "Recursos"}
-            items={resourceItems}
-            getKey={(r) => r.slug}
-            renderItem={(r) => <ResourceCard resource={r} />}
-          />
+          <section className={styles.section}>
+            <header className={styles.head}>
+              <h2 className={styles.h2}>{tResources.title}</h2>
+              <Link href="/recursos" className={styles.seeAll} data-track="home-resources-all">
+                Ver todos →
+              </Link>
+            </header>
+            <Carousel
+              ariaLabel={tResources.title ?? "Recursos"}
+              items={resourceItems}
+              getKey={(r) => r.slug}
+              renderItem={(r) => <ResourceCard resource={r} />}
+            />
+          </section>
         </section>
       ) : null,
     projects:
       projectItems.length > 0 ? (
         <section className={styles.fullSection}>
-          <header className={styles.head}>
-            <h2 className={styles.h2}>{tProjects.title}</h2>
-            <Link href="/proyectos" className={styles.seeAll}>
-              Ver todos →
-            </Link>
-          </header>
-          <div className={styles.grid}>
-            {projectItems.map((p) => (
-              <ProjectCard key={p.id} project={p} />
-            ))}
-          </div>
+          <section className={styles.section}>
+            <header className={styles.head}>
+              <h2 className={styles.h2}>{tProjects.title}</h2>
+              <Link href="/proyectos" className={styles.seeAll}>
+                Ver todos →
+              </Link>
+            </header>
+            <div className={styles.grid}>
+              {projectItems.map((p) => (
+                <ProjectCard key={p.id} project={p} />
+              ))}
+            </div>
+          </section>
         </section>
       ) : null,
     services:
@@ -212,18 +216,20 @@ export default async function HomePage() {
     posts:
       postItems.length > 0 ? (
         <section className={styles.fullSection}>
-          <header className={styles.head}>
-            <h2 className={styles.h2}>{tPosts.title}</h2>
-            <Link href="/blog" className={styles.seeAll}>
-              Ver todo →
-            </Link>
-          </header>
-          <Carousel
-            ariaLabel={tPosts.title ?? "Artículos"}
-            items={postItems}
-            getKey={(p) => p.slug}
-            renderItem={(p) => <PostCard post={p} />}
-          />
+          <section className={styles.section}>
+            <header className={styles.head}>
+              <h2 className={styles.h2}>{tPosts.title}</h2>
+              <Link href="/blog" className={styles.seeAll}>
+                Ver todo →
+              </Link>
+            </header>
+            <Carousel
+              ariaLabel={tPosts.title ?? "Artículos"}
+              items={postItems}
+              getKey={(p) => p.slug}
+              renderItem={(p) => <PostCard post={p} />}
+            />
+          </section>
         </section>
       ) : null,
     metrics: <Metrics />,

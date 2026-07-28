@@ -3,17 +3,14 @@ import { notFound } from "next/navigation";
 import { renderMarkdown } from "@/lib/markdown";
 import { mediaPublicUrl } from "@/lib/media";
 import { PostContent } from "@/features/blog/components/PostContent/PostContent";
-import {
-  getProjectBySlug,
-  getRelatedProjects,
-  getPublishedProjectSlugs,
-} from "@/features/projects/queries";
+import { getProjectBySlug, getRelatedProjects } from "@/features/projects/queries";
 import { ProjectCta } from "@/features/projects/components/ProjectCta/ProjectCta";
 import { ProjectCard } from "@/features/projects/components/ProjectCard/ProjectCard";
 import { type ProjectListItem } from "@/features/projects/types";
 import styles from "./project.module.css";
 import { type Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import { withPublicDatabaseFallback } from "@/lib/prisma-fallback";
 import { buildMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { creativeWorkJsonLd, breadcrumbJsonLd } from "@/lib/seo";
@@ -26,18 +23,22 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await prisma.project.findUnique({
-    where: { slug },
-    select: {
-      title: true,
-      summary: true,
-      coverUrl: true,
-      status: true,
-      seoTitle: true,
-      seoDescription: true,
-      ogImage: true,
-    },
-  });
+  const project = await withPublicDatabaseFallback(
+    () =>
+      prisma.project.findUnique({
+        where: { slug },
+        select: {
+          title: true,
+          summary: true,
+          coverUrl: true,
+          status: true,
+          seoTitle: true,
+          seoDescription: true,
+          ogImage: true,
+        },
+      }),
+    null,
+  );
   if (!project || project.status !== "PUBLISHED") {
     return buildMetadata({ title: "Proyecto no encontrado", noIndex: true });
   }
@@ -48,11 +49,6 @@ export async function generateMetadata({
     // image: project.ogImage ?? project.coverUrl,
     hasDynamicOgImage: true,
   });
-}
-
-export async function generateStaticParams() {
-  const slugs = await getPublishedProjectSlugs();
-  return slugs.map((slug) => ({ slug }));
 }
 
 export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {

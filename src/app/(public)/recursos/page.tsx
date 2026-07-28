@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { withPublicDatabaseFallback } from "@/lib/prisma-fallback";
 import {
   ResourceCard,
   type ResourceCardData,
@@ -43,21 +44,33 @@ export default async function RecursosPage({
   const activeCategory = isResourceCategory(categoria) ? categoria : undefined;
 
   const [resources, featured, totals] = await Promise.all([
-    prisma.resource.findMany({
-      where: { status: "PUBLISHED", ...(activeCategory ? { category: activeCategory } : {}) },
-      orderBy: { order: "asc" },
-      include: { _count: { select: { files: true } } },
-    }),
-    activeCategory
-      ? Promise.resolve(null)
-      : prisma.resource.findFirst({
-          where: { status: "PUBLISHED", featured: true },
+    withPublicDatabaseFallback(
+      () =>
+        prisma.resource.findMany({
+          where: { status: "PUBLISHED", ...(activeCategory ? { category: activeCategory } : {}) },
+          orderBy: { order: "asc" },
           include: { _count: { select: { files: true } } },
         }),
-    prisma.resource.aggregate({
-      _sum: { downloadCount: true },
-      where: { status: "PUBLISHED" },
-    }),
+      [],
+    ),
+    activeCategory
+      ? Promise.resolve(null)
+      : withPublicDatabaseFallback(
+          () =>
+            prisma.resource.findFirst({
+              where: { status: "PUBLISHED", featured: true },
+              include: { _count: { select: { files: true } } },
+            }),
+          null,
+        ),
+    withPublicDatabaseFallback(
+      () =>
+        prisma.resource.aggregate({
+          _sum: { downloadCount: true },
+          where: { status: "PUBLISHED" },
+        }),
+      { _sum: { downloadCount: null } },
+    ),
   ]);
 
   const totalDownloads = totals._sum.downloadCount ?? 0;

@@ -2,17 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { renderMarkdown } from "@/lib/markdown";
 import { PostContent } from "@/features/blog/components/PostContent/PostContent";
-import {
-  getServiceBySlug,
-  getRelatedServices,
-  getPublishedServiceSlugs,
-} from "@/features/services/queries";
+import { getServiceBySlug, getRelatedServices } from "@/features/services/queries";
 import { ServiceCta } from "@/features/services/components/ServiceCta/ServiceCta";
 import { ServiceCard } from "@/features/services/components/ServiceCard/ServiceCard";
 import { type ServiceListItem } from "@/features/services/types";
 import styles from "./service.module.css";
 import { type Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import { withPublicDatabaseFallback } from "@/lib/prisma-fallback";
 import { buildMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
@@ -25,17 +22,21 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const service = await prisma.service.findUnique({
-    where: { slug },
-    select: {
-      title: true,
-      summary: true,
-      status: true,
-      seoTitle: true,
-      seoDescription: true,
-      ogImage: true,
-    },
-  });
+  const service = await withPublicDatabaseFallback(
+    () =>
+      prisma.service.findUnique({
+        where: { slug },
+        select: {
+          title: true,
+          summary: true,
+          status: true,
+          seoTitle: true,
+          seoDescription: true,
+          ogImage: true,
+        },
+      }),
+    null,
+  );
   if (!service || service.status !== "PUBLISHED") {
     return buildMetadata({ title: "Servicio no encontrado", noIndex: true });
   }
@@ -45,11 +46,6 @@ export async function generateMetadata({
     path: `/servicios/${slug}`,
     image: service.ogImage,
   });
-}
-
-export async function generateStaticParams() {
-  const slugs = await getPublishedServiceSlugs();
-  return slugs.map((slug) => ({ slug }));
 }
 
 export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {

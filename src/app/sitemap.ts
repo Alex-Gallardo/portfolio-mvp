@@ -1,26 +1,46 @@
 // src/app/sitemap.ts
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { withPublicDatabaseFallback } from "@/lib/prisma-fallback";
 import { SITE_URL } from "@/lib/seo";
+
+// El sitemap incluye contenido del CMS y debe generarse con datos actuales.
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [posts, services, projects, resources] = await Promise.all([
-    prisma.post.findMany({
-      where: { status: "PUBLISHED" },
-      select: { slug: true, updatedAt: true },
-    }),
-    prisma.service.findMany({
-      where: { status: "PUBLISHED" },
-      select: { slug: true, updatedAt: true },
-    }),
-    prisma.project.findMany({
-      where: { status: "PUBLISHED" },
-      select: { slug: true, updatedAt: true },
-    }),
-    prisma.resource.findMany({
-      where: { status: "PUBLISHED" },
-      select: { slug: true, updatedAt: true },
-    }),
+    withPublicDatabaseFallback(
+      () =>
+        prisma.post.findMany({
+          where: { status: "PUBLISHED" },
+          select: { slug: true, updatedAt: true },
+        }),
+      [],
+    ),
+    withPublicDatabaseFallback(
+      () =>
+        prisma.service.findMany({
+          where: { status: "PUBLISHED" },
+          select: { slug: true, updatedAt: true },
+        }),
+      [],
+    ),
+    withPublicDatabaseFallback(
+      () =>
+        prisma.project.findMany({
+          where: { status: "PUBLISHED" },
+          select: { slug: true, updatedAt: true },
+        }),
+      [],
+    ),
+    withPublicDatabaseFallback(
+      () =>
+        prisma.resource.findMany({
+          where: { status: "PUBLISHED" },
+          select: { slug: true, updatedAt: true },
+        }),
+      [],
+    ),
   ]);
 
   const staticRoutes: MetadataRoute.Sitemap = [

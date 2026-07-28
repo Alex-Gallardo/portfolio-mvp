@@ -1,18 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { renderMarkdown } from "@/lib/markdown";
-import {
-  getPostBySlug,
-  getRelatedPosts,
-  getFeaturedResource,
-  getPublishedSlugs,
-} from "@/features/blog/queries";
+import { getPostBySlug, getRelatedPosts, getFeaturedResource } from "@/features/blog/queries";
 import { PostContent } from "@/features/blog/components/PostContent/PostContent";
 import { Toc } from "@/features/blog/components/Toc/Toc";
 import { ResourceCta } from "@/features/blog/components/ResourceCta/ResourceCta";
 import styles from "./post.module.css";
 import { type Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import { withPublicDatabaseFallback } from "@/lib/prisma-fallback";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildMetadata, blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
@@ -24,20 +20,24 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await prisma.post.findUnique({
-    where: { slug },
-    select: {
-      title: true,
-      excerpt: true,
-      coverUrl: true,
-      status: true,
-      seoTitle: true,
-      seoDescription: true,
-      ogImage: true,
-      publishedAt: true,
-      updatedAt: true,
-    },
-  });
+  const post = await withPublicDatabaseFallback(
+    () =>
+      prisma.post.findUnique({
+        where: { slug },
+        select: {
+          title: true,
+          excerpt: true,
+          coverUrl: true,
+          status: true,
+          seoTitle: true,
+          seoDescription: true,
+          ogImage: true,
+          publishedAt: true,
+          updatedAt: true,
+        },
+      }),
+    null,
+  );
   if (!post || post.status !== "PUBLISHED") {
     return buildMetadata({ title: "Artículo no encontrado", noIndex: true });
   }
@@ -51,11 +51,6 @@ export async function generateMetadata({
     publishedTime: post.publishedAt?.toISOString(),
     modifiedTime: post.updatedAt.toISOString(),
   });
-}
-
-export async function generateStaticParams() {
-  const slugs = await getPublishedSlugs();
-  return slugs.map((slug) => ({ slug }));
 }
 
 function fmt(date: Date | null): string {
