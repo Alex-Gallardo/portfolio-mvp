@@ -132,29 +132,6 @@ export default async function HomePage() {
     readMinutes: p.readMinutes ?? 3,
   }));
 
-  // const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://tudominio.com";
-  // const jsonLd = {
-  //   "@context": "https://schema.org",
-  //   "@graph": [
-  //     {
-  //       "@type": "Person",
-  //       name: "[Tu Nombre]",
-  //       jobTitle: "Desarrollador full-stack",
-  //       url: siteUrl,
-  //       sameAs: ["https://github.com/tuusuario", "https://www.linkedin.com/in/tuusuario"],
-  //     },
-  //     {
-  //       "@type": "WebSite",
-  //       name: "[Tu Marca]",
-  //       url: siteUrl,
-  //       potentialAction: {
-  //         "@type": "SearchAction",
-  //         target: `${siteUrl}/blog?buscar={search_term_string}`,
-  //         "query-input": "required name=search_term_string",
-  //       },
-  //     },
-  //   ],
-  // };
   const sameAs = [social.github, social.linkedin, social.x].filter(Boolean) as string[];
   const personLd = personJsonLd({
     name: branding.name,
@@ -165,40 +142,59 @@ export default async function HomePage() {
 
   // --- registro de secciones (clave → nodo) ---
   const sections: Record<string, React.ReactNode> = {
-    hero: <HeroHome title={hero.title ?? undefined} subtitle={hero.body || undefined} />,
+    hero: (
+      <HeroHome
+        title={hero.title ?? undefined}
+        subtitle={hero.body}
+        slides={[
+          { src: "/hero/dia-1.webp", alt: "Equipo trabajando bajo cielo despejado" },
+          { src: "/hero/dia-2.webp", alt: "La escena con torres de libros" },
+          { src: "/hero/dia-3.webp", alt: "La escena floreciendo en un prado" },
+        ]}
+        slidesDark={[
+          { src: "/hero/noche-1.webp", alt: "Equipo trabajando bajo cielo estrellado" },
+          { src: "/hero/noche-2.webp", alt: "La escena nocturna con torres de libros" },
+          { src: "/hero/noche-3.webp", alt: "La escena nocturna floreciendo" },
+        ]}
+      />
+    ),
     about: <AboutBrief title={about.title ?? undefined} body={about.body || undefined} />,
     stack: <StackBand />,
     resources:
       resourceItems.length > 0 ? (
-        <section className={styles.section}>
-          <header className={styles.head}>
-            <h2 className={styles.h2}>{tResources.title}</h2>
-            <Link href="/recursos" className={styles.seeAll} data-track="home-resources-all">
-              Ver todos →
-            </Link>
-          </header>
-          <Carousel
-            ariaLabel={tResources.title ?? "Recursos"}
-            items={resourceItems}
-            getKey={(r) => r.slug}
-            renderItem={(r) => <ResourceCard resource={r} />}
-          />
+        <section className={styles.fullSection}>
+          <section className={styles.section}>
+            <header className={styles.head}>
+              <h2 className={styles.h2}>{tResources.title}</h2>
+              <Link href="/recursos" className={styles.seeAll} data-track="home-resources-all">
+                Ver todos →
+              </Link>
+            </header>
+            <Carousel
+              ariaLabel={tResources.title ?? "Recursos"}
+              items={resourceItems}
+              getKey={(r) => r.slug}
+              renderItem={(r) => <ResourceCard resource={r} />}
+            />
+          </section>
         </section>
       ) : null,
     projects:
       projectItems.length > 0 ? (
-        <section className={styles.section}>
-          <header className={styles.head}>
-            <h2 className={styles.h2}>{tProjects.title}</h2>
-            <Link href="/proyectos" className={styles.seeAll}>
-              Ver todos →
-            </Link>
-          </header>
-          <div className={styles.grid}>
-            {projectItems.map((p) => (
-              <ProjectCard key={p.id} project={p} />
-            ))}
-          </div>
+        <section className={styles.fullSection}>
+          <section className={styles.section}>
+            <header className={styles.head}>
+              <h2 className={styles.h2}>{tProjects.title}</h2>
+              <Link href="/proyectos" className={styles.seeAll}>
+                Ver todos →
+              </Link>
+            </header>
+            <div className={styles.grid}>
+              {projectItems.map((p) => (
+                <ProjectCard key={p.id} project={p} />
+              ))}
+            </div>
+          </section>
         </section>
       ) : null,
     services:
@@ -219,19 +215,21 @@ export default async function HomePage() {
       ) : null,
     posts:
       postItems.length > 0 ? (
-        <section className={styles.section}>
-          <header className={styles.head}>
-            <h2 className={styles.h2}>{tPosts.title}</h2>
-            <Link href="/blog" className={styles.seeAll}>
-              Ver todo →
-            </Link>
-          </header>
-          <Carousel
-            ariaLabel={tPosts.title ?? "Artículos"}
-            items={postItems}
-            getKey={(p) => p.slug}
-            renderItem={(p) => <PostCard post={p} />}
-          />
+        <section className={styles.fullSection}>
+          <section className={styles.section}>
+            <header className={styles.head}>
+              <h2 className={styles.h2}>{tPosts.title}</h2>
+              <Link href="/blog" className={styles.seeAll}>
+                Ver todo →
+              </Link>
+            </header>
+            <Carousel
+              ariaLabel={tPosts.title ?? "Artículos"}
+              items={postItems}
+              getKey={(p) => p.slug}
+              renderItem={(p) => <PostCard post={p} />}
+            />
+          </section>
         </section>
       ) : null,
     metrics: <Metrics />,

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { withPublicDatabaseFallback } from "@/lib/prisma-fallback";
 import { getBranding } from "@/features/settings/queries";
 import { renderOgImage, OG_SIZE, OG_CONTENT_TYPE } from "@/lib/og";
 
@@ -9,7 +10,10 @@ export const alt = "Artículo del blog";
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const [post, branding] = await Promise.all([
-    prisma.post.findUnique({ where: { slug }, select: { title: true, readMinutes: true } }),
+    withPublicDatabaseFallback(
+      () => prisma.post.findUnique({ where: { slug }, select: { title: true, readMinutes: true } }),
+      null,
+    ),
     getBranding(),
   ]);
   return renderOgImage({

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { withPublicDatabaseFallback } from "@/lib/prisma-fallback";
 import { getBranding } from "@/features/settings/queries";
 import { CATEGORY_LABELS } from "@/features/resources/categories";
 import { renderOgImage, OG_SIZE, OG_CONTENT_TYPE } from "@/lib/og";
@@ -10,10 +11,14 @@ export const alt = "Recurso gratis";
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const [resource, branding] = await Promise.all([
-    prisma.resource.findUnique({
-      where: { slug },
-      select: { title: true, category: true, downloadCount: true },
-    }),
+    withPublicDatabaseFallback(
+      () =>
+        prisma.resource.findUnique({
+          where: { slug },
+          select: { title: true, category: true, downloadCount: true },
+        }),
+      null,
+    ),
     getBranding(),
   ]);
   const label = resource ? CATEGORY_LABELS[resource.category] : "Recurso gratis";

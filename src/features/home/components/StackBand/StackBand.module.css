@@ -1,3 +1,4 @@
+/* Fondo transparente: deja ver la aurora detrás */
 .band {
   max-width: var(--container);
   margin: var(--sp-16) auto;
@@ -7,6 +8,8 @@
   flex-direction: column;
   gap: var(--sp-4);
   align-items: center;
+  background: transparent;
+  padding: 2em var(--gutter);
 }
 .label {
   color: var(--fg-muted);
@@ -17,6 +20,54 @@
 .list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--sp-3);
+  /* gap: var(--sp-3); */
+  gap: 2em;
   justify-content: center;
+}
+
+/* Card tipo píldora (icono + texto) con animación al hover */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  /* padding: var(--sp-1) var(--sp-4) var(--sp-1) var(--sp-1); */
+  padding: 0.8em 1em;
+  padding-right: 2em;
+  border-radius: var(--radius-full);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--fg);
+  cursor: default;
+  transition:
+    transform var(--dur-fast) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+  will-change: transform;
+}
+.chip:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--chip-accent, var(--brand-500));
+}
+
+/* Icono por card: círculo con inicial + acento de color */
+.icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--chip-accent, var(--brand-500)) 15%, transparent);
+  color: var(--chip-accent, var(--brand-500));
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  transition: transform var(--dur-fast) var(--ease);
+  margin-right: 1em;
+}
+.chip:hover .icon {
+  transform: scale(1.1);
 }

@@ -1,12 +1,17 @@
 import { prisma } from "@/lib/prisma";
+import { withPublicDatabaseFallback } from "@/lib/prisma-fallback";
 import { type ContentMap, type SectionConfigItem } from "./types";
 
 /** Bloques de texto de una página, indexados por su `key`. */
 export async function getContentBlocks(page: string): Promise<ContentMap> {
-  const blocks = await prisma.contentBlock.findMany({
-    where: { page },
-    orderBy: { order: "asc" },
-  });
+  const blocks = await withPublicDatabaseFallback(
+    () =>
+      prisma.contentBlock.findMany({
+        where: { page },
+        orderBy: { order: "asc" },
+      }),
+    [],
+  );
 
   const map: ContentMap = {};
   for (const b of blocks) {
@@ -23,9 +28,13 @@ export async function getContentBlocks(page: string): Promise<ContentMap> {
 
 /** Config de orden/visibilidad de secciones desde site_settings["sections.{page}"]. */
 export async function getSectionsConfig(page: string): Promise<SectionConfigItem[] | null> {
-  const setting = await prisma.siteSetting.findUnique({
-    where: { key: `sections.${page}` },
-  });
+  const setting = await withPublicDatabaseFallback(
+    () =>
+      prisma.siteSetting.findUnique({
+        where: { key: `sections.${page}` },
+      }),
+    null,
+  );
   if (!setting || !Array.isArray(setting.value)) return null;
   return setting.value as unknown as SectionConfigItem[];
 }

@@ -7,8 +7,8 @@
   display: flex;
   align-items: center;
   gap: var(--sp-4);
-  width: max-content;
-  max-width: calc(100vw - var(--sp-8));
+  width: calc(100vw - var(--sp-8));
+  max-width: var(--container);
   padding: var(--sp-2) var(--sp-4);
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
@@ -20,6 +20,7 @@
   transition:
     transform var(--dur) var(--ease),
     opacity var(--dur) var(--ease);
+  justify-content: space-between;
 }
 
 /* Estado oculto (scroll hacia abajo) */

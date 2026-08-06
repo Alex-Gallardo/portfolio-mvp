@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { withPublicDatabaseFallback } from "@/lib/prisma-fallback";
 import { getBranding } from "@/features/settings/queries";
 import { renderOgImage, OG_SIZE, OG_CONTENT_TYPE } from "@/lib/og";
 
@@ -9,7 +10,10 @@ export const alt = "Proyecto";
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const [project, branding] = await Promise.all([
-    prisma.project.findUnique({ where: { slug }, select: { title: true, stack: true } }),
+    withPublicDatabaseFallback(
+      () => prisma.project.findUnique({ where: { slug }, select: { title: true, stack: true } }),
+      null,
+    ),
     getBranding(),
   ]);
   const stack = project?.stack ?? [];

@@ -4,6 +4,19 @@
   padding-inline: var(--gutter);
   margin-block: var(--sp-24);
 }
+.fullSection {
+  max-width: full !important;
+  margin: 0 !important;
+  padding: var(--sp-24) var(--sp-8) !important;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  margin-block: var(--sp-24);
+  background: var(--bg);
+}
+.fullSection > .section {
+  margin: 0.5em auto;
+}
+
 .head {
   display: flex;
   align-items: baseline;

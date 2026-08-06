@@ -1,36 +1,168 @@
+/* ============================================================
+   HERO full-bleed: imagen de fondo a sangre completa + texto centrado
+   ============================================================ */
+
 .hero {
-  min-height: 88vh;
+  position: relative;
+  isolation: isolate; /* crea contexto de apilado propio */
+  min-height: 100vh;
+  min-height: 100svh; /* móvil: descuenta barras del navegador */
   display: grid;
   place-items: center;
-  text-align: center;
-  padding: var(--sp-24) var(--gutter) var(--sp-16);
+  overflow: hidden;
+  color: #fff; /* texto base claro sobre la imagen */
+
+  /* --- Si tu hero queda dentro de un contenedor con max-width, descomenta
+         para forzar el ancho completo de la ventana ---
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+  */
 }
+
+/* ---- Fondo (capas de imagen) ---- */
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Duración del fundido entre capas de la secuencia. Cámbiala aquí. */
+.bg {
+  --hero-fade: 1100ms;
+}
+
+/* Cada pila (día / noche) cubre todo el hero; se cruzan al cambiar de tema */
+.stack {
+  position: absolute;
+  inset: 0;
+  transition: opacity var(--dur-fast, 280ms) var(--ease, ease);
+}
+
+/* Capas de la secuencia: se revelan por encima con fundido
+   (la imagen N contiene a la N-1 + más elementos → la escena "crece") */
+.layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--hero-fade, 1100ms) var(--ease, ease);
+  will-change: opacity;
+}
+.layerOn {
+  opacity: 1;
+}
+
+.img {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ---- Scrim: oscurecido para que el texto se lea sobre la imagen ----
+   Por defecto (modo día, cielo brillante) es más fuerte;
+   en modo noche se aligera porque la imagen ya es oscura. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      120% 75% at 50% 42%,
+      rgba(6, 10, 24, 0.55),
+      rgba(6, 10, 24, 0.16) 55%,
+      transparent 76%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(6, 10, 24, 0.55) 0%,
+      rgba(6, 10, 24, 0.12) 22%,
+      rgba(6, 10, 24, 0.22) 55%,
+      rgba(6, 10, 24, 0.7) 100%
+    );
+}
+
+/* ---- Conmutación día / noche ----
+   Deja activo el selector que coincida con tu toggle y borra los demás. */
+.dayStack {
+  opacity: 1;
+}
+.nightStack {
+  opacity: 0;
+}
+
+:global(html[data-theme="dark"]) .nightStack,
+:global(html.dark) .nightStack,
+:global([data-theme="dark"]) .nightStack {
+  opacity: 1;
+}
+
+:global(html[data-theme="dark"]) .dayStack,
+:global(html.dark) .dayStack,
+:global([data-theme="dark"]) .dayStack {
+  opacity: 0;
+}
+
+/* En noche aligeramos el scrim (la imagen ya aporta el contraste) */
+:global(html[data-theme="dark"]) .scrim,
+:global(html.dark) .scrim,
+:global([data-theme="dark"]) .scrim {
+  background:
+    radial-gradient(120% 75% at 50% 42%, rgba(0, 0, 0, 0.34), transparent 66%),
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.45) 0%,
+      transparent 26%,
+      transparent 55%,
+      rgba(0, 0, 0, 0.55) 100%
+    );
+}
+
+/* ---- Contenido centrado ---- */
 .inner {
-  max-width: 56rem;
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: var(--container);
+  padding: var(--sp-24) var(--gutter);
+  display: grid;
+  place-items: center;
+}
+
+.content {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-6);
   align-items: center;
+  gap: var(--sp-6);
+  text-align: center;
+  max-width: 56rem;
 }
+
 .title {
   font-family: var(--font-display);
-  font-size: var(--fs-3xl);
-  line-height: 1.05;
+  font-size: clamp(2.4rem, 6vw, var(--fs-3xl));
+  line-height: 1.06;
   letter-spacing: -0.02em;
   max-width: 20ch;
+  text-shadow:
+    0 2px 30px rgba(0, 0, 0, 0.35),
+    0 1px 3px rgba(0, 0, 0, 0.3);
 }
+
 .sub {
-  color: var(--fg-muted);
+  color: rgba(255, 255, 255, 0.82);
   font-size: var(--fs-lg);
-  max-width: 50ch;
+  max-width: 46ch;
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.4);
 }
+
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-4);
   justify-content: center;
-  margin-top: var(--sp-2);
+  margin-top: var(--sp-4);
 }
+
+/* ---- Botones (tamaño intacto) ---- */
 .primary,
 .secondary {
   text-decoration: none;
@@ -42,7 +174,8 @@
   align-items: center;
   transition:
     transform var(--dur-fast) var(--ease),
-    background var(--dur-fast);
+    background var(--dur-fast),
+    border-color var(--dur-fast);
 }
 .primary {
   background: var(--brand-500);
@@ -53,12 +186,82 @@
   background: var(--brand-600);
   transform: translateY(-2px);
 }
+/* Botón "glass" claro, legible sobre la imagen (estilo de la referencia) */
 .secondary {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  color: var(--fg);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: #fff;
   backdrop-filter: blur(var(--glass-blur));
 }
 .secondary:hover {
+  background: rgba(255, 255, 255, 0.16);
   transform: translateY(-2px);
+}
+
+/* ---- Placeholder por capa (visible solo si no pasas src) ---- */
+.placeholder {
+  position: absolute;
+  inset: 0;
+}
+.variant0 {
+  background:
+    radial-gradient(circle at 35% 30%, var(--brand-500), transparent 62%),
+    radial-gradient(circle at 70% 75%, var(--brand-700), transparent 60%), var(--bg-elev);
+}
+.variant1 {
+  background:
+    radial-gradient(circle at 30% 35%, var(--accent), transparent 62%),
+    radial-gradient(circle at 75% 70%, var(--brand-500), transparent 60%), var(--bg-elev);
+}
+.variant2 {
+  background:
+    radial-gradient(circle at 32% 30%, var(--resource-1), transparent 62%),
+    radial-gradient(circle at 72% 72%, var(--resource-2), transparent 60%), var(--bg-elev);
+}
+
+/* ---- Desktop: solo escalamos tipografía (sigue centrado) ---- */
+@media (min-width: 1024px) {
+  .inner {
+    padding: var(--sp-16) var(--gutter);
+  }
+}
+
+/* ---- Animaciones de entrada del texto (solo si se permiten) ---- */
+.reveal {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    animation: heroReveal var(--dur-slow) var(--ease) both;
+  }
+  .title.reveal {
+    animation-delay: 80ms;
+  }
+  .sub.reveal {
+    animation-delay: 220ms;
+  }
+  .actions.reveal {
+    animation-delay: 360ms;
+  }
+}
+
+/* ---- Sin movimiento: nada de fundidos ---- */
+@media (prefers-reduced-motion: reduce) {
+  .layer,
+  .stack {
+    transition: none;
+  }
+}
+
+@keyframes heroReveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -3,6 +3,7 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
+import { withPublicDatabaseFallback } from "@/lib/prisma-fallback";
 import {
   ResourceCard,
   type ResourceCardData,
@@ -24,18 +25,22 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const resource = await prisma.resource.findUnique({
-    where: { slug },
-    select: {
-      title: true,
-      summary: true,
-      coverUrl: true,
-      status: true,
-      seoTitle: true,
-      seoDescription: true,
-      ogImage: true,
-    },
-  });
+  const resource = await withPublicDatabaseFallback(
+    () =>
+      prisma.resource.findUnique({
+        where: { slug },
+        select: {
+          title: true,
+          summary: true,
+          coverUrl: true,
+          status: true,
+          seoTitle: true,
+          seoDescription: true,
+          ogImage: true,
+        },
+      }),
+    null,
+  );
   if (!resource || resource.status !== "PUBLISHED") {
     return buildMetadata({ title: "Recurso no encontrado", noIndex: true });
   }
@@ -64,18 +69,26 @@ export default async function ResourceDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const resource = await prisma.resource.findUnique({
-    where: { slug },
-    include: { files: { orderBy: { order: "asc" } } },
-  });
+  const resource = await withPublicDatabaseFallback(
+    () =>
+      prisma.resource.findUnique({
+        where: { slug },
+        include: { files: { orderBy: { order: "asc" } } },
+      }),
+    null,
+  );
   if (!resource || resource.status !== "PUBLISHED") notFound();
 
-  const related = await prisma.resource.findMany({
-    where: { status: "PUBLISHED", category: resource.category, slug: { not: resource.slug } },
-    orderBy: { order: "asc" },
-    take: 3,
-    include: { _count: { select: { files: true } } },
-  });
+  const related = await withPublicDatabaseFallback(
+    () =>
+      prisma.resource.findMany({
+        where: { status: "PUBLISHED", category: resource.category, slug: { not: resource.slug } },
+        orderBy: { order: "asc" },
+        take: 3,
+        include: { _count: { select: { files: true } } },
+      }),
+    [],
+  );
 
   const relatedCards: ResourceCardData[] = (related as RelatedSource[]).map((r) => ({
     slug: r.slug,

@@ -1,25 +1,134 @@
+/* =====================================================
+   Carousel — genérico (recursos, posts…)
+   Scroll nativo con snap + "peek" de la siguiente card.
+   Flechas glass en desktop, swipe en móvil,
+   línea de progreso sutil debajo.
+   ===================================================== */
+
+.carousel {
+  position: relative;
+}
+
 .track {
   display: flex;
-  gap: var(--sp-6);
-  list-style: none;
+  gap: var(--sp-4);
   margin: 0;
-  padding: var(--sp-4) 0;
+  padding: var(--sp-2) var(--sp-1) var(--sp-8);
+  list-style: none;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--sp-1);
+  overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
+  scrollbar-width: none;
 }
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
 .slide {
-  flex: 0 0 auto;
+  flex: 0 0 min(19rem, 84%); /* deja asomar la siguiente card */
   scroll-snap-align: start;
-  width: clamp(260px, 78vw, 340px);
   display: flex;
 }
+
 .slide > * {
   width: 100%;
 }
-@media (min-width: 1024px) {
+
+/* ---------- Flechas (solo desktop; en móvil se desliza) ---------- */
+
+.arrow {
+  position: absolute;
+  top: 42%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  color: var(--fg);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.arrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+.arrow:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.arrow:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.arrow:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
+.arrow:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.arrowPrev {
+  left: calc(-1 * var(--sp-2));
+}
+
+.arrowNext {
+  right: calc(-1 * var(--sp-2));
+}
+
+/* ---------- Línea de progreso ---------- */
+
+.progress {
+  position: relative;
+  width: min(240px, 50%);
+  height: 4px;
+  margin: calc(-1 * var(--sp-3)) auto 0;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--fg) 10%, transparent);
+  overflow: hidden;
+}
+
+.progressBar {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--brand-500), var(--accent));
+  transition:
+    transform 80ms linear,
+    width 80ms linear;
+  will-change: transform;
+}
+
+/* ---------- ≥ tablet ---------- */
+
+@media (min-width: 768px) {
+  .track {
+    gap: var(--sp-6);
+  }
+
   .slide {
-    width: 340px;
+    flex-basis: 21.5rem;
+  }
+
+  .arrow {
+    display: inline-flex;
   }
 }

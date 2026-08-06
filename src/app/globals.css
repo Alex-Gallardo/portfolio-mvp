@@ -37,6 +37,7 @@ h2,
 h3 {
   font-family: var(--font-display);
   line-height: 1.15;
+  font-weight: 400;
 }
 
 img,

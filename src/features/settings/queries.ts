@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { withPublicDatabaseFallback } from "@/lib/prisma-fallback";
 import {
   type Branding,
   DEFAULT_BRANDING,
@@ -14,7 +15,10 @@ import {
 
 /** Lee un setting "plano" (objeto de strings) y lo fusiona con el default. */
 async function readFlat<T extends object>(key: string, fallback: T): Promise<T> {
-  const s = await prisma.siteSetting.findUnique({ where: { key } });
+  const s = await withPublicDatabaseFallback(
+    () => prisma.siteSetting.findUnique({ where: { key } }),
+    null,
+  );
   if (!s || typeof s.value !== "object" || s.value === null || Array.isArray(s.value)) {
     return fallback;
   }
@@ -27,7 +31,10 @@ export const getCopiesHome = () => readFlat<CopiesHome>("copies.home", DEFAULT_C
 export const getSeo = () => readFlat<Seo>("seo", DEFAULT_SEO);
 
 export async function getNavigation(): Promise<NavItem[]> {
-  const s = await prisma.siteSetting.findUnique({ where: { key: "navigation" } });
+  const s = await withPublicDatabaseFallback(
+    () => prisma.siteSetting.findUnique({ where: { key: "navigation" } }),
+    null,
+  );
   const value = s?.value as { items?: unknown } | null;
   const items = value?.items;
   return Array.isArray(items) ? (items as NavItem[]) : DEFAULT_NAV;
