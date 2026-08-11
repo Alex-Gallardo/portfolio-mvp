@@ -17,6 +17,7 @@ import { KeyValueForm } from "@/features/settings/components/KeyValueForm";
 import { NavEditor } from "@/features/settings/components/NavEditor";
 import { SectionsEditor } from "@/features/settings/components/SectionEditor";
 import { ContentEditor } from "@/features/settings/components/ContentEditor";
+import { DESIGN_CHAPTER_DEFAULTS } from "@/features/design/design-content";
 
 import styles from "./ajustes.module.css";
 
@@ -187,9 +188,16 @@ async function ContenidoTab() {
     orderBy: [{ page: "asc" }, { order: "asc" }],
     select: { key: true, page: true, title: true, body: true },
   });
-  return (
-    <ContentEditor
-      blocks={blocks.map((b) => ({ key: b.key, page: b.page, title: b.title ?? "", body: b.body }))}
-    />
-  );
+  const existingKeys = new Set(blocks.map((block) => block.key));
+  const designDefaults = DESIGN_CHAPTER_DEFAULTS.map((chapter) => ({
+    key: chapter.key,
+    page: "design",
+    title: chapter.title,
+    body: chapter.body,
+  }));
+  const editableBlocks = [
+    ...blocks.map((b) => ({ key: b.key, page: b.page, title: b.title ?? "", body: b.body })),
+    ...designDefaults.filter((block) => !existingKeys.has(block.key)),
+  ];
+  return <ContentEditor blocks={editableBlocks} />;
 }

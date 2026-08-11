@@ -61,9 +61,10 @@ export async function saveContentBlock(input: {
 }) {
   await guard();
   const { key, page, title, body } = input;
-  await prisma.contentBlock.update({
+  await prisma.contentBlock.upsert({
     where: { key },
-    data: { title: title.trim() || null, body },
+    update: { title: title.trim() || null, body },
+    create: { key, page, title: title.trim() || null, body },
   });
   revalidatePath(page === "home" ? "/" : `/${page}`);
 }

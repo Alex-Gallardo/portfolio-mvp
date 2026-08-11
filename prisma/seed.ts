@@ -372,6 +372,42 @@ async function main() {
         body: "Interfaces claras para un mundo complejo.",
         order: 0,
       },
+      // --- DISEÑO 3D ---
+      {
+        key: "design.hero",
+        page: "design",
+        title: "Ideas que cobran volumen.",
+        body: "Forma, luz y movimiento para hacer visible lo que todavía no existe.",
+        order: 0,
+      },
+      {
+        key: "design.intent",
+        page: "design",
+        title: "Todo empieza con una emoción.",
+        body: "Antes de modelar, defino qué debe provocar.",
+        order: 1,
+      },
+      {
+        key: "design.material",
+        page: "design",
+        title: "El detalle cambia la percepción.",
+        body: "Personajes y modelos donde cada superficie cuenta una historia.",
+        order: 2,
+      },
+      {
+        key: "design.structure",
+        page: "design",
+        title: "Espacios que ya puedes sentir.",
+        body: "Arquitectura, proporción y luz antes de que exista la primera pared.",
+        order: 3,
+      },
+      {
+        key: "design.transformation",
+        page: "design",
+        title: "Tu idea ya tiene forma.",
+        body: "Convirtamos una intención en una imagen que permanezca.",
+        order: 4,
+      },
       // ⚠️ No consumido aún: el FAQ se sirve desde features/crypto/faq.ts (constante TS),
       // no desde content_blocks. Se conserva por si más adelante mueves el FAQ a la DB.
       {
@@ -412,6 +448,7 @@ async function main() {
             { label: "Home", href: "/" },
             { label: "About", href: "/about" },
             { label: "Crypto", href: "/crypto" },
+            { label: "Diseño 3D", href: "/design" },
             { label: "Blog", href: "/blog" },
             { label: "Recursos", href: "/recursos" },
           ],

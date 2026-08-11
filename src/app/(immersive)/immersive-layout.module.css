@@ -1,0 +1,8 @@
+.shell {
+  min-height: 100svh;
+  background: #02040a;
+}
+
+.shell :global(footer) {
+  margin-top: 0;
+}

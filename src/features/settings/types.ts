@@ -48,6 +48,7 @@ export const DEFAULT_NAV: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Crypto", href: "/crypto" },
+  { label: "Diseño 3D", href: "/design" },
   { label: "Blog", href: "/blog" },
   { label: "Recursos", href: "/recursos" },
 ];
