@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache";
 import { EventType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { withDatabaseFallback } from "@/lib/prisma-fallback";
 
 function dayKey(d: Date): string {
   return d.toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
@@ -121,6 +122,7 @@ async function computeDashboard(rangeDays: number) {
   const captureRate = resourceViews ? (leads / resourceViews) * 100 : 0;
 
   return {
+    available: true,
     kpis: {
       pageviews,
       visitors,
@@ -149,6 +151,46 @@ async function computeDashboard(rangeDays: number) {
 
 export type DashboardData = Awaited<ReturnType<typeof computeDashboard>>;
 
+function emptyDashboard(rangeDays: number): DashboardData {
+  const since = new Date(Date.now() - rangeDays * 24 * 60 * 60 * 1000);
+  const trend: DashboardData["trend"] = [];
+  const start = new Date(since);
+  start.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+    trend.push({ day: dayKey(d).slice(5), count: 0 });
+  }
+
+  return {
+    available: false,
+    kpis: {
+      pageviews: 0,
+      visitors: 0,
+      leads: 0,
+      downloads: 0,
+      conversions: 0,
+      conversionRate: 0,
+      captureRate: 0,
+      avgScroll: 0,
+    },
+    trend,
+    devices: [],
+    countries: [],
+    topPaths: [],
+    topClicks: [],
+    topResources: [],
+    funnel: {
+      visitors: 0,
+      resourceViews: 0,
+      leads: 0,
+      downloads: 0,
+      contacts: 0,
+    },
+  };
+}
+
 // Cachea por rango; refresca cada 5 min. Invalida manualmente con revalidateTag("analytics").
 const getCachedDashboard = unstable_cache(
   async (rangeDays: number) => computeDashboard(rangeDays),
@@ -157,5 +199,7 @@ const getCachedDashboard = unstable_cache(
 );
 
 export function getDashboardData(rangeDays: number): Promise<DashboardData> {
-  return getCachedDashboard(rangeDays);
+  // El fallback queda fuera de la caché: una caída temporal nunca se conserva
+  // durante cinco minutos y la siguiente carga puede recuperarse de inmediato.
+  return withDatabaseFallback(() => getCachedDashboard(rangeDays), emptyDashboard(rangeDays));
 }
