@@ -3,36 +3,244 @@
   margin: var(--sp-24) auto;
   padding-inline: var(--gutter);
 }
-.grid {
+
+/* ---------------------------------------------------------------- panel */
+
+.panel {
+  /* Todos los tonos derivan del foreground → funciona en dark y en light */
+  --hairline: color-mix(in oklab, var(--fg, #fff) 14%, transparent);
+  --tint-top: color-mix(in oklab, var(--fg, #fff) 7%, transparent);
+  --tint-bottom: color-mix(in oklab, var(--fg, #fff) 3%, transparent);
+
+  position: relative;
+  isolation: isolate;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--sp-8);
-  text-align: center;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  border: 1px solid color-mix(in oklab, var(--fg, #fff) 12%, transparent);
+  border-radius: var(--radius-lg, 20px);
+  background-image: linear-gradient(180deg, var(--tint-top), var(--tint-bottom));
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--fg, #fff) 18%, transparent),
+    0 24px 48px -32px rgb(0 0 0 / 0.7);
+  overflow: clip;
 }
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(4, 1fr);
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .panel {
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    backdrop-filter: blur(16px) saturate(150%);
   }
 }
+
+/* Luz ambiental que sigue al cursor. Solo en punteros finos. */
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 400ms ease;
+  background: radial-gradient(
+    16rem 16rem at var(--pointer-x, 50%) var(--pointer-y, 0%),
+    color-mix(in oklab, var(--brand-600, #4f5bd5) 26%, transparent),
+    transparent 70%
+  );
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .panel:hover::before {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel::before {
+    display: none;
+  }
+}
+
+/* ----------------------------------------------------------------- item */
+
 .item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  /* El DOM va <dt> → <dd> por validez HTML; aquí se invierte el orden visual */
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-3, 0.75rem);
+  padding: clamp(1.5rem, 1rem + 2vw, 2.25rem) var(--sp-4, 1rem);
+  text-align: center;
+}
+
+/* Divisores hairline que se desvanecen en los extremos */
+.item::before,
+.item::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.item::before {
+  inset-block: 22%;
+  inset-inline-start: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--hairline), transparent);
+}
+
+.item::after {
+  inset-inline: 22%;
+  inset-block-start: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--hairline), transparent);
+}
+
+/* Móvil: 2×2 → divisor vertical en la 2ª columna, horizontal en la 2ª fila */
+.item:nth-child(even)::before,
+.item:nth-child(n + 3)::after {
+  opacity: 1;
+}
+
+@media (min-width: 768px) {
+  .panel {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .item:not(:first-child)::before {
+    opacity: 1;
+  }
+  .item::after {
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------- valor */
+
+.valueRow {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.value {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-display);
+  font-size: clamp(2.125rem, 1.4rem + 2.4vw, 3.25rem);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  /* Cifras de ancho fijo: la animación no descuadra el layout */
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings:
+    "tnum" 1,
+    "lnum" 1;
+  color: var(--fg, #fff);
+}
+
+/* Degradado sutil hacia el brand, con el peso del contraste en el blanco */
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .value {
+    background-image: linear-gradient(
+      170deg,
+      var(--fg, #fff) 35%,
+      color-mix(in oklab, var(--brand-600, #4f5bd5) 55%, var(--fg, #fff))
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
+.numberSlot {
+  display: inline-grid;
+}
+
+.numberSlot > * {
+  grid-area: 1 / 1;
+  justify-self: center;
+}
+
+/* Fantasma con el valor final: reserva el ancho, evita el salto al contar */
+.numberGhost {
+  visibility: hidden;
+}
+
+.affix {
+  font-size: 0.55em;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--fg-muted);
+  -webkit-text-fill-color: currentColor;
+  align-self: baseline;
+}
+
+/* --------------------------------------------------------------- rótulo */
+
+.label {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-1);
-}
-.value {
-  font-family: var(--font-display);
-  font-size: var(--fs-2xl);
-  color: var(--brand-600);
-}
-.label {
+  gap: 0.35rem;
+  font-size: var(--fs-xs, 0.75rem);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-wrap: balance;
   color: var(--fg-muted);
-  font-size: var(--fs-sm);
 }
-/* Reveal nativo (usa el @keyframes fade-up global de animations.css) */
-@supports (animation-timeline: view()) {
-  .item {
-    animation: fade-up linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 25%;
+
+/* La evidencia detrás del número: en un portafolio, el dato sin fuente no vale */
+.hint {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: color-mix(in oklab, var(--fg-muted) 65%, transparent);
+}
+
+/* --------------------------------------------------------------- reveal */
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .item {
+      animation: fade-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 22%;
+    }
+  }
+}
+
+/* ----------------------------------------------------------- utilidades */
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (forced-colors: active) {
+  .panel {
+    border-color: CanvasText;
+  }
+  .value {
+    background-image: none;
+    -webkit-text-fill-color: CanvasText;
+    color: CanvasText;
+  }
+  .item::before,
+  .item::after {
+    background: CanvasText;
   }
 }

@@ -40,6 +40,16 @@ export default async function AnaliticaPage({
         <RangeFilter active={activeRange} />
       </header>
 
+      {!data.available && (
+        <div className={styles.databaseNotice} role="status">
+          <strong>Datos temporalmente no disponibles.</strong>
+          <span>
+            La conexión con la base de datos se interrumpió. Esta vista seguirá operativa y
+            recuperará las métricas al recargar.
+          </span>
+        </div>
+      )}
+
       {/* KPIs */}
       <section className={styles.kpis}>
         {KPI_CARDS.map((k) => (
