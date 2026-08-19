@@ -1,73 +1,204 @@
-/* Fondo transparente: deja ver la aurora detrás */
+/* ============================================================
+   StackBand — cinta infinita de logos
+   Fondo transparente: deja ver la aurora detrás.
+   ============================================================ */
+
 .band {
-  max-width: var(--container);
-  margin: var(--sp-16) auto;
-  padding-inline: var(--gutter);
-  text-align: center;
+  /* Escalas locales: un solo lugar para afinar densidad y ritmo */
+  --band-gap: clamp(2.75rem, 5vw, 4.75rem);
+  --band-size: clamp(2.25rem, 3.2vw, 3rem);
+  --band-fade: clamp(2.5rem, 12vw, 11rem);
+  --band-duration: 55s; /* lo sobreescribe el componente según nº de logos */
+
+  /* Hueco bajo el logo para que el tooltip quepa dentro del overflow:hidden.
+     Si cambias el tamaño de fuente del tooltip, ajusta esto. */
+  --band-tip-space: 3.5rem;
+
   display: flex;
   flex-direction: column;
-  gap: var(--sp-4);
   align-items: center;
+  gap: var(--sp-6);
+
+  /* Full bleed: la cinta rompe el contenedor y toca los dos bordes.
+     Si ya la montas fuera del container, borra estas dos líneas. */
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+
+  /* Abajo resta lo que ya aporta el hueco del tooltip: la sección
+     no debe crecer solo por reservar sitio para un estado de hover. */
+  padding-block: var(--sp-16) max(var(--sp-4), calc(var(--sp-16) - var(--band-tip-space)));
   background: transparent;
-  padding: 2em var(--gutter);
 }
+
 .label {
   color: var(--fg-muted);
   font-size: var(--fs-sm);
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.list {
-  display: flex;
-  flex-wrap: wrap;
-  /* gap: var(--sp-3); */
-  gap: 2em;
-  justify-content: center;
+  letter-spacing: 0.14em;
 }
 
-/* Card tipo píldora (icono + texto) con animación al hover */
-.chip {
-  display: inline-flex;
+/* ---- Ventana ------------------------------------------------
+   overflow:hidden recorta el track. El padding vertical reserva
+   sitio para el tooltip, que si no quedaría cortado. */
+.viewport {
+  width: 100%;
+  /* Arriba solo hace falta sitio para el lift del hover; abajo, para el tooltip */
+  padding-block: 1rem var(--band-tip-space);
+  overflow: hidden;
+
+  /* Difuminado en los extremos: la cinta entra y sale, no empieza ni acaba */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--band-fade),
+    #000 calc(100% - var(--band-fade)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--band-fade),
+    #000 calc(100% - var(--band-fade)),
+    transparent
+  );
+}
+
+/* ---- Track --------------------------------------------------
+   Dos grupos idénticos + translate -50% = loop sin costura. */
+.track {
+  display: flex;
+  width: max-content;
+  animation: band-scroll var(--band-duration) linear infinite;
+}
+
+.reverse {
+  animation-direction: reverse;
+}
+
+/* Pausa al pasar el ratón o al tabular dentro */
+.viewport:hover .track,
+.viewport:focus-within .track {
+  animation-play-state: paused;
+}
+
+@keyframes band-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* El gap final vive en el padding para que ambas mitades midan igual */
+.group {
+  display: flex;
   align-items: center;
-  gap: var(--sp-2);
-  /* padding: var(--sp-1) var(--sp-4) var(--sp-1) var(--sp-1); */
-  padding: 0.8em 1em;
-  padding-right: 2em;
+  gap: var(--band-gap);
+  padding: 0 var(--band-gap) 0 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* ---- Logo ---------------------------------------------------
+   Reposo: monocromo apagado. Hover: color de marca + elevación.
+   El color de marca solo aparece cuando lo pides. */
+.item {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--band-size);
+  height: var(--band-size);
+  color: var(--fg-muted);
+  opacity: 0.55;
+  transition:
+    color var(--dur) var(--ease),
+    opacity var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease),
+    filter var(--dur) var(--ease);
+  will-change: transform;
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* Compensación óptica para logos apaisados (AWS) o muy densos */
+  scale: var(--icon-scale, 1);
+}
+
+.item:hover {
+  color: var(--tech-color);
+  opacity: 1;
+  transform: translateY(-4px) scale(1.12);
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--tech-color) 40%, transparent));
+}
+
+/* El resto se apaga: el logo señalado queda solo en foco */
+.track:hover .item:not(:hover) {
+  opacity: 0.24;
+}
+
+/* ---- Tooltip ------------------------------------------------ */
+.item::after {
+  content: attr(data-label);
+  position: absolute;
+  top: calc(100% + 0.85rem);
+  left: 50%;
+  translate: -50% 4px;
+  padding: 0.4em 0.85em;
   border-radius: var(--radius-full);
   background: var(--bg-elev);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  color: var(--fg);
   font-size: var(--fs-sm);
   font-weight: 500;
-  color: var(--fg);
-  cursor: default;
-  transition:
-    transform var(--dur-fast) var(--ease),
-    box-shadow var(--dur) var(--ease),
-    border-color var(--dur-fast) var(--ease);
-  will-change: transform;
-}
-.chip:hover {
-  transform: translateY(-3px);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
   box-shadow: var(--shadow-md);
-  border-color: var(--chip-accent, var(--brand-500));
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--dur) var(--ease),
+    translate var(--dur) var(--ease);
 }
 
-/* Icono por card: círculo con inicial + acento de color */
-.icon {
-  width: 1.5rem;
-  height: 1.5rem;
-  flex: none;
-  display: grid;
-  place-items: center;
-  border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--chip-accent, var(--brand-500)) 15%, transparent);
-  color: var(--chip-accent, var(--brand-500));
-  font-size: var(--fs-xs);
-  font-weight: 700;
-  transition: transform var(--dur-fast) var(--ease);
-  margin-right: 1em;
+.item:hover::after {
+  opacity: 1;
+  translate: -50% 0;
 }
-.chip:hover .icon {
-  transform: scale(1.1);
+
+/* ---- Accesibilidad ------------------------------------------
+   Sin movimiento: la cinta se convierte en una fila deslizable a mano. */
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+
+  .viewport {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .item {
+    transition: none;
+  }
+
+  .item:hover {
+    transform: none;
+  }
+}
+
+@media (hover: none) {
+  /* En táctil no hay hover: sube el reposo para que se lea bien */
+  .item {
+    opacity: 0.7;
+  }
 }

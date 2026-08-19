@@ -1,5 +1,14 @@
-/* Fondo sólido a todo el ancho (sin aspecto de card, sin aurora) */
+/* ============================================================
+   AboutBrief — fondo sólido a todo el ancho, una sola card
+   ============================================================ */
+
 .about {
+  --ease: cubic-bezier(0.22, 1, 0.36, 1); /* salida suave, entrada rápida */
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --slide-dur: 900ms;
+  --interval: 5200ms; /* lo sobreescribe el componente */
+
+  position: relative;
   background: var(--bg);
   padding-block: var(--sp-16);
 }
@@ -14,88 +23,218 @@
   align-items: center;
 }
 
-/* ---- Texto (sin card, sin animación) ---- */
+/* ---- Texto ---- */
 .content {
   display: flex;
   flex-direction: column;
   gap: var(--sp-4);
   align-items: flex-start;
 }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  font-size: var(--fs-sm, 0.8125rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+.eyebrow::before {
+  content: "";
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 700ms var(--ease) 220ms;
+}
+.inView .eyebrow::before {
+  transform: scaleX(1);
+}
+
 .h2 {
   font-family: var(--font-display);
   font-size: var(--fs-xl);
+  text-wrap: balance;
 }
+
 .text {
   color: var(--fg-muted);
   font-size: var(--fs-lg);
   max-width: 42rem;
+  text-wrap: pretty;
 }
 
-/* ---- La ÚNICA card: visual de la derecha (enlace + hover) ---- */
+/* ---- Entrada escalonada (solo con JS montado; sin JS todo queda visible) ---- */
+.js .content > *,
+.js .cardWrap {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+}
+.js .cardWrap {
+  transform: translate3d(20px, 16px, 0);
+}
+.js.inView .content > *,
+.js.inView .cardWrap {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 700ms var(--ease) calc(var(--i, 0) * 90ms),
+    transform 950ms var(--ease) calc(var(--i, 0) * 90ms);
+}
+
+/* ============================================================
+   La ÚNICA card
+   ============================================================ */
+
+.cardWrap {
+  perspective: 1200px;
+}
+
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
-  text-decoration: none;
-  color: var(--brand-600);
+  padding: var(--sp-4);
   background: var(--bg-elev);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: var(--sp-4);
   box-shadow: var(--shadow-sm);
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translate3d(0, var(--lift, 0px), 0);
   transition:
-    transform var(--dur) var(--ease),
-    box-shadow var(--dur) var(--ease);
+    transform 450ms var(--ease-soft),
+    box-shadow 450ms var(--ease-soft),
+    border-color 450ms var(--ease-soft);
+}
+.card:hover {
   will-change: transform;
 }
-.card:hover,
-.card:focus-visible {
-  transform: translateX(8px);
-  box-shadow: var(--shadow-md);
+
+/* Luz que sigue al cursor */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    360px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in oklab, var(--brand-500) 20%, transparent),
+    transparent 62%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 400ms var(--ease-soft);
 }
-.card:focus-visible {
-  outline: 2px solid var(--brand-500);
-  outline-offset: 3px;
+.card:hover::before,
+.card:focus-within::before {
+  opacity: 1;
 }
 
-/* ---- Carrusel dentro de la card ---- */
+.card:hover,
+.card:focus-within {
+  --lift: -6px;
+  box-shadow: var(--shadow-md);
+  border-color: color-mix(in oklab, var(--brand-500) 42%, var(--border));
+}
+
+/* ---- Marco de la imagen ---- */
 .thumb {
   position: relative;
-  overflow: hidden; /* recorta el track → nunca hay huecos */
+  z-index: 1;
   display: block;
+  overflow: hidden;
   aspect-ratio: 16 / 10;
   border-radius: var(--radius-md);
   background: var(--bg);
   border: 1px solid var(--border);
+  transform: translateZ(28px);
+  isolation: isolate;
 }
-/* Track: dos celdas contiguas [siguiente, actual] */
-.track {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  width: 200%;
-  height: 100%;
-  will-change: transform;
-}
-.animate {
-  transition: transform var(--dur-slow) var(--ease);
-}
+
+/* Cada slide vive apilado: entra desde la derecha, sale hacia la izquierda */
 .slide {
-  position: relative;
-  flex: 0 0 50%;
-  width: 50%;
-  height: 100%;
-  display: block;
-}
-.single {
   position: absolute;
   inset: 0;
+  opacity: 0;
+  transform: translate3d(7%, 0, 0);
+  transition:
+    opacity var(--slide-dur) var(--ease-soft),
+    transform var(--slide-dur) var(--ease);
+  pointer-events: none;
 }
+.slideActive {
+  z-index: 2;
+  opacity: 1;
+  transform: none;
+}
+.slideLeaving {
+  z-index: 1;
+  opacity: 0;
+  transform: translate3d(-5%, 0, 0);
+}
+
+/* Parallax + Ken Burns lento durante el ciclo */
+.media {
+  position: absolute;
+  inset: 0;
+  scale: 1.03;
+  transform: translate3d(var(--px, 0px), var(--py, 0px), 0);
+  transition: transform 600ms var(--ease-soft);
+}
+.slideActive .media {
+  animation: kenburns var(--interval) linear both;
+}
+.paused .slideActive .media {
+  animation-play-state: paused;
+}
+@keyframes kenburns {
+  from {
+    scale: 1.03;
+  }
+  to {
+    scale: 1.11;
+  }
+}
+
 .img {
   object-fit: cover;
 }
 
-/* Placeholder por slide (stand-in de imagen, distinto por índice) */
+/* Brillo que barre la imagen al pasar el cursor */
+.sheen {
+  position: absolute;
+  inset: -30%;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    rgb(255 255 255 / 0.14) 50%,
+    transparent 58%
+  );
+  transform: translateX(-130%);
+  transition: transform 950ms var(--ease);
+}
+.card:hover .sheen {
+  transform: translateX(130%);
+}
+
+/* Viñeta sutil: asienta la imagen sobre el fondo oscuro */
+.vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.28));
+  opacity: 0.9;
+}
+
+/* ---- Placeholder por slide ---- */
 .placeholder {
   position: relative;
   display: grid;
@@ -127,14 +266,132 @@
 .icon {
   position: relative;
   z-index: 1;
-  width: 24%;
+  width: 22%;
   height: auto;
   color: #fff;
   opacity: 0.85;
 }
 
+/* ---- Pie: enlace + indicadores ---- */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  transform: translateZ(14px);
+}
+
+/* El enlace cubre toda la card (patrón stretched link) */
 .cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  color: var(--brand-600);
   font-weight: 600;
+  text-decoration: none;
+}
+.cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: var(--radius-lg);
+}
+.cta:focus-visible {
+  outline: none;
+}
+.cta:focus-visible::after {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 4px;
+}
+
+.ctaLabel {
+  position: relative;
+}
+.ctaLabel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 420ms var(--ease);
+}
+.card:hover .ctaLabel::after,
+.card:focus-within .ctaLabel::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.arrow {
+  display: inline-block;
+  transition: transform 420ms var(--ease);
+}
+.card:hover .arrow,
+.card:focus-within .arrow {
+  transform: translateX(5px);
+}
+
+/* Indicadores: la barra activa se llena al ritmo del autoplay */
+.dots {
+  position: relative;
+  z-index: 2; /* por encima del stretched link */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dot {
+  position: relative;
+  width: 16px;
+  height: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  cursor: pointer;
+  background: color-mix(in oklab, var(--fg-muted) 32%, transparent);
+  transition:
+    width 420ms var(--ease),
+    background 300ms var(--ease-soft);
+}
+.dot::before {
+  /* área táctil de 44px sin alterar el diseño */
+  content: "";
+  position: absolute;
+  inset: -20px -6px;
+}
+.dot:hover {
+  background: color-mix(in oklab, var(--fg-muted) 55%, transparent);
+}
+.dot:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 4px;
+}
+.dotActive {
+  width: 34px;
+  background: color-mix(in oklab, var(--fg-muted) 22%, transparent);
+}
+.dotFill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--brand-500);
+  transform-origin: left;
+  animation: dotFill var(--interval) linear both;
+}
+.paused .dotFill {
+  animation-play-state: paused;
+}
+@keyframes dotFill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
 /* ---- Desktop: texto izquierda, card derecha ---- */
@@ -145,21 +402,62 @@
   }
 }
 
-/* ---- Entrada: comienza en visibilidad 0 (solo opacidad, no choca con el hover) ---- */
-.reveal {
-  opacity: 1;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .reveal {
-    opacity: 0;
-    animation: aboutReveal var(--dur-slow) var(--ease) 120ms both;
+/* ---- Táctil: sin tilt, sin sheen, sin spotlight ---- */
+@media (hover: none) {
+  .card,
+  .card:hover,
+  .card:focus-within {
+    --rx: 0deg;
+    --ry: 0deg;
+    --lift: 0px;
+  }
+  .sheen {
+    display: none;
+  }
+  .card::before {
+    display: none;
+  }
+  .thumb,
+  .footer {
+    transform: none;
   }
 }
-@keyframes aboutReveal {
-  from {
-    opacity: 0;
-  }
-  to {
+
+/* ---- Movimiento reducido: todo estático y visible ---- */
+@media (prefers-reduced-motion: reduce) {
+  .js .content > *,
+  .js .cardWrap {
     opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .eyebrow::before {
+    transform: scaleX(1);
+    transition: none;
+  }
+  .card,
+  .thumb,
+  .footer,
+  .media {
+    transform: none;
+    transition: none;
+  }
+  .slide {
+    transition: opacity 200ms linear;
+    transform: none;
+  }
+  .slideLeaving {
+    transform: none;
+  }
+  .slideActive .media {
+    animation: none;
+    scale: 1;
+  }
+  .dotFill {
+    animation: none;
+    transform: scaleX(1);
+  }
+  .sheen {
+    display: none;
   }
 }
