@@ -6,4 +6,7 @@ export interface ProjectListItem {
   coverUrl: string | null;
   stack: string[];
   featured: boolean;
+  repoUrl?: string | null;
+  category?: string | null;
+  kind?: string | null;
 }
