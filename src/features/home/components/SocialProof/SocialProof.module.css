@@ -1,64 +1,257 @@
 .section {
+  --gap: var(--sp-6);
+  --speed: 46s;
+
+  position: relative;
+  isolation: isolate;
   margin: var(--sp-24) 0;
   display: flex;
   flex-direction: column;
   gap: var(--sp-8);
 }
-.h2 {
-  font-family: var(--font-display);
-  font-size: var(--fs-2xl);
+
+/* Glow suave que ancla la sección sobre la aurora */
+.section::before {
+  content: "";
+  position: absolute;
+  inset: -8% -15% auto;
+  height: 65%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(60% 100% at 50% 0%, rgba(79, 107, 255, 0.14), transparent 70%);
+  filter: blur(40px);
+  width: 100%;
+}
+
+/* ---------- Header ---------- */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
   text-align: center;
   padding-inline: var(--gutter);
 }
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: var(--sp-1) var(--sp-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+}
+.h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+.sub {
+  margin: 0;
+  max-width: 48ch;
+  color: var(--fg-muted);
+  font-size: var(--fs-base);
+  text-wrap: pretty;
+}
+
+/* ---------- Carrusel ---------- */
 .viewport {
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  padding-block: var(--sp-4); /* espacio para la elevación y la sombra */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
 }
 .track {
   display: flex;
-  gap: var(--sp-6);
-  list-style: none;
+  align-items: stretch;
+  gap: var(--gap);
+  width: max-content;
   margin: 0;
   padding: 0;
-  width: max-content;
-  animation: marquee 40s linear infinite;
+  list-style: none;
+  animation: marquee var(--speed) linear infinite;
+  will-change: transform;
 }
-.track:hover {
+.viewport:hover .track,
+.viewport:focus-within .track {
   animation-play-state: paused;
 }
-.card {
-  flex: 0 0 auto;
-  width: clamp(260px, 80vw, 360px);
-  background: var(--bg-elev);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--sp-6);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-3);
-}
-.quote {
-  font-size: var(--fs-lg);
-}
-.author {
-  font-weight: 600;
-  font-size: var(--fs-sm);
-}
-.role {
-  color: var(--fg-muted);
-  font-weight: 400;
-}
+
+/*
+  Con `gap`, desplazar solo -50% deja un desfase de gap/2 y produce
+  un tirón visible en cada ciclo. Se compensa aquí.
+*/
 @keyframes marquee {
   to {
-    transform: translateX(-50%);
+    transform: translateX(calc(-50% - (var(--gap) / 2)));
   }
 }
+
+/* ---------- Card ---------- */
+.item {
+  display: flex;
+  flex: 0 0 auto;
+  width: clamp(272px, 82vw, 340px);
+}
+.card {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-6);
+  margin: 0;
+  overflow: hidden;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+/* Hairline superior */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+}
+/* Comilla decorativa */
+.card::after {
+  content: "\201D";
+  position: absolute;
+  top: -0.25em;
+  right: var(--sp-4);
+  font-family: var(--font-display);
+  font-size: 6rem;
+  line-height: 1;
+  color: var(--fg);
+  opacity: 0.07;
+  pointer-events: none;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--brand-500) 45%, transparent);
+}
+
+/* ---------- Estrellas ---------- */
+.stars {
+  display: flex;
+  gap: 2px;
+}
+.star,
+.starMuted {
+  width: 14px;
+  height: 14px;
+}
+.star {
+  fill: var(--warning);
+}
+.starMuted {
+  fill: var(--border);
+}
+
+/* ---------- Cita ---------- */
+.quote {
+  margin: 0;
+}
+.quote p {
+  margin: 0;
+  font-size: var(--fs-lg);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+/* ---------- Autoría ---------- */
+.author {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: auto; /* alinea el bloque abajo → alturas homogéneas */
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--border);
+}
+.avatar {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--brand-500), var(--accent));
+  color: #fff;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(79, 107, 255, 0.35);
+}
+.meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+.name {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+.role {
+  font-size: var(--fs-xs);
+  color: var(--fg-muted);
+}
+
+/* ---------- Responsive ---------- */
+@media (min-width: 768px) {
+  .item {
+    width: clamp(320px, 34vw, 400px);
+  }
+  .card {
+    padding: var(--sp-8);
+  }
+}
+
+/* ---------- Motion reducido ---------- */
 @media (prefers-reduced-motion: reduce) {
+  .viewport {
+    padding-inline: var(--gutter);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
   .track {
     animation: none;
-    flex-wrap: wrap;
     width: auto;
+    max-width: var(--container);
+    margin-inline: auto;
+    flex-wrap: wrap;
     justify-content: center;
+  }
+  /* Sin animación, los duplicados no aportan: se ocultan */
+  .item[aria-hidden="true"] {
+    display: none;
+  }
+  .card:hover {
+    transform: none;
   }
 }
