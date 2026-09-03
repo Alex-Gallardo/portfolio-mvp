@@ -97,12 +97,29 @@
 
 /* ---- Barra de progreso -------------------------------------- */
 
-.progress {
+.progressRow {
   display: none;
 }
 
+@media (min-width: 1024px) {
+  .progressRow {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sp-4);
+  }
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .progressMeta {
-  display: none;
+  padding-top: 2px;
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+  line-height: 1.7;
 }
 
 @media (min-width: 1024px) {
@@ -127,6 +144,10 @@
   }
 }
 
+.progressMeta p {
+  margin: 0;
+}
+
 .track {
   width: 2px;
   height: 10rem;
@@ -135,12 +156,14 @@
   overflow: hidden;
 }
 
+/* Base = llena. Firefox y Safari (sin timeline-scope) ven una barra
+   estática coherente en vez de un hueco vacío. */
 .fill {
   width: 100%;
   height: 100%;
   border-radius: var(--radius-full);
   transform-origin: top;
-  transform: scaleY(0);
+  transform: scaleY(1);
   background: linear-gradient(to bottom, var(--brand-500), var(--accent));
 }
 
@@ -149,7 +172,7 @@
   height: 10px;
   margin-top: var(--sp-1);
   border-radius: var(--radius-full);
-  background: var(--brand-500);
+  background-color: var(--brand-500);
 }
 
 /* ---- Columna de hitos --------------------------------------- */
@@ -165,6 +188,21 @@
   /* Fuente de la barra de progreso del panel */
   view-timeline-name: --tl-track;
   view-timeline-axis: block;
+}
+
+/* Sin recorrido no hay scroll-driven animation: la columna tiene que
+   superar el viewport para que el panel se pegue y los hitos entren
+   de uno en uno. Es lo que en FeaturesSection aportan sus 6 cards. */
+@media (min-width: 1024px) {
+  .cards {
+    gap: var(--sp-8);
+    min-height: 118vh;
+    justify-content: space-between;
+  }
+
+  .card {
+    padding: var(--sp-8) var(--sp-8) var(--sp-12);
+  }
 }
 
 .item {
@@ -350,8 +388,8 @@
 
 /* ---- Animaciones ligadas al scroll ---------------------------
    Equivalente nativo de useScroll + useSpring de framer-motion.
-   Fuera del @supports los estilos base ya son el estado final,
-   así que sin soporte todo se ve, solo que sin reveal. */
+   Longhands explícitos: el atajo `animation` fija animation-duration
+   y con una timeline de progreso hace falta `auto`, no un tiempo. */
 
 @keyframes tl-card-in {
   from {
@@ -386,41 +424,56 @@
 
 @keyframes tl-dot-shift {
   from {
-    background: var(--brand-500);
+    background-color: var(--brand-500);
   }
   to {
-    background: var(--accent);
+    background-color: var(--accent);
   }
 }
 
-@supports (animation-timeline: view()) {
-  .item {
-    animation: tl-card-in linear both;
-    animation-timeline: view();
-    animation-range: entry 5% cover 30%;
-  }
+/* La guardia de movimiento va FUERA: el reset global colapsa cualquier
+   animation-duration a 0.01ms, lo que con una timeline de scroll deja
+   el estado final fijo y parece que nada anima. Mismo patrón que Metrics. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .item {
+      animation-name: tl-card-in;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 45%;
+    }
 
-  .item[data-flip] {
-    animation-name: tl-card-in-flip;
-  }
+    .item[data-flip] {
+      animation-name: tl-card-in-flip;
+    }
 
-  .fill {
-    animation: tl-grow linear both;
-    animation-timeline: --tl-track;
-    animation-range: cover 20% cover 80%;
-  }
+    .fill {
+      transform: scaleY(0);
+      animation-name: tl-grow;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --tl-track;
+      animation-range: cover 15% cover 85%;
+    }
 
-  .dot {
-    animation: tl-dot-shift linear both;
-    animation-timeline: --tl-track;
-    animation-range: cover 20% cover 80%;
+    .dot {
+      animation-name: tl-dot-shift;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --tl-track;
+      animation-range: cover 15% cover 85%;
+    }
   }
 }
 
 /* ---- Accesibilidad -------------------------------------------
    El reset global ya anula animaciones con motion reducido; aquí
    solo garantizamos el estado final por si se aplica antes. */
-@media (prefers-reduced-motion: reduce) {
+/* @media (prefers-reduced-motion: reduce) {
   .item {
     opacity: 1;
     transform: none;
@@ -429,4 +482,41 @@
   .fill {
     transform: scaleY(1);
   }
+} */
+
+/* ---- Mini-estadísticas ---------------------------------------- */
+
+.stats {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-3);
+    margin: 0;
+  }
+}
+
+.stat {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--sp-3) var(--sp-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.statValue {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.statLabel {
+  margin: var(--sp-1) 0 0;
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+  line-height: 1.4;
 }

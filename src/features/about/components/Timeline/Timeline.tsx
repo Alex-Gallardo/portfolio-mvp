@@ -147,16 +147,18 @@ function LeftPanel() {
       </p>
 
       {/* Barra de progreso ligada al scroll de la columna de hitos */}
-      <div className={styles.progress} aria-hidden="true">
-        <div className={styles.track}>
-          <div className={styles.fill} />
+      <div className={styles.progressRow} aria-hidden="true">
+        <div className={styles.progress}>
+          <div className={styles.track}>
+            <div className={styles.fill} />
+          </div>
+          <span className={styles.dot} />
         </div>
-        <span className={styles.dot} />
-      </div>
 
-      <div className={styles.progressMeta} aria-hidden="true">
-        <p>{MILESTONES.length} hitos</p>
-        <p>y sumando</p>
+        <div className={styles.progressMeta}>
+          <p>{MILESTONES.length} hitos</p>
+          <p>y sumando</p>
+        </div>
       </div>
 
       <dl className={styles.stats}>
