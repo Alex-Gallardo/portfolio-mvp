@@ -45,8 +45,13 @@
   justify-content: center;
 }
 
-/* Card tipo píldora (dot + texto) con animación al hover */
+/* Card tipo píldora (dot + texto) con animación al hover.
+   `position: relative` es lo que ancla los destellos de los pseudoelementos.
+   Nota: se quitó `will-change: transform`. Promocionaba a capa las ~19
+   píldoras de forma permanente para un translateY que solo ocurre en hover;
+   con los destellos encima ya no compensa. */
 .chip {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
@@ -63,7 +68,6 @@
     transform var(--dur-fast) var(--ease),
     box-shadow var(--dur) var(--ease),
     border-color var(--dur-fast) var(--ease);
-  will-change: transform;
 }
 .chip:hover {
   transform: translateY(-3px);
@@ -81,4 +85,81 @@
 }
 .chip:hover .dot {
   transform: scale(1.35);
+}
+
+/* ============================================================
+   Destello de mena
+   Glint de 4 puntas que nace en un punto arbitrario de la píldora,
+   pica casi al instante y se apaga con más calma. La píldora NO
+   emite luz: todo el brillo vive en la partícula.
+   ============================================================ */
+
+.chip::before,
+.chip::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  pointer-events: none;
+  opacity: 0;
+
+  /* currentColor toma el acento de la categoría, no el color del texto */
+  color: var(--chip-accent, var(--brand-500));
+
+  /* Brazo horizontal + brazo vertical + núcleo blanco */
+  background:
+    radial-gradient(ellipse 100% 10% at 50% 50%, currentColor, transparent 72%),
+    radial-gradient(ellipse 10% 100% at 50% 50%, currentColor, transparent 72%),
+    radial-gradient(circle 2px at 50% 50%, #fff, transparent);
+  filter: drop-shadow(0 0 3px currentColor);
+}
+
+/* Retrasos negativos: cada píldora arranca con su ciclo ya empezado,
+   así no hay una ráfaga sincronizada al montar el componente. */
+.chip::before {
+  left: var(--gx1);
+  top: var(--gy1);
+  animation: ore-glint var(--shine-a, 6.7s) linear calc(var(--i) * -0.73s) infinite;
+}
+
+/* Segundo destello solo en un tercio de las píldoras. Basta para que la
+   sección respire y evita duplicar el número de elementos animados. */
+.chip::after {
+  content: none;
+}
+.chip:nth-child(3n + 1)::after {
+  content: "";
+  left: var(--gx2);
+  top: var(--gy2);
+  animation: ore-glint var(--shine-b, 9.1s) linear calc(var(--i) * -1.31s - 2.2s) infinite;
+}
+
+/* Asimétrica: pico al 3 %, apagado al 9 %, invisible el resto del ciclo.
+   Esa proporción ventana/ciclo es lo que se percibe como "rareza". */
+@keyframes ore-glint {
+  0% {
+    opacity: 0;
+    transform: scale(0.25) rotate(0deg);
+  }
+  3% {
+    opacity: 1;
+    transform: scale(1.1) rotate(12deg);
+  }
+  9% {
+    opacity: 0;
+    transform: scale(0.5) rotate(24deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.25) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip::before,
+  .chip:nth-child(3n + 1)::after {
+    content: none;
+  }
 }
