@@ -1,55 +1,126 @@
-/* Fondo transparente: deja ver la aurora detrás */
+/* ============================================================
+   Skills — el stack ordenado por profundidad real.
+   El brillo no es decoración: codifica el nivel. Núcleo = mena
+   rara que centellea; en órbita = piedra que no brilla.
+   Fondo translúcido: deja ver la aurora detrás.
+   ============================================================ */
+
 .section {
   max-width: var(--container);
   margin: var(--sp-24) auto;
   padding-inline: var(--gutter);
   background: transparent;
-  text-align: center;
 }
+
+/* ---- Cabecera ------------------------------------------------ */
+
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-12);
+  max-width: 46ch;
+}
+
+.eyebrow {
+  background: var(--brand-50);
+  color: var(--brand-600);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-full);
+}
+
 .h2 {
   font-family: var(--font-display);
   font-size: var(--fs-2xl);
-  margin-bottom: var(--sp-8);
+  font-weight: 800;
+  line-height: 1.1;
 }
+
+.gradient {
+  background: linear-gradient(135deg, var(--brand-500), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lead {
+  color: var(--fg-muted);
+  line-height: 1.65;
+}
+
+.leadStrong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+/* ---- Rejilla de categorías ----------------------------------- */
 
 .grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--sp-8);
+  gap: var(--sp-6);
 }
+
 @media (min-width: 768px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-8);
   }
 }
 
-.group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-4);
-  align-items: center;
+/* Translúcido a propósito: agrupa sin tapar la aurora */
+.panel {
+  position: relative;
+  overflow: hidden;
+  padding: var(--sp-6) var(--sp-6) var(--sp-8);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in oklab, var(--bg-elev) 55%, transparent);
+  box-shadow: var(--shadow-sm);
 }
+
+/* Raíl superior con el acento de la categoría */
+.rail {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--chip-accent, var(--brand-500)),
+    color-mix(in oklab, var(--chip-accent, var(--brand-500)) 15%, transparent)
+  );
+}
+
 .cat {
   font-family: var(--font-display);
-  font-size: var(--fs-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  font-size: var(--fs-lg);
+  line-height: 1.2;
+  margin-bottom: var(--sp-2);
+}
+
+.claim {
   color: var(--fg-muted);
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  margin-bottom: var(--sp-6);
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-3);
-  justify-content: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-/* Card tipo píldora (dot + texto) con animación al hover.
-   `position: relative` es lo que ancla los destellos de los pseudoelementos.
-   Nota: se quitó `will-change: transform`. Promocionaba a capa las ~19
-   píldoras de forma permanente para un translateY que solo ocurre en hover;
-   con los destellos encima ya no compensa. */
+/* ---- Píldora ------------------------------------------------- */
+
 .chip {
   position: relative;
   display: inline-flex;
@@ -59,7 +130,6 @@
   border-radius: var(--radius-full);
   background: var(--bg-elev);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
   font-size: var(--fs-sm);
   font-weight: 500;
   color: var(--fg);
@@ -69,34 +139,141 @@
     box-shadow var(--dur) var(--ease),
     border-color var(--dur-fast) var(--ease);
 }
+
+/* El peso visual escala con el nivel: es la primera capa del mensaje,
+   antes de que ningún destello entre en juego. */
+.chip[data-level="3"] {
+  padding: var(--sp-3) var(--sp-6);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  border-color: color-mix(in oklab, var(--chip-accent, var(--brand-500)) 45%, var(--border));
+  box-shadow: var(--shadow-sm);
+}
+
+.chip[data-level="2"] {
+  border-color: color-mix(in oklab, var(--chip-accent, var(--brand-500)) 26%, var(--border));
+}
+
+.chip[data-level="1"] {
+  color: var(--fg-muted);
+  background: transparent;
+  border-style: dashed;
+  border-color: color-mix(in oklab, var(--chip-accent, var(--brand-500)) 14%, var(--border));
+}
+
 .chip:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-md);
-  border-color: var(--chip-accent, var(--brand-500));
+  border-color: color-mix(in oklab, var(--chip-accent, var(--brand-500)) 70%, var(--border));
+}
+
+.chip[data-level="3"]:hover {
+  border-color: transparent; /* el anillo toma el relevo */
 }
 
 .dot {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 0.4rem;
+  height: 0.4rem;
   flex: none;
   border-radius: var(--radius-full);
   background: var(--chip-accent, var(--brand-500));
-  transition: transform var(--dur-fast) var(--ease);
-}
-.chip:hover .dot {
-  transform: scale(1.35);
+  opacity: 0.5;
+  transition:
+    transform var(--dur-fast) var(--ease),
+    opacity var(--dur-fast) var(--ease);
 }
 
-/* ============================================================
-   Destello de mena
-   Glint de 4 puntas que nace en un punto arbitrario de la píldora,
-   pica casi al instante y se apaga con más calma. La píldora NO
-   emite luz: todo el brillo vive en la partícula.
-   ============================================================ */
+.chip[data-level="3"] .dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  opacity: 1;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--chip-accent, var(--brand-500)) 18%, transparent);
+}
+
+.chip[data-level="2"] .dot {
+  opacity: 0.85;
+}
+
+.chip:hover .dot {
+  transform: scale(1.35);
+  opacity: 1;
+}
+
+/* ---- Anillo metálico (solo núcleo) --------------------------- */
+
+.rim {
+  position: absolute;
+  inset: -1px;
+  z-index: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  opacity: 0;
+
+  background: linear-gradient(
+    100deg,
+    transparent 32%,
+    color-mix(in oklab, var(--chip-accent, var(--brand-500)) 80%, white) 47%,
+    color-mix(in oklab, var(--chip-accent, var(--brand-500)) 95%, white) 52%,
+    transparent 67%
+  );
+  background-size: 320% 100%;
+  background-position: 160% 0;
+
+  /* XOR entre content-box y border-box = solo queda el anillo de 1px */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+
+  animation: rim-sheen var(--shine-a, 3.7s) linear calc(var(--i) * -0.73s) infinite;
+}
+
+/* En hover el barrido para y el anillo queda encendido: evita congelar
+   un gradiente a medio recorrido. */
+.chip:hover .rim {
+  animation: none;
+  opacity: 1;
+  background: linear-gradient(
+    140deg,
+    color-mix(in oklab, var(--chip-accent, var(--brand-500)) 92%, white),
+    var(--chip-accent, var(--brand-500)) 48%,
+    color-mix(in oklab, var(--chip-accent, var(--brand-500)) 60%, transparent)
+  );
+}
+
+@keyframes rim-sheen {
+  0% {
+    opacity: 0;
+    background-position: 160% 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  12% {
+    opacity: 1;
+  }
+  16% {
+    opacity: 0;
+    background-position: -60% 0;
+  }
+  100% {
+    opacity: 0;
+    background-position: -60% 0;
+  }
+}
+
+/* ---- Destello de mena ---------------------------------------
+   Glint de 4 puntas en un punto arbitrario. La píldora NO emite
+   luz: todo el brillo vive en la partícula. */
 
 .chip::before,
 .chip::after {
-  content: "";
+  content: none;
   position: absolute;
   z-index: 1;
   width: 12px;
@@ -105,10 +282,8 @@
   pointer-events: none;
   opacity: 0;
 
-  /* currentColor toma el acento de la categoría, no el color del texto */
   color: var(--chip-accent, var(--brand-500));
 
-  /* Brazo horizontal + brazo vertical + núcleo blanco */
   background:
     radial-gradient(ellipse 100% 10% at 50% 50%, currentColor, transparent 72%),
     radial-gradient(ellipse 10% 100% at 50% 50%, currentColor, transparent 72%),
@@ -116,28 +291,27 @@
   filter: drop-shadow(0 0 3px currentColor);
 }
 
-/* Retrasos negativos: cada píldora arranca con su ciclo ya empezado,
-   así no hay una ráfaga sincronizada al montar el componente. */
-.chip::before {
+/* Niveles 2 y 3 destellan. El 1 es piedra: no lleva partícula.
+   Retrasos negativos → cada píldora arranca con su ciclo empezado,
+   así no hay ráfaga sincronizada al montar. */
+.chip[data-level="3"]::before,
+.chip[data-level="2"]::before {
+  content: "";
   left: var(--gx1);
   top: var(--gy1);
   animation: ore-glint var(--shine-a, 6.7s) linear calc(var(--i) * -0.73s) infinite;
 }
 
-/* Segundo destello solo en un tercio de las píldoras. Basta para que la
-   sección respire y evita duplicar el número de elementos animados. */
-.chip::after {
-  content: none;
-}
-.chip:nth-child(3n + 1)::after {
+/* Segunda partícula: exclusiva del núcleo */
+.chip[data-level="3"]::after {
   content: "";
   left: var(--gx2);
   top: var(--gy2);
-  animation: ore-glint var(--shine-b, 9.1s) linear calc(var(--i) * -1.31s - 2.2s) infinite;
+  animation: ore-glint var(--shine-b, 5.9s) linear calc(var(--i) * -1.31s - 2.2s) infinite;
 }
 
-/* Asimétrica: pico al 3 %, apagado al 9 %, invisible el resto del ciclo.
-   Esa proporción ventana/ciclo es lo que se percibe como "rareza". */
+/* Asimétrica: pico al 3 %, apagado al 9 %, invisible el resto.
+   Esa proporción ventana/ciclo es lo que se percibe como rareza. */
 @keyframes ore-glint {
   0% {
     opacity: 0;
@@ -157,9 +331,126 @@
   }
 }
 
+/* ---- Leyenda y CTA ------------------------------------------- */
+
+.foot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+  margin-top: var(--sp-8);
+  padding-top: var(--sp-6);
+  border-top: 1px solid var(--border);
+}
+
+@media (min-width: 768px) {
+  .foot {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-8);
+  }
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-6);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+}
+
+.legendDot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: var(--radius-full);
+  background: var(--brand-500);
+}
+
+.legendItem[data-level="3"] .legendDot {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand-500) 18%, transparent);
+}
+
+.legendItem[data-level="2"] .legendDot {
+  opacity: 0.6;
+}
+
+.legendItem[data-level="1"] .legendDot {
+  background: transparent;
+  border: 1px dashed var(--fg-muted);
+}
+
+.cta {
+  color: var(--brand-600);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cta:hover {
+  text-decoration: underline;
+}
+
+/* ---- Reveal al scroll ----------------------------------------
+   Mismo patrón que Timeline: la guardia de movimiento va FUERA,
+   porque el reset global colapsa animation-duration a 0.01ms y
+   dejaría el estado final fijo. Los estilos base SON el final. */
+
+@keyframes skills-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .panel {
+      animation-name: skills-panel-in;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 34%;
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .chip::before,
-  .chip:nth-child(3n + 1)::after {
+  .chip::after {
     content: none;
   }
+
+  .rim {
+    animation: none;
+    opacity: 0.5;
+    background-position: 50% 0;
+  }
+}
+
+/* ---- Utilidades ---------------------------------------------- */
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
