@@ -1,65 +1,432 @@
+/* ============================================================
+   Timeline — trayectoria en dos columnas
+   Panel sticky + hitos que se revelan al scroll.
+   Animaciones 100% CSS (scroll-driven). Sin JS.
+   ============================================================ */
+
 .section {
+  position: relative;
   max-width: var(--container);
   margin: var(--sp-24) auto;
   padding-inline: var(--gutter);
 }
+
+/* Patrón de puntos: textura de fondo, no una banda de color.
+   Se desvanece hacia los bordes para no cortar la aurora. */
+.pattern {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.6;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 35%, transparent 78%);
+  mask-image: radial-gradient(ellipse at center, #000 35%, transparent 78%);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-12);
+  align-items: start;
+
+  /* Deja que la barra de progreso del panel lea la timeline de .cards,
+     que es su hermano y no su ancestro. */
+  timeline-scope: --tl-track;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr 1.4fr;
+    gap: var(--sp-16);
+  }
+}
+
+/* ---- Panel izquierdo ---------------------------------------- */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+@media (min-width: 1024px) {
+  .panel {
+    position: sticky;
+    top: var(--sp-24);
+    align-self: start;
+    gap: var(--sp-8);
+  }
+}
+
+.badge {
+  align-self: flex-start;
+  background: var(--brand-50);
+  color: var(--brand-600);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-full);
+}
+
 .h2 {
   font-family: var(--font-display);
   font-size: var(--fs-2xl);
-  margin-bottom: var(--sp-12);
+  font-weight: 800;
+  line-height: 1.08;
+  margin: 0;
 }
-.list {
+
+.gradient {
+  background: linear-gradient(135deg, var(--brand-500), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lead {
+  color: var(--fg-muted);
+  font-size: var(--fs-base);
+  line-height: 1.65;
+  max-width: 34ch;
+  margin: 0;
+}
+
+/* ---- Barra de progreso -------------------------------------- */
+
+.progress {
+  display: none;
+}
+
+.progressMeta {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .progress {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 12px;
+  }
+
+  .progressMeta {
+    display: block;
+    margin-top: calc(var(--sp-8) * -1);
+    margin-left: var(--sp-6);
+    color: var(--fg-muted);
+    font-size: var(--fs-xs);
+    line-height: 1.6;
+  }
+
+  .progressMeta p {
+    margin: 0;
+  }
+}
+
+.track {
+  width: 2px;
+  height: 10rem;
+  border-radius: var(--radius-full);
+  background: var(--border);
+  overflow: hidden;
+}
+
+.fill {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full);
+  transform-origin: top;
+  transform: scaleY(0);
+  background: linear-gradient(to bottom, var(--brand-500), var(--accent));
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  margin-top: var(--sp-1);
+  border-radius: var(--radius-full);
+  background: var(--brand-500);
+}
+
+/* ---- Columna de hitos --------------------------------------- */
+
+.cards {
   list-style: none;
   margin: 0;
   padding: 0;
-  position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--sp-8);
+  gap: var(--sp-6);
+
+  /* Fuente de la barra de progreso del panel */
+  view-timeline-name: --tl-track;
+  view-timeline-axis: block;
 }
-.list::before {
-  content: "";
-  position: absolute;
-  left: 7px;
-  top: 4px;
-  bottom: 4px;
-  width: 2px;
-  background: var(--border);
-}
+
 .item {
   position: relative;
-  padding-left: var(--sp-8);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-1);
 }
-.item::before {
-  content: "";
+
+/* Acentos: se ciclan por posición. Solo marca y acento del proyecto,
+   nada de la paleta cálida (reservada a Recursos). */
+.item[data-accent="1"] {
+  --tl-accent: var(--brand-500);
+}
+.item[data-accent="2"] {
+  --tl-accent: var(--accent);
+}
+.item[data-accent="3"] {
+  --tl-accent: var(--brand-700);
+}
+
+/* Borde de acento que aparece en hover */
+.glow {
   position: absolute;
-  left: 0;
-  top: 6px;
-  width: 16px;
-  height: 16px;
+  inset: -1px;
+  border-radius: calc(var(--radius-lg) + 1px);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tl-accent) 45%, transparent),
+    transparent 60%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+
+.item:hover .glow,
+.item:focus-within .glow {
+  opacity: 1;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-6);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--dur-slow) var(--ease);
+}
+
+.item:hover .card,
+.item:focus-within .card {
+  box-shadow: var(--shadow-md);
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: var(--sp-8);
+  }
+}
+
+/* Número gigante de fondo */
+.ghost {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-4);
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 4rem);
+  font-weight: 800;
+  line-height: 1;
+  color: color-mix(in srgb, var(--tl-accent) 10%, transparent);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Blob difuso en la esquina */
+.blob {
+  position: absolute;
+  right: calc(var(--sp-6) * -1);
+  bottom: calc(var(--sp-6) * -1);
+  width: 6rem;
+  height: 6rem;
   border-radius: var(--radius-full);
-  background: var(--brand-500);
-  box-shadow: 0 0 0 4px var(--bg);
+  background: color-mix(in srgb, var(--tl-accent) 22%, transparent);
+  filter: blur(32px);
+  pointer-events: none;
 }
+
+.header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+
+.heading {
+  padding-top: 2px;
+}
+
 .year {
+  margin: 0 0 var(--sp-1);
+  color: var(--tl-accent);
+  font-size: var(--fs-xs);
   font-weight: 700;
-  color: var(--brand-600);
-  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
 }
+
 .title {
+  margin: 0;
   font-family: var(--font-display);
   font-size: var(--fs-lg);
+  line-height: 1.25;
 }
+
+.rule {
+  position: relative;
+  z-index: 1;
+  width: 2.5rem;
+  height: 2px;
+  margin-bottom: var(--sp-4);
+  border-radius: var(--radius-full);
+  background: var(--tl-accent);
+}
+
 .text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
   color: var(--fg-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.7;
 }
+
+/* ---- Icono con forma recortada ------------------------------- */
+
+.shape {
+  position: relative;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  color: var(--tl-accent);
+}
+
+.shapeBg,
+.shapeTint {
+  position: absolute;
+  inset: 0;
+  clip-path: var(--tl-clip);
+}
+
+.shapeBg {
+  background: color-mix(in srgb, var(--tl-accent) 12%, var(--bg-elev));
+}
+
+.shapeTint {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tl-accent) 18%, transparent),
+    color-mix(in srgb, var(--tl-accent) 4%, transparent)
+  );
+}
+
+.hexagon {
+  --tl-clip: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+}
+.circle {
+  --tl-clip: circle(50% at 50% 50%);
+}
+.diamond {
+  --tl-clip: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+.glyph {
+  position: relative;
+  z-index: 1;
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+/* ---- Animaciones ligadas al scroll ---------------------------
+   Equivalente nativo de useScroll + useSpring de framer-motion.
+   Fuera del @supports los estilos base ya son el estado final,
+   así que sin soporte todo se ve, solo que sin reveal. */
+
+@keyframes tl-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(52px) scale(0.93) rotate(-3deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes tl-card-in-flip {
+  from {
+    opacity: 0;
+    transform: translateY(52px) scale(0.93) rotate(3deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes tl-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes tl-dot-shift {
+  from {
+    background: var(--brand-500);
+  }
+  to {
+    background: var(--accent);
+  }
+}
+
 @supports (animation-timeline: view()) {
   .item {
-    animation: fade-up linear both;
+    animation: tl-card-in linear both;
     animation-timeline: view();
-    animation-range: entry 0% cover 20%;
+    animation-range: entry 5% cover 30%;
+  }
+
+  .item[data-flip] {
+    animation-name: tl-card-in-flip;
+  }
+
+  .fill {
+    animation: tl-grow linear both;
+    animation-timeline: --tl-track;
+    animation-range: cover 20% cover 80%;
+  }
+
+  .dot {
+    animation: tl-dot-shift linear both;
+    animation-timeline: --tl-track;
+    animation-range: cover 20% cover 80%;
+  }
+}
+
+/* ---- Accesibilidad -------------------------------------------
+   El reset global ya anula animaciones con motion reducido; aquí
+   solo garantizamos el estado final por si se aplica antes. */
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    opacity: 1;
+    transform: none;
+  }
+
+  .fill {
+    transform: scaleY(1);
   }
 }
