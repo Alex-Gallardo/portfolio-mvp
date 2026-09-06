@@ -1,0 +1,410 @@
+/* ============================================================
+   AchievementCard — certificado con lámina holográfica.
+
+   La superficie se compone en capas con mix-blend-mode. `isolation`
+   en .card es obligatorio: sin él las capas mezclarían con la aurora
+   de la página en lugar de con la propia card.
+
+   Todo se deriva de --px / --py (0-1), que escribe el componente.
+   Valores por defecto 0.5 → estado en reposo, centrado.
+   ============================================================ */
+
+.stage {
+  --px: 0.5;
+  --py: 0.5;
+
+  /* Inclinación derivada del puntero. El eje X se invierte para que la
+     card "mire" hacia el cursor, que es lo que se siente natural. */
+  --rx: calc((var(--py) - 0.5) * -11deg);
+  --ry: calc((var(--px) - 0.5) * 13deg);
+
+  perspective: 900px;
+  height: 100%;
+}
+
+.card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: block;
+  height: 100%;
+  min-height: 17.5rem;
+  border-radius: var(--radius-lg);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  color: inherit;
+  text-decoration: none;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+
+  /* Al soltar el puntero vuelve suave; mientras se mueve, ver .active */
+  transition:
+    transform 420ms var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+/* Mientras el ratón está encima el seguimiento debe ser inmediato:
+   una transición larga aquí produce sensación de goma. */
+.stage.active .card {
+  transition:
+    transform 90ms linear,
+    box-shadow var(--dur) var(--ease);
+  box-shadow:
+    var(--shadow-md),
+    0 18px 50px -20px hsl(calc(var(--hue) + 200) 80% 55% / 0.45);
+  will-change: transform;
+}
+
+/* ---- Capas ---------------------------------------------------
+   Todas comparten posición y quedan fuera del flujo de eventos. */
+
+.guilloche,
+.foil,
+.glitter,
+.glare,
+.edge {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Papel de seguridad: torneado concéntrico muy tenue */
+.guilloche {
+  z-index: 0;
+  opacity: 0.5;
+  background-image:
+    repeating-radial-gradient(
+      circle at 50% 38%,
+      transparent 0 7px,
+      color-mix(in oklab, var(--fg) 5%, transparent) 7px 7.6px
+    ),
+    repeating-linear-gradient(
+      62deg,
+      transparent 0 9px,
+      color-mix(in oklab, var(--fg) 3.5%, transparent) 9px 9.7px
+    );
+}
+
+/* Lámina: arcoíris que se desplaza con el puntero.
+   `overlay` respeta el fondo claro; en oscuro se sube la intensidad. */
+.foil {
+  z-index: 1;
+  mix-blend-mode: overlay;
+  opacity: 0.34;
+  background-image: repeating-linear-gradient(
+    108deg,
+    hsl(calc(var(--hue) + 0) 92% 62%) 0%,
+    hsl(calc(var(--hue) + 55) 92% 64%) 9%,
+    hsl(calc(var(--hue) + 115) 88% 60%) 18%,
+    hsl(calc(var(--hue) + 195) 92% 62%) 27%,
+    hsl(calc(var(--hue) + 265) 90% 64%) 36%,
+    hsl(calc(var(--hue) + 0) 92% 62%) 45%
+  );
+  background-size: 340% 340%;
+  background-position: calc(var(--px) * 100%) calc(var(--py) * 100%);
+  transition:
+    opacity var(--dur) var(--ease),
+    background-position 420ms var(--ease);
+}
+
+.stage.active .foil {
+  opacity: 0.62;
+  transition:
+    opacity var(--dur) var(--ease),
+    background-position 90ms linear;
+}
+
+/* Purpurina: parallax invertido respecto al foil.
+   Ese desfase es lo que da sensación de dos capas físicas. */
+.glitter {
+  z-index: 2;
+  mix-blend-mode: color-dodge;
+  opacity: 0;
+  background-image: radial-gradient(
+    circle at 50% 50%,
+    rgb(255 255 255 / 0.9) 0.6px,
+    transparent 1.3px
+  );
+  background-size: 7px 7px;
+  background-position: calc((1 - var(--px)) * 40px) calc((1 - var(--py)) * 40px);
+  transition:
+    opacity var(--dur) var(--ease),
+    background-position 420ms var(--ease);
+}
+
+.stage.active .glitter {
+  opacity: 0.5;
+  transition:
+    opacity var(--dur) var(--ease),
+    background-position 90ms linear;
+}
+
+/* Destello especular bajo el cursor */
+.glare {
+  z-index: 3;
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  background: radial-gradient(
+    22rem 22rem at calc(var(--px) * 100%) calc(var(--py) * 100%),
+    rgb(255 255 255 / 0.85),
+    transparent 62%
+  );
+  transition: opacity var(--dur) var(--ease);
+}
+
+.stage.active .glare {
+  opacity: 1;
+}
+
+/* Canto biselado: 1px interior que se enciende con el acento del foil */
+.edge {
+  z-index: 4;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--fg) 8%, transparent);
+  transition: box-shadow var(--dur) var(--ease);
+}
+
+.stage.active .edge {
+  box-shadow:
+    inset 0 0 0 1px hsl(calc(var(--hue) + 200) 90% 66% / 0.55),
+    inset 0 1px 0 0 rgb(255 255 255 / 0.4);
+}
+
+/* ---- Contenido ----------------------------------------------
+   translateZ separa el texto del plano del foil: al inclinar, el
+   contenido flota por encima en lugar de ir pegado. */
+
+.content {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  height: 100%;
+  padding: var(--sp-6);
+  transform: translateZ(38px);
+}
+
+.top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+}
+
+.seal {
+  position: relative;
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  flex: none;
+  color: hsl(calc(var(--hue) + 200) 70% 52%);
+  filter: drop-shadow(0 2px 6px hsl(calc(var(--hue) + 200) 70% 50% / 0.3));
+}
+
+.seal svg {
+  width: 100%;
+  height: 100%;
+}
+
+.sealRing {
+  fill: color-mix(in oklab, currentColor 12%, transparent);
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.sealDash {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-dasharray: 2 3.2;
+  opacity: 0.75;
+}
+
+.sealMark {
+  stroke: currentColor;
+}
+
+.year {
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--radius-full);
+  background: color-mix(in oklab, var(--fg) 6%, transparent);
+  border: 1px solid color-mix(in oklab, var(--fg) 10%, transparent);
+  color: var(--fg-muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+.body {
+  margin-top: auto;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  line-height: 1.2;
+  text-wrap: balance;
+  margin-bottom: var(--sp-2);
+}
+
+.issuer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+}
+
+.issuerLabel {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-top: var(--sp-4);
+  border-top: 1px solid color-mix(in oklab, var(--fg) 8%, transparent);
+}
+
+/* Cinta del sello: pequeña barra de acento, no un lazo literal */
+.ribbon {
+  width: 2.5rem;
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(
+    90deg,
+    hsl(calc(var(--hue) + 200) 85% 60%),
+    hsl(calc(var(--hue) + 280) 85% 62%)
+  );
+}
+
+.verify {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  color: hsl(calc(var(--hue) + 200) 60% 45%);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.verify svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+/* ---- Foco por teclado ---------------------------------------
+   El efecto no puede depender solo del ratón. */
+
+.card:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 3px;
+}
+
+.card:focus-visible ~ *,
+.card:focus-visible .foil {
+  opacity: 0.62;
+}
+
+.card:focus-visible .glare {
+  opacity: 1;
+}
+
+/* ---- Tema oscuro ---------------------------------------------
+   Sobre fondo oscuro `overlay` apenas se ve: se sube el foil y se
+   cambia la mezcla del destello. */
+
+[data-theme="dark"] .foil {
+  opacity: 0.46;
+  mix-blend-mode: color-dodge;
+}
+
+[data-theme="dark"] .stage.active .foil {
+  opacity: 0.75;
+}
+
+[data-theme="dark"] .glare {
+  mix-blend-mode: screen;
+}
+
+[data-theme="dark"] .guilloche {
+  opacity: 0.7;
+}
+
+/* ---- Táctil ---------------------------------------------------
+   Sin puntero no hay seguimiento: se sustituye por un brillo lento
+   en bucle para que la card siga leyéndose como holográfica. */
+
+@media (hover: none) {
+  .card {
+    transform: none;
+  }
+
+  .content {
+    transform: none;
+  }
+
+  .foil {
+    opacity: 0.4;
+    animation: holo-drift 9s var(--ease) infinite alternate;
+  }
+
+  .glare {
+    opacity: 0.35;
+    background: radial-gradient(18rem 18rem at 30% 20%, rgb(255 255 255 / 0.6), transparent 62%);
+  }
+}
+
+@keyframes holo-drift {
+  from {
+    background-position: 12% 20%;
+  }
+  to {
+    background-position: 88% 76%;
+  }
+}
+
+/* ---- Movimiento reducido -------------------------------------
+   Estado estático y legible: nada de inclinación ni de bucle. */
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .content {
+    transform: none;
+  }
+
+  .foil {
+    opacity: 0.3;
+    animation: none;
+    background-position: 50% 50%;
+  }
+
+  .glitter {
+    display: none;
+  }
+
+  .glare {
+    opacity: 0.3;
+  }
+}
+
+/* ---- Utilidades ---------------------------------------------- */
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
