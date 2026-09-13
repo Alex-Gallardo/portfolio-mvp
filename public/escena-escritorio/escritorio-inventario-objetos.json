@@ -1,0 +1,766 @@
+{
+  "version": 1,
+  "fecha": "2026-09-12",
+  "idioma": "es",
+  "escena": "Escritorio creativo sin personas ni textos flotantes",
+  "archivo_final": "escritorio-limpio-full-hd.png",
+  "imagenes": {
+    "original": {
+      "archivo": "referencia/escritorio-original.png",
+      "width": 798,
+      "height": 817,
+      "channels": 4,
+      "bytes": 551280,
+      "sha256": "63E3C656D34D6D18C9573EDEAB7F93F25CB7C5242D5213D6A58A9B997C5948C4"
+    },
+    "nativa": {
+      "archivo": "escritorio-limpio-nativa.png",
+      "width": 1672,
+      "height": 941,
+      "channels": 3,
+      "bytes": 1604004,
+      "sha256": "D61790FC63524F7FF5B7591F2D55317E1C1ABA7199DC61A7B03ABF1F947A87AE"
+    },
+    "final": {
+      "archivo": "escritorio-limpio-full-hd.png",
+      "width": 1920,
+      "height": 1080,
+      "channels": 3,
+      "bytes": 2575794,
+      "sha256": "D9ABF47E687FB1931BAC8451957AE706397D456B3151F3A0B179D45123D18A48"
+    }
+  },
+  "metodo": {
+    "herramienta_edicion": "image_gen integrada",
+    "pasadas_generadas": 3,
+    "pasada_seleccionada": 2,
+    "motivo_seleccion": "La segunda pasada limpia la interfaz y conserva mejor el detalle de la alfombra. La tercera prueba no aporta una mejora clara del teclado y no se usa como entrega.",
+    "exportacion": {
+      "herramienta": "sharp",
+      "kernel": "Lanczos3",
+      "width": 1920,
+      "height": 1080,
+      "fit": "cover",
+      "position": "centre",
+      "nota": "Escalado uniforme de la salida nativa 1672 × 941 y ajuste central mínimo. Es exportación Full HD, no generación nativa Full HD."
+    }
+  },
+  "coordenadas": {
+    "origen": "Esquina superior izquierda",
+    "formato": "[x_min, y_min, x_max, y_max]",
+    "unidades": "píxeles",
+    "precision": "Estimación visual; no son máscaras ni contornos pixel perfect",
+    "base_original": [798, 817],
+    "base_nativa": [1672, 941],
+    "base_final": [1920, 1080],
+    "conversion_final": "Cajas estimadas en la salida nativa seleccionada, ajustadas al escalado uniforme y centrado de exportación. La correspondencia desde la referencia no es una transformación geométrica exacta.",
+    "observacion": "Cajas de la región visible. Componentes superpuestos y grupos pueden incluir fondo. Null indica elemento retirado o región agrupada sin caja única."
+  },
+  "paleta": [
+    {
+      "nombre": "Fondo beige",
+      "x": 200,
+      "y": 250,
+      "rgb": [232, 219, 202],
+      "hex": "#E8DBCA",
+      "muestra": {
+        "x": 200,
+        "y": 250,
+        "width": 9,
+        "height": 9,
+        "metodo": "Media RGB de 81 píxeles del PNG final"
+      }
+    },
+    {
+      "nombre": "Tablero de madera",
+      "x": 650,
+      "y": 526,
+      "rgb": [215, 186, 155],
+      "hex": "#D7BA9B",
+      "muestra": {
+        "x": 650,
+        "y": 526,
+        "width": 9,
+        "height": 9,
+        "metodo": "Media RGB de 81 píxeles del PNG final"
+      }
+    },
+    {
+      "nombre": "Pata de madera",
+      "x": 1315,
+      "y": 702,
+      "rgb": [213, 175, 138],
+      "hex": "#D5AF8A",
+      "muestra": {
+        "x": 1315,
+        "y": 702,
+        "width": 9,
+        "height": 9,
+        "metodo": "Media RGB de 81 píxeles del PNG final"
+      }
+    },
+    {
+      "nombre": "Malla de silla",
+      "x": 928,
+      "y": 486,
+      "rgb": [62, 53, 45],
+      "hex": "#3E352D",
+      "muestra": {
+        "x": 928,
+        "y": 486,
+        "width": 9,
+        "height": 9,
+        "metodo": "Media RGB de 81 píxeles del PNG final"
+      }
+    },
+    {
+      "nombre": "Estructura gris de silla",
+      "x": 931,
+      "y": 702,
+      "rgb": [102, 96, 91],
+      "hex": "#66605B",
+      "muestra": {
+        "x": 931,
+        "y": 702,
+        "width": 9,
+        "height": 9,
+        "metodo": "Media RGB de 81 píxeles del PNG final"
+      }
+    },
+    {
+      "nombre": "Fondo rojo de alfombra",
+      "x": 1180,
+      "y": 945,
+      "rgb": [180, 74, 61],
+      "hex": "#B44A3D",
+      "muestra": {
+        "x": 1180,
+        "y": 945,
+        "width": 9,
+        "height": 9,
+        "metodo": "Media RGB de 81 píxeles del PNG final"
+      }
+    },
+    {
+      "nombre": "Ornamento marrón de alfombra",
+      "x": 420,
+      "y": 1000,
+      "rgb": [153, 92, 66],
+      "hex": "#995C42",
+      "muestra": {
+        "x": 420,
+        "y": 1000,
+        "width": 9,
+        "height": 9,
+        "metodo": "Media RGB de 81 píxeles del PNG final"
+      }
+    },
+    {
+      "nombre": "Área oscura del monitor",
+      "x": 1040,
+      "y": 252,
+      "rgb": [45, 45, 45],
+      "hex": "#2D2D2D",
+      "muestra": {
+        "x": 1040,
+        "y": 252,
+        "width": 9,
+        "height": 9,
+        "metodo": "Media RGB de 81 píxeles del PNG final"
+      }
+    },
+    {
+      "nombre": "Papel blanco",
+      "x": 580,
+      "y": 294,
+      "rgb": [225, 226, 228],
+      "hex": "#E1E2E4",
+      "muestra": {
+        "x": 580,
+        "y": 294,
+        "width": 9,
+        "height": 9,
+        "metodo": "Media RGB de 81 píxeles del PNG final"
+      }
+    },
+    {
+      "nombre": "Taza física",
+      "x": 1273,
+      "y": 492,
+      "rgb": [193, 164, 136],
+      "hex": "#C1A488",
+      "muestra": {
+        "x": 1273,
+        "y": 492,
+        "width": 9,
+        "height": 9,
+        "metodo": "Media RGB de 81 píxeles del PNG final"
+      }
+    },
+    {
+      "nombre": "Taza ilustrada",
+      "x": 900,
+      "y": 336,
+      "rgb": [212, 157, 110],
+      "hex": "#D49D6E",
+      "muestra": {
+        "x": 900,
+        "y": 336,
+        "width": 9,
+        "height": 9,
+        "metodo": "Media RGB de 81 píxeles del PNG final"
+      }
+    },
+    {
+      "nombre": "Carcasa del teléfono",
+      "x": 1345,
+      "y": 410,
+      "rgb": [57, 56, 55],
+      "hex": "#393837",
+      "muestra": {
+        "x": 1345,
+        "y": 410,
+        "width": 9,
+        "height": 9,
+        "metodo": "Media RGB de 81 píxeles del PNG final"
+      }
+    }
+  ],
+  "objetos": [
+    {
+      "id": "E01",
+      "nombre": "Fondo beige continuo",
+      "grupo": "Entorno",
+      "original": [0, 0, 798, 817],
+      "nativa": [0, 0, 1672, 941],
+      "certeza": "Alta",
+      "aspecto": "Campo cálido marfil/beige, sin arquitectura definida ni línea de horizonte inequívoca. Rodea a todos los objetos y sostiene el efecto de composición publicitaria.",
+      "relaciones": "Detrás de pantalla, mobiliario y objetos suspendidos. No es posible separar físicamente pared y fondo de estudio solo con la imagen.",
+      "resultado": "Se retiró el titular negro y se extendió el fondo hacia los lados para 16:9. La transición de color es continua.",
+      "edicion": "Utilizar como capa de fondo. Las sombras suaves son parte del aspecto de la escena; al mover objetos, reconstruir también las sombras que dejan.",
+      "final": [0, 0, 1920, 1080],
+      "bbox_final_normalizada": [0, 0, 1, 1]
+    },
+    {
+      "id": "E02",
+      "nombre": "Zona de suelo y sombras de apoyo",
+      "grupo": "Entorno",
+      "original": [0, 641, 798, 817],
+      "nativa": [0, 674, 1672, 941],
+      "certeza": "Alta para el apoyo; media para el material",
+      "aspecto": "Plano inferior claro que se funde con el fondo, con sombras bajo la alfombra y los muebles. No hay baldosas ni veta de suelo inequívocas.",
+      "relaciones": "Soporta visualmente alfombra, escritorio y silla; gran parte está cubierta por E03.",
+      "resultado": "Se conservaron la continuidad beige y el contacto con la alfombra, sin introducir juntas de suelo ni un material nuevo dominante.",
+      "edicion": "La caja es una región semántica, no el límite de una superficie física medible. Separar el sombreado de apoyo si se cambia la posición del conjunto.",
+      "final": [0, 774, 1920, 1080],
+      "bbox_final_normalizada": [0, 0.71667, 1, 1]
+    },
+    {
+      "id": "E03",
+      "nombre": "Alfombra roja ornamentada",
+      "grupo": "Textiles",
+      "original": [15, 687, 789, 807],
+      "nativa": [293, 725, 1377, 905],
+      "certeza": "Alta",
+      "aspecto": "Alfombra rectangular vista en perspectiva, de campo rojo oscuro, bordes múltiples y motivos crema, marrones y oscuros de apariencia floral y geométrica tradicional.",
+      "relaciones": "Bajo las patas del escritorio y la base de la silla. En la fuente está parcialmente tapada por piernas, zapatos y ruedas.",
+      "resultado": "Se mantuvieron formato, familia ornamental y colores; se completó el dibujo bajo la persona retirada. Los motivos son una reconstrucción, no una reproducción exacta nudo a nudo.",
+      "edicion": "Distinguir campo central, cenefas y ribete. No se conoce procedencia, técnica de fabricación ni significado histórico del patrón. Los motivos se consideran ornamentación, no texto.",
+      "final": [336, 832, 1581, 1039],
+      "bbox_final_normalizada": [0.175, 0.77037, 0.82344, 0.96204]
+    },
+    {
+      "id": "E04",
+      "nombre": "Tablero del escritorio",
+      "grupo": "Escritorio",
+      "original": [127, 460, 676, 490],
+      "nativa": [469, 436, 1203, 480],
+      "certeza": "Alta",
+      "aspecto": "Tabla larga de madera clara, con grosor visible, frente horizontal y superficie superior vista con perspectiva suave.",
+      "relaciones": "Sostiene teclado, tableta, lápiz, taza y objeto ovalado. La persona oculta buena parte del centro en la referencia.",
+      "resultado": "Se reconstruyó la superficie tapada por brazos y torso y se definieron cantos, veta y sombras de los accesorios.",
+      "edicion": "Mantener continuidad de veta y grosor. Una edición del tablero afecta los apoyos de E10–E14. No hay medidas físicas reales inferibles.",
+      "final": [539, 500, 1381, 551],
+      "bbox_final_normalizada": [0.28073, 0.46296, 0.71927, 0.51019]
+    },
+    {
+      "id": "E05",
+      "nombre": "Faldón y travesaños del escritorio",
+      "grupo": "Escritorio",
+      "original": [164, 484, 632, 517],
+      "nativa": [522, 475, 1139, 513],
+      "certeza": "Media-alta",
+      "aspecto": "Estructura de madera bajo el tablero, con un faldón frontal horizontal y uniones laterales. Su parte central queda oculta por la silla.",
+      "relaciones": "Entre tablero y patas; por detrás de respaldo, apoyabrazos y asiento.",
+      "resultado": "Se completaron segmentos antes tapados por la figura y se aclararon las uniones con las patas.",
+      "edicion": "No interpretar los frentes como cajones funcionales: no se aprecian tiradores ni aperturas claras. Las partes detrás de la silla siguen sin estar disponibles.",
+      "final": [599, 545, 1308, 589],
+      "bbox_final_normalizada": [0.31198, 0.50463, 0.68125, 0.54537]
+    },
+    {
+      "id": "E06",
+      "nombre": "Patas del escritorio",
+      "grupo": "Escritorio",
+      "original": [146, 480, 647, 753],
+      "nativa": [505, 477, 1169, 819],
+      "certeza": "Alta para las delanteras; media para las posteriores",
+      "aspecto": "Patas de madera delgadas, ligeramente abiertas, con dos delanteras muy legibles y elementos posteriores visibles por segmentos.",
+      "relaciones": "Unen la estructura del escritorio con la alfombra. Algunas zonas de las patas posteriores se confunden con las uniones superiores o están ocultas.",
+      "resultado": "Se mantuvo una estructura de cuatro apoyos, con el par delantero dominante y sombras de contacto continuas.",
+      "edicion": "La caja agrupa las cuatro patas y mucho espacio vacío; no es una máscara. Verificar cada unión y punto de apoyo al separar o animar el mueble.",
+      "final": [580, 547, 1342, 940],
+      "bbox_final_normalizada": [0.30208, 0.50648, 0.69896, 0.87037]
+    },
+    {
+      "id": "E07",
+      "nombre": "Marco y cuerpo del monitor",
+      "grupo": "Monitor",
+      "original": [215, 211, 587, 402],
+      "nativa": [590, 126, 1083, 367],
+      "certeza": "Alta",
+      "aspecto": "Pantalla grande apaisada, con marco negro fino y forma casi rectangular. Su ancho ronda el doble de su alto.",
+      "relaciones": "Centrada sobre el escritorio; la cabeza y el torso de la persona la ocultan parcialmente en la referencia. No se ve un soporte convencional.",
+      "resultado": "Se conserva como pantalla visualmente suspendida, con borde limpio y superficie completa. No se añadió pie de monitor.",
+      "edicion": "Preservar la proporción apaisada, el marco y la frontalidad. La ausencia de soporte pertenece al lenguaje de objetos suspendidos de la escena.",
+      "final": [678, 144, 1244, 421],
+      "bbox_final_normalizada": [0.35313, 0.13333, 0.64792, 0.38981]
+    },
+    {
+      "id": "E08",
+      "nombre": "Interfaz gráfica dentro del monitor",
+      "grupo": "Monitor; contenido de pantalla",
+      "original": [222, 218, 581, 394],
+      "nativa": [597, 133, 1077, 360],
+      "certeza": "Alta para un editor gráfico; baja para una versión o programa exactos",
+      "aspecto": "Área de trabajo oscura con herramientas laterales, barras superiores y panel derecho de controles, selector de color y capas o bloques.",
+      "relaciones": "Dentro de E07 y rodeando el arte de café E09. Es contenido de pantalla, no un conjunto de dispositivos físicos.",
+      "resultado": "Se sustituyeron menús y etiquetas por círculos, cuadrados, deslizadores y bloques sin palabras. Se mantuvo el selector de color rojo y la banda cromática.",
+      "edicion": "No es una interfaz funcional ni una captura fiel de software identificable. Los controles se simplificaron deliberadamente para eliminar tipografía. No asignar funciones exactas a cada figura geométrica.",
+      "final": [686, 152, 1237, 413],
+      "bbox_final_normalizada": [0.35729, 0.14074, 0.64427, 0.38241]
+    },
+    {
+      "id": "E09",
+      "nombre": "Ilustración de café en la pantalla",
+      "grupo": "Monitor; contenido de pantalla",
+      "original": [307, 249, 441, 398],
+      "nativa": [708, 173, 875, 344],
+      "certeza": "Alta para el tema de café; media-baja para la composición originalmente tapada",
+      "aspecto": "Pieza vertical en tonos crema, caramelo y café. La fuente permite ver granos, curvas marrones y fragmentos de diseño comercial; gran parte está detrás de la cabeza y la espalda.",
+      "relaciones": "Dentro del espacio de trabajo E08. La taza de esta ilustración es distinta de la taza física E13.",
+      "resultado": "Se reconstruyó una taza con café y espuma, vapor y granos alrededor, sin palabras. La forma completa de la taza, la espuma, el vapor y el reparto de granos son interpretaciones generativas.",
+      "edicion": "Puede tratarse como una sola imagen insertada en pantalla, o separar taza ilustrada, café/espuma, vapor, granos y fondo si se necesitan recursos futuros. No confundir la reconstrucción con el diseño original exacto.",
+      "final": [813, 198, 1005, 395],
+      "bbox_final_normalizada": [0.42344, 0.18333, 0.52344, 0.36574]
+    },
+    {
+      "id": "E10",
+      "nombre": "Teclado blanco",
+      "grupo": "Accesorios del escritorio",
+      "original": [213, 459, 291, 479],
+      "nativa": [589, 437, 734, 463],
+      "certeza": "Alta para el teclado; baja para su distribución completa",
+      "aspecto": "Teclado compacto blanco, visto con inclinación y parcialmente tapado por la persona/silla. Se distinguen pequeñas teclas y un borde bajo.",
+      "relaciones": "Sobre el lado izquierdo del tablero; el extremo derecho sigue oculto por el respaldo.",
+      "resultado": "Se amplió la región visible al retirar al brazo y se conservó la silueta blanca. No hay palabras legibles; a gran aumento persisten pequeños contrastes grises de teclas que no permiten certificar la ausencia absoluta de toda marca.",
+      "edicion": "No se puede identificar idioma, distribución de teclas ni marca. Si se requiere una vista cercana con cada tecla totalmente lisa, esta región necesitará una edición específica adicional; las cajas no documentan el teclado oculto completo.",
+      "final": [676, 502, 843, 531],
+      "bbox_final_normalizada": [0.35208, 0.46481, 0.43906, 0.49167]
+    },
+    {
+      "id": "E11",
+      "nombre": "Superficie rectangular oscura de trabajo",
+      "grupo": "Accesorios del escritorio",
+      "original": [530, 460, 582, 479],
+      "nativa": [944, 441, 1075, 463],
+      "certeza": "Media en la referencia; alta en la interpretación final",
+      "aspecto": "Pieza baja y oscura a la derecha de la silla, parcialmente oculta por la mano y el antebrazo en el original.",
+      "relaciones": "Apoyada en el tablero, a la izquierda de la taza. Vinculada visualmente al lápiz E12.",
+      "resultado": "Se interpretó como una tableta gráfica delgada, con superficie lisa y bordes definidos, sin marcas ni interfaz impresa.",
+      "edicion": "La referencia no confirma modelo, botones o funciones. Conservar como una única tableta; no añadir otra pantalla o dispositivo.",
+      "final": [1084, 506, 1234, 531],
+      "bbox_final_normalizada": [0.56458, 0.46852, 0.64271, 0.49167]
+    },
+    {
+      "id": "E12",
+      "nombre": "Lápiz digital o estilete",
+      "grupo": "Accesorios del escritorio",
+      "original": [527, 416, 550, 455],
+      "nativa": [995, 435, 1053, 456],
+      "certeza": "Alta para el accesorio; media para su tipo exacto",
+      "aspecto": "Varilla oscura pequeña que la mano derecha sostiene en la fuente, compatible con un lápiz de tableta.",
+      "relaciones": "Originalmente conectado a la mano; en el resultado pertenece al conjunto de trabajo E11.",
+      "resultado": "La mano se eliminó y el lápiz se colocó en diagonal sobre la tableta, con un apoyo visual más claro. Se conserva una sola pieza.",
+      "edicion": "La nueva postura es intencional para evitar un objeto sostenido por una mano inexistente. No confundirlo con la pluma flotante E31; mantener el contacto con la tableta.",
+      "final": [1143, 499, 1209, 523],
+      "bbox_final_normalizada": [0.59531, 0.46204, 0.62969, 0.48426]
+    },
+    {
+      "id": "E13",
+      "nombre": "Taza física crema con asa",
+      "grupo": "Accesorios del escritorio",
+      "original": [589, 431, 631, 472],
+      "nativa": [1088, 401, 1141, 451],
+      "certeza": "Alta",
+      "aspecto": "Taza pequeña de color beige/crema, cuerpo aproximadamente cilíndrico, boca elíptica y asa a la derecha.",
+      "relaciones": "En el extremo derecho del tablero, detrás del objeto ovalado blanco E14.",
+      "resultado": "Se preservaron posición, volumen y asa; el borde y la sombra se definieron sin añadir logotipos ni letras.",
+      "edicion": "La bebida no se puede identificar de forma fiable por la pequeña abertura oscura. No asumir que contiene el mismo café representado en la pantalla.",
+      "final": [1249, 460, 1310, 518],
+      "bbox_final_normalizada": [0.65052, 0.42593, 0.68229, 0.47963]
+    },
+    {
+      "id": "E14",
+      "nombre": "Objeto ovalado blanco junto a la taza",
+      "grupo": "Accesorios del escritorio",
+      "original": [596, 465, 626, 478],
+      "nativa": [1098, 443, 1132, 463],
+      "certeza": "Media",
+      "aspecto": "Pieza blanca ovalada y baja que aparece inmediatamente delante o al pie de la taza.",
+      "relaciones": "Sobre el tablero, parcialmente próxima a la sombra de E13.",
+      "resultado": "Se interpretó como un ratón compacto blanco. Se mantuvieron el tamaño pequeño y la forma ovalada.",
+      "edicion": "En la fuente podría confundirse con un pequeño platillo o accesorio de escritorio; no hay evidencia suficiente para confirmar su función. Conservar esta ambigüedad en cualquier documentación del original.",
+      "final": [1261, 508, 1300, 531],
+      "bbox_final_normalizada": [0.65677, 0.47037, 0.67708, 0.49167]
+    },
+    {
+      "id": "E15",
+      "nombre": "Respaldo oscuro de la silla",
+      "grupo": "Silla de oficina",
+      "original": [321, 397, 481, 548],
+      "nativa": [727, 375, 944, 572],
+      "certeza": "Alta",
+      "aspecto": "Respaldo redondeado rectangular, negro/gris oscuro, con superficie textil o de malla, visto desde atrás.",
+      "relaciones": "Delante del monitor y detrás de la estructura gris posterior. Oculta parte del teclado y del tablero incluso al quitar la persona.",
+      "resultado": "Se conservó la orientación de espaldas hacia el observador y la silla quedó vacía. La malla se afinó sin introducir una silueta humana.",
+      "edicion": "Respaldo, asiento y armazón siguen siendo una sola silla. Las zonas delante de la malla no se pueden deducir con certeza de la vista trasera.",
+      "final": [835, 430, 1084, 657],
+      "bbox_final_normalizada": [0.4349, 0.39815, 0.56458, 0.60833]
+    },
+    {
+      "id": "E16",
+      "nombre": "Armazón posterior y soporte gris de la silla",
+      "grupo": "Silla de oficina",
+      "original": [312, 398, 494, 640],
+      "nativa": [710, 375, 967, 675],
+      "certeza": "Alta para su diseño general; media para el mecanismo",
+      "aspecto": "Estructura gris que rodea o abraza el respaldo, con dos montantes que descienden hacia el mecanismo inferior.",
+      "relaciones": "Se superpone a malla y asiento; conecta con la región del elevador. Algunas piezas interiores son oscuras y poco legibles.",
+      "resultado": "Se mantuvo el diseño abierto y se hicieron más claros los cantos y reflejos del material.",
+      "edicion": "No es posible identificar modelo, fabricante ni ingeniería exacta del mecanismo. Para modelado 3D se requiere decidir explícitamente las partes no visibles.",
+      "final": [815, 430, 1110, 775],
+      "bbox_final_normalizada": [0.42448, 0.39815, 0.57813, 0.71759]
+    },
+    {
+      "id": "E17",
+      "nombre": "Asiento y cojín de la silla",
+      "grupo": "Silla de oficina",
+      "original": [305, 514, 498, 629],
+      "nativa": [704, 514, 971, 653],
+      "certeza": "Media por las oclusiones originales",
+      "aspecto": "Asiento acolchado gris/negro, con bordes redondeados y volumen bajo el respaldo.",
+      "relaciones": "Entre los apoyabrazos y encima del mecanismo central. La persona oculta parte del asiento y el interior de la silla en la fuente.",
+      "resultado": "Se completaron las zonas cubiertas por el cuerpo y se preservó el aspecto acolchado. La forma oculta del cojín es una reconstrucción.",
+      "edicion": "No utilizar su contorno final como prueba de la forma original bajo la persona. Revisar apoyos y uniones con el armazón si se cambia la cámara.",
+      "final": [808, 590, 1115, 750],
+      "bbox_final_normalizada": [0.42083, 0.5463, 0.58073, 0.69444]
+    },
+    {
+      "id": "E18",
+      "nombre": "Apoyabrazos izquierdo de la silla",
+      "grupo": "Silla de oficina",
+      "original": [285, 496, 325, 591],
+      "nativa": [685, 494, 735, 628],
+      "certeza": "Alta",
+      "aspecto": "Apoyo negro horizontal corto con vástago vertical y unión lateral al asiento.",
+      "relaciones": "A la izquierda del respaldo desde la vista del observador; se superpone a la estructura del escritorio.",
+      "resultado": "Se conservó completo y sin un brazo humano encima. Los cantos y el sombreado se hicieron más legibles.",
+      "edicion": "Mantener altura respecto del asiento. La designación izquierda se refiere al lado de la imagen, no a la orientación de una persona sentada.",
+      "final": [787, 567, 844, 721],
+      "bbox_final_normalizada": [0.4099, 0.525, 0.43958, 0.66759]
+    },
+    {
+      "id": "E19",
+      "nombre": "Apoyabrazos derecho de la silla",
+      "grupo": "Silla de oficina",
+      "original": [479, 496, 516, 591],
+      "nativa": [940, 494, 987, 627],
+      "certeza": "Alta",
+      "aspecto": "Apoyo oscuro simétrico aproximado al del lado izquierdo, con vástago y base lateral.",
+      "relaciones": "A la derecha de respaldo y asiento, delante del escritorio. Antes estaba próximo al brazo de la persona.",
+      "resultado": "Se separó visualmente del brazo retirado y se mantuvo el apoyo mecánico.",
+      "edicion": "No imponer una simetría de píxeles: perspectiva, sombras y oclusiones producen diferencias. Editar junto con E18 si se modifica el ancho de la silla.",
+      "final": [1079, 567, 1133, 720],
+      "bbox_final_normalizada": [0.56198, 0.525, 0.5901, 0.66667]
+    },
+    {
+      "id": "E20",
+      "nombre": "Columna elevadora de la silla",
+      "grupo": "Silla de oficina",
+      "original": [387, 630, 415, 708],
+      "nativa": [813, 648, 853, 750],
+      "certeza": "Alta para la columna; media para piezas internas",
+      "aspecto": "Eje central vertical, con tramo metálico claro y tramo oscuro más ancho bajo el asiento.",
+      "relaciones": "Conecta el mecanismo del asiento con la base estrellada. En la fuente queda entre las piernas de la persona.",
+      "resultado": "Se reconstruyó su continuidad tras retirar las piernas y se definió el contacto con la base.",
+      "edicion": "Mantenerlo alineado con la base y el centro funcional de la silla. No se puede deducir carrera, regulación o mecanismo real.",
+      "final": [934, 744, 980, 861],
+      "bbox_final_normalizada": [0.48646, 0.68889, 0.51042, 0.79722]
+    },
+    {
+      "id": "E21",
+      "nombre": "Base estrellada de la silla",
+      "grupo": "Silla de oficina",
+      "original": [278, 692, 523, 776],
+      "nativa": [665, 741, 1003, 853],
+      "certeza": "Alta para el tipo; media para las ramas originalmente ocultas",
+      "aspecto": "Base gris metálica radial, con varias ramas dirigidas hacia delante, lados y parte posterior.",
+      "relaciones": "Debajo del elevador y encima de las ruedas, apoyada visualmente sobre la alfombra.",
+      "resultado": "Se representó una base coherente de cinco radios; algunas zonas antes tapadas por piernas y zapatos fueron reconstruidas.",
+      "edicion": "La caja contiene espacios vacíos. Para segmentarla hay que seguir cada radio y respetar sus solapamientos con columna y ruedas; la vista trasera no documenta todas las superficies.",
+      "final": [764, 851, 1152, 979],
+      "bbox_final_normalizada": [0.39792, 0.78796, 0.6, 0.90648]
+    },
+    {
+      "id": "E22",
+      "nombre": "Ruedas de la silla",
+      "grupo": "Silla de oficina",
+      "original": [274, 719, 529, 788],
+      "nativa": [661, 759, 1007, 876],
+      "certeza": "Alta para la presencia; media para las piezas posteriores",
+      "aspecto": "Ruedas pequeñas negras en los extremos de la base, con tres apoyos frontales/laterales más claros y otros posteriores parcialmente solapados.",
+      "relaciones": "Conectan E21 con E03. Se cruzan con sombras, motivos de alfombra y partes posteriores de la base.",
+      "resultado": "Se conservaron los apoyos visibles y se completó el conjunto bajo la silla vacía.",
+      "edicion": "La entrada agrupa todas las ruedas; no son una sola pieza física. No afirmar conteo de caras o rodillos por rueda que no se distingue a esta escala.",
+      "final": [759, 871, 1156, 1006],
+      "bbox_final_normalizada": [0.39531, 0.80648, 0.60208, 0.93148]
+    },
+    {
+      "id": "E23",
+      "nombre": "Abanico de muestras de color",
+      "grupo": "Objetos suspendidos izquierdos",
+      "original": [95, 161, 201, 234],
+      "nativa": [431, 67, 571, 163],
+      "certeza": "Alta",
+      "aspecto": "Conjunto de tiras de muestras en abanico, con rectángulos de distintos colores y separadores blancos unidos en un punto común.",
+      "relaciones": "Suspendido en la esquina superior izquierda del grupo de trabajo, por encima de los papeles.",
+      "resultado": "Se conservaron abanico, colores y separadores, con bordes más nítidos y sin etiquetas legibles.",
+      "edicion": "Puede editarse como conjunto o como tiras articuladas. No se conoce el número exacto de tarjetas, un estándar cromático ni códigos comerciales; los colores son parte de la imagen renderizada.",
+      "final": [495, 77, 656, 187],
+      "bbox_final_normalizada": [0.25781, 0.0713, 0.34167, 0.17315]
+    },
+    {
+      "id": "E24",
+      "nombre": "Pila de hojas blancas",
+      "grupo": "Objetos suspendidos izquierdos",
+      "original": [66, 242, 165, 352],
+      "nativa": [391, 170, 530, 315],
+      "certeza": "Alta para las hojas; media para su número",
+      "aspecto": "Varias hojas rectangulares claras, inclinadas, con bordes superpuestos. En la fuente aparecen trazos grises densos compatibles con impresión.",
+      "relaciones": "Entre el abanico de color y el televisor, sin apoyo físico visible.",
+      "resultado": "Se retiró la impresión aparente y se dejaron hojas blancas con espesor visual y sombras entre capas.",
+      "edicion": "Se distinguen varios bordes, pero no un conteo certificado de hojas. Eliminar texto no significa borrar bordes, pliegues o sombras del papel.",
+      "final": [449, 195, 609, 361],
+      "bbox_final_normalizada": [0.23385, 0.18056, 0.31719, 0.33426]
+    },
+    {
+      "id": "E25",
+      "nombre": "Televisor CRT pequeño",
+      "grupo": "Objetos suspendidos izquierdos",
+      "original": [88, 367, 189, 448],
+      "nativa": [416, 326, 550, 431],
+      "certeza": "Alta",
+      "aspecto": "Televisor antiguo de carcasa gris/negra, pantalla abombada en escala de grises, controles circulares laterales y apoyos inferiores pequeños.",
+      "relaciones": "Flota debajo de los papeles y a la izquierda del monitor. Su antena se documenta aparte en E26.",
+      "resultado": "Se preservaron proporción, inclinación, pantalla sin contenido y controles sin texto legible. Se definieron vidrio y carcasa.",
+      "edicion": "Componentes útiles: carcasa, cristal, perillas y pequeñas patas. No se puede identificar marca, modelo ni programa emitido; el gris del cristal es reflejo/gradiente.",
+      "final": [478, 374, 632, 495],
+      "bbox_final_normalizada": [0.24896, 0.3463, 0.32917, 0.45833]
+    },
+    {
+      "id": "E26",
+      "nombre": "Antena del televisor",
+      "grupo": "Televisor; componente fino",
+      "original": [99, 359, 158, 380],
+      "nativa": [428, 316, 503, 345],
+      "certeza": "Media",
+      "aspecto": "Varilla o varillas finas que salen de la parte superior del televisor y se extienden en diagonal.",
+      "relaciones": "Por delante del fondo y unidas a E25. Algunas líneas se superponen y el número exacto es poco legible en la fuente.",
+      "resultado": "Se conservó el gesto diagonal con líneas más continuas, sin convertirlo en texto o un cable nuevo.",
+      "edicion": "Necesita máscara fina. No confundir las líneas de antena con los bordes de las hojas; mantener el punto de unión al televisor.",
+      "final": [491, 363, 578, 396],
+      "bbox_final_normalizada": [0.25573, 0.33611, 0.30104, 0.36667]
+    },
+    {
+      "id": "E27",
+      "nombre": "Teléfono inteligente oscuro",
+      "grupo": "Objetos suspendidos derechos",
+      "original": [625, 171, 674, 236],
+      "nativa": [1136, 71, 1201, 158],
+      "certeza": "Alta",
+      "aspecto": "Dispositivo rectangular oscuro con esquinas redondeadas, inclinado, pantalla frontal gris carbón sin contenido reconocible.",
+      "relaciones": "Flota arriba y a la derecha del monitor, a la izquierda del auricular antiguo.",
+      "resultado": "Se mantuvo una sola unidad, sin interfaz, marca o texto, con reflejo sobrio y bordes definidos.",
+      "edicion": "La pequeña forma superior del borde no permite confirmar sensor, cámara o muesca del original. No identificar fabricante o modelo.",
+      "final": [1304, 81, 1379, 181],
+      "bbox_final_normalizada": [0.67917, 0.075, 0.71823, 0.16759]
+    },
+    {
+      "id": "E28",
+      "nombre": "Auricular de teléfono antiguo",
+      "grupo": "Teléfono fijo suspendido",
+      "original": [685, 216, 740, 312],
+      "nativa": [1223, 126, 1292, 257],
+      "certeza": "Alta",
+      "aspecto": "Auricular negro curvo con dos extremos ensanchados, orientado casi verticalmente y ligeramente inclinado.",
+      "relaciones": "Conectado visualmente al cable E29 y a la base E30, por encima de la pluma.",
+      "resultado": "Se conservaron la curva, el color oscuro y las cavidades de los extremos; no hay mano sosteniéndolo.",
+      "edicion": "Mantener la conexión al cable si se rota. La suspensión es intencional y ya existía en la referencia.",
+      "final": [1404, 144, 1484, 295],
+      "bbox_final_normalizada": [0.73125, 0.13333, 0.77292, 0.27315]
+    },
+    {
+      "id": "E29",
+      "nombre": "Cable del teléfono",
+      "grupo": "Teléfono fijo suspendido",
+      "original": [641, 262, 707, 356],
+      "nativa": [1160, 193, 1251, 322],
+      "certeza": "Alta",
+      "aspecto": "Cable negro con un tramo espiral enrollado y tramos lisos; describe una curva amplia entre auricular y base.",
+      "relaciones": "Une E28 con E30 delante del fondo. Forma huecos interiores que muestran el beige del entorno.",
+      "resultado": "Mayor continuidad y separación de las espiras. El número y ritmo exactos de vueltas se reconstruyeron.",
+      "edicion": "Objeto fino y topológicamente delicado: la máscara debe conservar los huecos y la continuidad de ambos extremos. La caja rectangular incluye mucho fondo.",
+      "final": [1332, 221, 1437, 369],
+      "bbox_final_normalizada": [0.69375, 0.20463, 0.74844, 0.34167]
+    },
+    {
+      "id": "E30",
+      "nombre": "Base del teléfono antiguo",
+      "grupo": "Teléfono fijo suspendido",
+      "original": [619, 346, 689, 409],
+      "nativa": [1127, 307, 1221, 387],
+      "certeza": "Alta para su vínculo con el auricular; media para el tipo de dial",
+      "aspecto": "Base oscura inclinada, de forma trapezoidal/cuadrangular, con un control o dial circular central.",
+      "relaciones": "Conectada al cable y situada debajo del auricular, a la izquierda de la pluma y cerca de la taza.",
+      "resultado": "Se preservó una sola base y se simplificaron las marcas del dial para evitar números. El diseño sigue sugiriendo un teléfono de disco.",
+      "edicion": "La fuente no permite confirmar mecanismo o distribución de números. No confundirla con una cámara independiente o añadir un segundo teléfono.",
+      "final": [1294, 352, 1402, 444],
+      "bbox_final_normalizada": [0.67396, 0.32593, 0.73021, 0.41111]
+    },
+    {
+      "id": "E31",
+      "nombre": "Pluma negra y dorada",
+      "grupo": "Objetos suspendidos derechos",
+      "original": [673, 373, 734, 448],
+      "nativa": [1205, 339, 1293, 445],
+      "certeza": "Alta para la pluma; media para sus detalles finos",
+      "aspecto": "Instrumento de escritura largo y delgado, en diagonal ascendente hacia la derecha, con cuerpo negro y remates/anillos dorados.",
+      "relaciones": "Flota a la derecha de la base telefónica y de la taza. Es distinto del lápiz digital sobre la tableta.",
+      "resultado": "Se conservaron diagonal, contraste negro/dorado y punta visible, sin logotipo ni letras.",
+      "edicion": "La forma precisa del plumín y el estado de capuchón no se certifican en la fuente borrosa. Mantener su escala y no duplicarla al trabajar con E12.",
+      "final": [1384, 389, 1485, 511],
+      "bbox_final_normalizada": [0.72083, 0.36019, 0.77344, 0.47315]
+    }
+  ],
+  "elementos_retirados_o_limpiados": [
+    {
+      "id": "R01",
+      "nombre": "Persona completa",
+      "original": [283, 235, 556, 740],
+      "final": null,
+      "estado": "Retirada",
+      "observacion": "Una persona sentada de espaldas, con cabello corto oscuro, camisa azul, brazos/manos visibles, pantalón gris y calzado oscuro. No se infiere identidad, edad exacta ni profesión real.",
+      "accion": "Eliminar cuerpo y ropa. Conservar la silla y el lápiz digital como objetos independientes. Reconstruir las superficies del entorno que la persona ocultaba.",
+      "subregiones": [
+        {
+          "nombre": "Cabeza, cabello y cuello",
+          "bbox": [363, 235, 436, 341]
+        },
+        {
+          "nombre": "Camisa, torso, brazos y manos",
+          "bbox": [282, 313, 556, 491]
+        },
+        {
+          "nombre": "Pantalón y piernas",
+          "bbox": [303, 587, 505, 719]
+        },
+        {
+          "nombre": "Calzado",
+          "bbox": [300, 689, 510, 740]
+        }
+      ]
+    },
+    {
+      "id": "R02",
+      "nombre": "Palabra flotante superior: Hard",
+      "original": [227, 24, 438, 143],
+      "final": null,
+      "estado": "Retirada",
+      "observacion": "Titular negro grande, inclinado, en el fondo superior.",
+      "accion": "Sustituir por fondo beige continuo, sin sombra de letras ni huella de máscara."
+    },
+    {
+      "id": "R03",
+      "nombre": "Palabra flotante secundaria: work.",
+      "original": [431, 116, 565, 180],
+      "final": null,
+      "estado": "Retirada",
+      "observacion": "Segunda parte negra del titular, inclinada, a la derecha y por debajo de la primera.",
+      "accion": "Sustituir por fondo beige continuo, incluidos el punto y todos los trazos de los caracteres."
+    },
+    {
+      "id": "R04",
+      "nombre": "Etiquetas de interfaz del monitor",
+      "original": [218, 214, 584, 399],
+      "final": null,
+      "estado": "Simplificadas sin palabras legibles",
+      "observacion": "Textos pequeños y marcas de un editor gráfico; no se necesita identificar el software exacto.",
+      "accion": "Conservar marco, selector cromático y estructura de trabajo; sustituir etiquetas y menús por formas geométricas sin palabras."
+    },
+    {
+      "id": "R05",
+      "nombre": "Texto del diseño de café",
+      "original": [307, 249, 441, 398],
+      "final": null,
+      "estado": "Retirado",
+      "observacion": "Fragmentos tipográficos de un anuncio o diseño de café, parcialmente tapados por la persona.",
+      "accion": "Reconstruir una ilustración sin texto con taza, café, vapor y granos. El contenido oculto es interpretado."
+    },
+    {
+      "id": "R06",
+      "nombre": "Impresión aparente sobre las hojas",
+      "original": [67, 243, 165, 352],
+      "final": null,
+      "estado": "Retirada",
+      "observacion": "Trazos grises densos compatibles con impresión; contenido ilegible.",
+      "accion": "Dejar papel blanco y conservar los bordes, el espesor y las sombras entre hojas."
+    },
+    {
+      "id": "R07",
+      "nombre": "Marcas diminutas de periféricos y controles",
+      "original": null,
+      "final": null,
+      "estado": "Revisadas; límite de certeza en el teclado",
+      "observacion": "Incluye posibles caracteres en teclas, dial telefónico y controles del televisor.",
+      "accion": "Se solicitaron superficies sin etiquetas. En el resultado no hay palabras legibles; las pequeñas marcas/contrastes del teclado no permiten garantizar ausencia absoluta de todo signo a gran aumento.",
+      "objetos_relacionados": ["E10", "E25", "E30"]
+    }
+  ],
+  "archivos_anteriores_preservados": {
+    "escena-limpia-full-hd.png": "9485e68c65fc63b96bf313e7e1edd6f4e67a42021acb9dddf46f1230a12d3b4b",
+    "escena-limpia-nativa.png": "cc965419fcd5d4d78163c9f53cab9cf6586c210b8b48f00fa461529b132912f9",
+    "inventario-objetos.json": "a24233e2f4470393b1a5888dc0ee9eecda5e7e3d50ee90b729ead5dc6bd7f699",
+    "prompts-edicion.md": "bc04d1b227c18f8f64234f19de2f814d4ffc969314dd949b40c0f1697d5d6594",
+    "reporte-analisis.md": "f6d773fb5570939d871d02c6ee328fdb6b298f503a00abdb0267db85a3202013",
+    "referencia/original.png": "7095b4163b7a63ff1fba34e03b9e8043336fb6588f50945f71220c919eba716c"
+  },
+  "limitaciones": [
+    "Inventario de 31 objetos/componentes conservados; algunas entradas son partes de un mismo mueble o regiones de pantalla.",
+    "Una persona original retirada, documentada aparte; no hay personas visibles en la imagen final.",
+    "Pared lateral, zona tapada del arte, tablero, asiento y alfombra contienen reconstrucciones generativas.",
+    "El teclado mantiene microcontrastes grises; no se distinguen palabras legibles, pero no se certifica la eliminación de toda marca a gran aumento.",
+    "Inspección visual sin certificación OCR ni segmentación automática.",
+    "Archivo final plano RGB opaco; no incluye capas, máscaras ni recursos transparentes separados.",
+    "La referencia conserva la persona y los textos únicamente para documentar el original."
+  ]
+}
