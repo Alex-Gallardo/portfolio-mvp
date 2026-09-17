@@ -6,12 +6,16 @@
   "archivo_final": "escritorio-limpio-full-hd.png",
   "imagenes": {
     "original": {
-      "archivo": "referencia/escritorio-original.png",
+      "archivo": null,
       "width": 798,
       "height": 817,
       "channels": 4,
       "bytes": 551280,
-      "sha256": "63E3C656D34D6D18C9573EDEAB7F93F25CB7C5242D5213D6A58A9B997C5948C4"
+      "sha256": "63E3C656D34D6D18C9573EDEAB7F93F25CB7C5242D5213D6A58A9B997C5948C4",
+      "archivo_historico": "referencia/escritorio-original.png",
+      "disponible": false,
+      "estado": "referencia_historica_no_incluida",
+      "nota": "El PNG original dejó de estar incluido tras la reorganización. Se conservan sus dimensiones y huella histórica; no es una ruta activa."
     },
     "nativa": {
       "archivo": "escritorio-limpio-nativa.png",
@@ -761,6 +765,73 @@
     "El teclado mantiene microcontrastes grises; no se distinguen palabras legibles, pero no se certifica la eliminación de toda marca a gran aumento.",
     "Inspección visual sin certificación OCR ni segmentación automática.",
     "Archivo final plano RGB opaco; no incluye capas, máscaras ni recursos transparentes separados.",
-    "La referencia conserva la persona y los textos únicamente para documentar el original."
+    "El PNG de referencia original no está incluido en la organización actual; sus datos históricos se conservan."
+  ],
+  "actualizacion_documental": "2026-09-13",
+  "organizacion_actual": {
+    "carpeta": "public/escena-escritorio",
+    "ruta_publica": "/escena-escritorio/escritorio-limpio-full-hd.png",
+    "nota": "Las huellas del bloque archivos_anteriores_preservados corresponden a rutas y contenidos de la fecha original; no describen la disponibilidad actual."
+  },
+  "usos_en_otras_escenas": [
+    {
+      "id": "v3-escritorio",
+      "fecha": "2026-09-13",
+      "archivo": "../escena-gato-mejorada/escena-limpia-full-hd_v3.png",
+      "inventario": "../escena-gato-mejorada/inventario-v3-escritorio.json",
+      "reporte": "../escena-gato-mejorada/reporte-v3-escritorio.md",
+      "componentes_incorporados": [
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20",
+        "E21",
+        "E22"
+      ],
+      "nota": "El archivo del escritorio sigue siendo el donante original; la composición se guarda en la carpeta de la escena del gato."
+    },
+    {
+      "id": "v4-sin-envases",
+      "fecha": "2026-09-13",
+      "derivada_de": "v3-escritorio",
+      "archivo": "../escena-gato-mejorada/escena-limpia-full-hd_v4.png",
+      "inventario": "../escena-gato-mejorada/inventario-v4-sin-envases.json",
+      "reporte": "../escena-gato-mejorada/reporte-v4-sin-envases.md",
+      "componentes_conservados": [
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20",
+        "E21",
+        "E22"
+      ],
+      "nota": "Los componentes E04–E22 pasan de v3 a v4 sin una nueva importación. La v4 elimina únicamente los envases O07 y O08 de la habitación; el donante no se modifica."
+    }
   ]
 }

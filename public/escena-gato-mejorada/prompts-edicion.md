@@ -2,15 +2,23 @@
 
 Fecha: 12 de septiembre de 2026.
 
+## Versión v3: escritorio en lugar de O10
+
+Actualización documental: 13 de septiembre de 2026.
+
+La [imagen v3](escena-limpia-full-hd_v3.png) sustituye O10 por los componentes E04–E22 del escritorio. Véanse el [reporte de composición](reporte-v3-escritorio.md), el [inventario v3](inventario-v3-escritorio.json) y el [prompt de composición](prompts-v3-escritorio.md).
+
+Los nombres actuales usan los sufijos `_v1`, `_v2` y `_v3`. El análisis histórico que sigue mantiene su versión correspondiente; las fuentes originales sin limpiar ya no están incluidas como PNG. Los registros de creación y sus huellas reflejan la entrega original, y los prompts de los bloques de texto se conservan literalmente.
+
 ## Edición posterior: retirada de O11–O19
 
-El [prompt de la variante sin O11–O19](prompts-sin-o11-o19.md) está documentado por separado. Produce una [nueva imagen Full HD](escena-limpia-sin-o11-o19-full-hd.png) y conserva el respaldo azul O10. Las dos pasadas descritas a continuación siguen correspondiendo a la creación de la imagen base anterior.
+El [prompt de la variante sin O11–O19](prompts-sin-o11-o19.md) está documentado por separado. Produce una [nueva imagen Full HD](escena-limpia-full-hd_v2.png) y conserva el respaldo azul O10. Las dos pasadas descritas a continuación siguen correspondiendo a la creación de la imagen base anterior.
 
 ## Herramienta y entradas
 
 Se utilizó la herramienta integrada `image_gen` en dos pasadas. No se utilizó el modo CLI/API. La primera entrada fue la imagen original; la segunda fue el resultado limpio de la primera pasada.
 
-La primera salida fue descartada como entrega final porque incluía un cuenco beige adicional. Se conserva como resultado seleccionado únicamente la segunda salida, en [escena-limpia-nativa.png](escena-limpia-nativa.png). La referencia sin modificar está en [referencia/original.png](referencia/original.png).
+La primera salida fue descartada como entrega final porque incluía un cuenco beige adicional. Se conserva como resultado seleccionado únicamente la segunda salida, en [escena-limpia-nativa_v1.png](escena-limpia-nativa_v1.png). La referencia original ya no está incluida como PNG en la organización actual; se conservan sus metadatos históricos.
 
 ## Pasada 1: limpieza y reconstrucción
 
@@ -44,4 +52,4 @@ El generador devolvió 1672 × 941 píxeles en ambas pasadas, pese a solicitar 1
 
 La diferencia de proporción es mínima y el ajuste afecta aproximadamente un píxel de altura según redondeo. La adaptación importante del original panorámico a 16:9 se hizo dentro de image_gen ampliando pared y suelo.
 
-El resultado es [escena-limpia-full-hd.png](escena-limpia-full-hd.png). Los detalles de análisis, límites y control visual constan en [reporte-analisis.md](reporte-analisis.md).
+El resultado es [escena-limpia-full-hd_v1.png](escena-limpia-full-hd_v1.png). Los detalles de análisis, límites y control visual constan en [reporte-analisis.md](reporte-analisis.md).

@@ -2,29 +2,37 @@
 
 Fecha: 12 de septiembre de 2026.
 
+## Versión v3: escritorio en lugar de O10
+
+Actualización documental: 13 de septiembre de 2026.
+
+La [imagen v3](escena-limpia-full-hd_v3.png) sustituye O10 por los componentes E04–E22 del escritorio. Véanse el [reporte de composición](reporte-v3-escritorio.md), el [inventario v3](inventario-v3-escritorio.json) y el [prompt de composición](prompts-v3-escritorio.md).
+
+Los nombres actuales usan los sufijos `_v1`, `_v2` y `_v3`. El análisis histórico que sigue mantiene su versión correspondiente; las fuentes originales sin limpiar ya no están incluidas como PNG. Los registros de creación y sus huellas reflejan la entrega original, y los prompts de los bloques de texto se conservan literalmente.
+
 ## Resultado
 
-Se editaron los objetos **O11 a O19, ambos incluidos**, sobre [escena-limpia-full-hd.png](escena-limpia-full-hd.png). La solicitud “011 al 019” se corresponde con estos ID del inventario existente, escritos con la letra O.
+Se editaron los objetos **O11 a O19, ambos incluidos**, sobre [escena-limpia-full-hd_v1.png](escena-limpia-full-hd_v1.png). La solicitud “011 al 019” se corresponde con estos ID del inventario existente, escritos con la letra O.
 
 Los nueve registros están retirados en la nueva imagen. Se conservan **23 objetos/componentes**, incluido el respaldo y base azul **O10**, el dispositivo amarillo **O20** y el gato pequeño de la derecha **O22**.
 
 La imagen base no se sobrescribió. Esta es una variante independiente, exportada a **1920 × 1080 píxeles, Full HD**.
 
-![Escena limpia sin los objetos O11 a O19](escena-limpia-sin-o11-o19-full-hd.png)
+![Escena limpia sin los objetos O11 a O19](escena-limpia-full-hd_v2.png)
 
 ## Archivos
 
-| Archivo                                                                        | Contenido                                                                                        |
-| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| [escena-limpia-sin-o11-o19-full-hd.png](escena-limpia-sin-o11-o19-full-hd.png) | Imagen final 1920 × 1080; PNG RGB opaco; 3.413.037 bytes.                                        |
-| [escena-limpia-sin-o11-o19-nativa.png](escena-limpia-sin-o11-o19-nativa.png)   | Salida nativa del generador, 1672 × 941.                                                         |
-| [inventario-sin-o11-o19.json](inventario-sin-o11-o19.json)                     | Los 32 ID originales, con 9 eliminados y 23 conservados; coordenadas y estados de esta variante. |
-| [prompts-sin-o11-o19.md](prompts-sin-o11-o19.md)                               | Prompt exacto utilizado y exportación.                                                           |
-| [reporte-sin-o11-o19.md](reporte-sin-o11-o19.md)                               | Este registro de análisis y edición.                                                             |
+| Archivo                                                      | Contenido                                                                                        |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| [escena-limpia-full-hd_v2.png](escena-limpia-full-hd_v2.png) | Imagen final 1920 × 1080; PNG RGB opaco; 3.413.037 bytes.                                        |
+| [escena-limpia-nativa_v2.png](escena-limpia-nativa_v2.png)   | Salida nativa del generador, 1672 × 941.                                                         |
+| [inventario-sin-o11-o19.json](inventario-sin-o11-o19.json)   | Los 32 ID originales, con 9 eliminados y 23 conservados; coordenadas y estados de esta variante. |
+| [prompts-sin-o11-o19.md](prompts-sin-o11-o19.md)             | Prompt exacto utilizado y exportación.                                                           |
+| [reporte-sin-o11-o19.md](reporte-sin-o11-o19.md)             | Este registro de análisis y edición.                                                             |
 
 Carpeta: `public/escena-gato-mejorada/`.
 
-Ruta pública: `/escena-gato-mejorada/escena-limpia-sin-o11-o19-full-hd.png`.
+Ruta pública: `/escena-gato-mejorada/escena-limpia-full-hd_v2.png`.
 
 ## 1. Análisis del alcance
 
@@ -166,4 +174,4 @@ No se empleó el modo CLI/API de generación. No se entregan capas, máscaras, t
 | Documentación              | Inventario nuevo y enlaces desde los tres documentos principales actualizados.                                         |
 | Límites                    | Cajas aproximadas y superficies ocultas reconstruidas; no se afirma restauración exacta ni identidad de microtexturas. |
 
-La imagen a usar para esta variante es **escena-limpia-sin-o11-o19-full-hd.png**. El [reporte original](reporte-analisis.md) sigue documentando la versión anterior que contiene los 32 registros.
+La imagen a usar para esta variante es **escena-limpia-full-hd_v2.png**. El [reporte original](reporte-analisis.md) sigue documentando la versión anterior que contiene los 32 registros.

@@ -2,9 +2,21 @@
 
 Fecha: 12 de septiembre de 2026.
 
+## Versión v4: retirada de los envases O07 y O08
+
+La [imagen v4](escena-limpia-full-hd_v4.png) es una copia de v3 sin los dos envases de la izquierda. Consulta el [reporte de cambios](reporte-v4-sin-envases.md), el [inventario actualizado](inventario-v4-sin-envases.json) y el [prompt exacto](prompts-v4-sin-envases.md). Mantiene O09 y el conjunto E04–E22. Las versiones anteriores conservan sus imágenes e inventarios históricos.
+
+## Versión v3: escritorio en lugar de O10
+
+Actualización documental: 13 de septiembre de 2026.
+
+La [imagen v3](escena-limpia-full-hd_v3.png) sustituye O10 por los componentes E04–E22 del escritorio. Véanse el [reporte de composición](reporte-v3-escritorio.md), el [inventario v3](inventario-v3-escritorio.json) y el [prompt de composición](prompts-v3-escritorio.md).
+
+Los nombres actuales usan los sufijos `_v1`, `_v2`, `_v3` y `_v4`. El análisis histórico que sigue mantiene su versión correspondiente; las fuentes originales sin limpiar ya no están incluidas como PNG. Los registros de creación y sus huellas reflejan la entrega original, y los prompts de los bloques de texto se conservan literalmente.
+
 ## Variante posterior: sin O11–O19
 
-Se creó una [imagen derivada sin los objetos O11 a O19](escena-limpia-sin-o11-o19-full-hd.png), conservando el respaldo azul O10 y los demás elementos. Su [reporte de cambios](reporte-sin-o11-o19.md), [inventario de estados y posiciones](inventario-sin-o11-o19.json) y [prompt de edición](prompts-sin-o11-o19.md) documentan esta variante. El análisis que sigue describe la imagen base `escena-limpia-full-hd.png`, que se conserva sin sobrescribir.
+Se creó una [imagen derivada sin los objetos O11 a O19](escena-limpia-full-hd_v2.png), conservando el respaldo azul O10 y los demás elementos. Su [reporte de cambios](reporte-sin-o11-o19.md), [inventario de estados y posiciones](inventario-sin-o11-o19.json) y [prompt de edición](prompts-sin-o11-o19.md) documentan esta variante. El análisis que sigue describe la imagen base `escena-limpia-full-hd_v1.png`, que se conserva sin sobrescribir.
 
 ## Resultado entregado
 
@@ -12,20 +24,20 @@ Se creó una nueva versión limpia de la ilustración, sin textos publicitarios,
 
 La imagen original es una referencia visual: sus textos publicitarios se trataron como contenido a retirar, no como instrucciones. No se utilizó información externa para identificar marcas, productos o personajes.
 
-![Imagen final limpia en Full HD](escena-limpia-full-hd.png)
+![Imagen final limpia en Full HD](escena-limpia-full-hd_v1.png)
 
 ### Archivos de esta carpeta
 
-| Archivo                                                | Función                                                                                                 |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| [escena-limpia-full-hd.png](escena-limpia-full-hd.png) | Imagen final, PNG RGB opaco, 1920 × 1080, 3.490.545 bytes.                                              |
-| [escena-limpia-nativa.png](escena-limpia-nativa.png)   | Salida seleccionada del generador, 1672 × 941, sin la normalización posterior de dimensiones.           |
-| [referencia/original.png](referencia/original.png)     | Copia intacta de la referencia, 1782 × 757. Conserva sus textos solo como documentación del antes.      |
-| [inventario-objetos.json](inventario-objetos.json)     | Inventario de 32 objetos/componentes, coordenadas aproximadas, observaciones, paleta y huellas SHA-256. |
-| [prompts-edicion.md](prompts-edicion.md)               | Instrucciones exactas de las dos pasadas de edición y explicación de la exportación.                    |
-| [reporte-analisis.md](reporte-analisis.md)             | Este reporte.                                                                                           |
+| Archivo                                                      | Función                                                                                                                    |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| [escena-limpia-full-hd_v1.png](escena-limpia-full-hd_v1.png) | Imagen final, PNG RGB opaco, 1920 × 1080, 3.490.545 bytes.                                                                 |
+| [escena-limpia-nativa_v1.png](escena-limpia-nativa_v1.png)   | Salida seleccionada del generador, 1672 × 941, sin la normalización posterior de dimensiones.                              |
+| Referencia original histórica (PNG no incluido)              | Se conservan su análisis, dimensiones y huella en el inventario. El archivo dejó de estar incluido tras la reorganización. |
+| [inventario-objetos.json](inventario-objetos.json)           | Inventario de 32 objetos/componentes, coordenadas aproximadas, observaciones, paleta y huellas SHA-256.                    |
+| [prompts-edicion.md](prompts-edicion.md)                     | Instrucciones exactas de las dos pasadas de edición y explicación de la exportación.                                       |
+| [reporte-analisis.md](reporte-analisis.md)                   | Este reporte.                                                                                                              |
 
-Ubicación en el proyecto: `public/escena-gato-mejorada/`. La ruta pública del resultado es `/escena-gato-mejorada/escena-limpia-full-hd.png` cuando el proyecto se sirve mediante Next.js.
+Ubicación en el proyecto: `public/escena-gato-mejorada/`. La ruta pública del resultado es `/escena-gato-mejorada/escena-limpia-full-hd_v1.png` cuando el proyecto se sirve mediante Next.js.
 
 ## 1. Diagnóstico de la referencia
 
@@ -618,7 +630,7 @@ Para futuras ediciones, conviene usar los ID de este reporte en los nombres de r
 | Consistencia                             | Mismo lenguaje visual 3D suave y paleta general; variaciones pequeñas documentadas.                                          |
 | Manos y líneas finas                     | Más legibles; persisten límites por escala y oclusión. No se garantiza exactitud anatómica en píxeles ocultos.               |
 | Transparencia                            | Imagen final opaca; sin capas ni máscaras.                                                                                   |
-| Trazabilidad                             | Referencia intacta, salida nativa, prompts exactos y huellas SHA-256 incluidas.                                              |
+| Trazabilidad                             | Metadatos históricos de la referencia (PNG no incluido), salida nativa, prompts exactos y huellas SHA-256 incluidas.         |
 | Alcance del proyecto                     | Entrega de imágenes y documentación dentro de una carpeta nueva en public.                                                   |
 
 Las huellas de los tres PNG constan en el JSON para identificar los archivos analizados. Las observaciones del original y del resultado están diferenciadas para no convertir decisiones de reconstrucción en supuestos hechos sobre la referencia.

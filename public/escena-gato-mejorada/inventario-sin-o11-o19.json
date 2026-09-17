@@ -5,15 +5,15 @@
   "idioma": "es",
   "titulo": "Escena limpia sin los objetos O11 a O19",
   "solicitud": {
-    "imagen_base": "escena-limpia-full-hd.png",
+    "imagen_base": "escena-limpia-full-hd_v1.png",
     "rango_escrito_por_usuario": "011 al 019",
     "ids_normalizados": ["O11", "O12", "O13", "O14", "O15", "O16", "O17", "O18", "O19"],
     "interpretacion": "Correspondencia con los ID O11–O19, con letra O, del inventario existente."
   },
-  "archivo_final": "escena-limpia-sin-o11-o19-full-hd.png",
+  "archivo_final": "escena-limpia-full-hd_v2.png",
   "imagenes": {
     "base": {
-      "archivo": "escena-limpia-full-hd.png",
+      "archivo": "escena-limpia-full-hd_v1.png",
       "width": 1920,
       "height": 1080,
       "channels": 3,
@@ -21,7 +21,7 @@
       "sha256": "9485E68C65FC63B96BF313E7E1EDD6F4E67A42021ACB9DDDF46F1230A12D3B4B"
     },
     "nativa": {
-      "archivo": "escena-limpia-sin-o11-o19-nativa.png",
+      "archivo": "escena-limpia-nativa_v2.png",
       "width": 1672,
       "height": 941,
       "channels": 3,
@@ -29,7 +29,7 @@
       "sha256": "BC3F2050AFBC0AC5BD91F05141234ADF564646D0DD541564846525F1A01416CD"
     },
     "final": {
-      "archivo": "escena-limpia-sin-o11-o19-full-hd.png",
+      "archivo": "escena-limpia-full-hd_v2.png",
       "width": 1920,
       "height": 1080,
       "channels": 3,
@@ -596,5 +596,53 @@
     "Resultado PNG RGB opaco de una sola capa; no incluye máscaras, transparencias ni objetos recortados.",
     "El recuento incluye componentes de objetos compuestos, no 32 objetos físicos independientes.",
     "Los datos base y las imágenes anteriores se conservan como referencias históricas; las eliminaciones se aplican solo a esta variante."
+  ],
+  "actualizacion_documental": "2026-09-13",
+  "organizacion_actual": {
+    "carpeta": "public/escena-gato-mejorada",
+    "versiones": {
+      "v1": "escena-limpia-full-hd_v1.png",
+      "v2": "escena-limpia-full-hd_v2.png",
+      "v3": "escena-limpia-full-hd_v3.png"
+    },
+    "nota": "Los nombres anteriores de los registros de integridad se conservan como datos históricos, no como rutas activas."
+  },
+  "nota_integridad_historica": "archivos_previos_sin_modificar es una instantánea del 12/09/2026 con los nombres originales; no debe usarse como lista de archivos actuales. El escritorio está ahora en ../escena-escritorio y las imágenes originales de referencia no están incluidas.",
+  "derivados": [
+    {
+      "id": "v3-escritorio",
+      "titulo": "Escritorio en lugar de O10",
+      "fecha": "2026-09-13",
+      "imagen_base": "escena-limpia-full-hd_v2.png",
+      "imagen_donante": "../escena-escritorio/escritorio-limpio-full-hd.png",
+      "archivo_final": "escena-limpia-full-hd_v3.png",
+      "archivo_nativo": "escena-limpia-nativa_v3.png",
+      "inventario": "inventario-v3-escritorio.json",
+      "reporte": "reporte-v3-escritorio.md",
+      "prompts": "prompts-v3-escritorio.md",
+      "objeto_sustituido": "O10",
+      "componentes_incorporados": [
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20",
+        "E21",
+        "E22"
+      ],
+      "objetos_presentes": 41
+    }
   ]
 }

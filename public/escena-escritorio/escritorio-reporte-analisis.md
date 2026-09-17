@@ -2,6 +2,14 @@
 
 Fecha: 12 de septiembre de 2026.
 
+## Uso del conjunto en la escena v3
+
+Actualización documental: 13 de septiembre de 2026.
+
+Los componentes **E04–E22** se incorporaron a la [escena v3 de la habitación](../escena-gato-mejorada/escena-limpia-full-hd_v3.png). El [reporte de composición](../escena-gato-mejorada/reporte-v3-escritorio.md) y el [inventario de la v3](../escena-gato-mejorada/inventario-v3-escritorio.json) registran sus posiciones nuevas. Esta carpeta sigue documentando la imagen donante del escritorio.
+
+Las rutas actuales pertenecen a `public/escena-escritorio/`. Los registros de creación y las huellas históricas siguientes describen la entrega original; el PNG de referencia sin limpiar ya no está incluido. Los prompts dentro de los bloques de texto se conservan literalmente.
+
 ## Resultado entregado
 
 Se creó una nueva versión del escritorio **sin la persona y sin las palabras flotantes del fondo**. Se conservó la silla vacía, el mobiliario, la alfombra, los objetos suspendidos y el contexto de diseño gráfico en la pantalla. Se mejoraron contornos, materiales y zonas antes ocultas.
@@ -14,18 +22,18 @@ Los textos de la imagen se trataron como elementos visuales a retirar, no como i
 
 ### Archivos de esta entrega
 
-| Archivo                                                                  | Contenido                                                                                               |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| [escritorio-limpio-full-hd.png](escritorio-limpio-full-hd.png)           | Resultado final seleccionado y exportado: PNG RGB opaco, 1920 × 1080, 2.575.794 bytes.                  |
-| [escritorio-limpio-nativa.png](escritorio-limpio-nativa.png)             | Salida nativa seleccionada del generador: 1672 × 941, antes del ajuste final de dimensiones.            |
-| [referencia/escritorio-original.png](referencia/escritorio-original.png) | Copia intacta del original: 798 × 817; conserva persona y textos solo como referencia.                  |
-| [escritorio-inventario-objetos.json](escritorio-inventario-objetos.json) | Inventario de 31 componentes conservados, coordenadas, paleta, registro de retiradas y huellas SHA-256. |
-| [escritorio-prompts-edicion.md](escritorio-prompts-edicion.md)           | Prompts exactos de las pasadas y descripción de la exportación.                                         |
-| [escritorio-reporte-analisis.md](escritorio-reporte-analisis.md)         | Este reporte detallado.                                                                                 |
+| Archivo                                                                  | Contenido                                                                                                                  |
+| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| [escritorio-limpio-full-hd.png](escritorio-limpio-full-hd.png)           | Resultado final seleccionado y exportado: PNG RGB opaco, 1920 × 1080, 2.575.794 bytes.                                     |
+| [escritorio-limpio-nativa.png](escritorio-limpio-nativa.png)             | Salida nativa seleccionada del generador: 1672 × 941, antes del ajuste final de dimensiones.                               |
+| Referencia original histórica (PNG no incluido)                          | Se conservan su análisis, dimensiones y huella en el inventario. El archivo dejó de estar incluido tras la reorganización. |
+| [escritorio-inventario-objetos.json](escritorio-inventario-objetos.json) | Inventario de 31 componentes conservados, coordenadas, paleta, registro de retiradas y huellas SHA-256.                    |
+| [escritorio-prompts-edicion.md](escritorio-prompts-edicion.md)           | Prompts exactos de las pasadas y descripción de la exportación.                                                            |
+| [escritorio-reporte-analisis.md](escritorio-reporte-analisis.md)         | Este reporte detallado.                                                                                                    |
 
-Carpeta: `public/escena-gato-mejorada/`.
+Carpeta: `public/escena-escritorio/`.
 
-Ruta pública del resultado, cuando el proyecto se sirve: `/escena-gato-mejorada/escritorio-limpio-full-hd.png`.
+Ruta pública del resultado, cuando el proyecto se sirve: `/escena-escritorio/escritorio-limpio-full-hd.png`.
 
 ## 1. Análisis de la referencia
 
@@ -704,8 +712,8 @@ El abanico y la pila de hojas pueden tratarse como objetos compuestos. La pluma 
 | Apoyos             | Mesa y silla apoyan visualmente sobre la alfombra; lápiz reubicado sobre la tableta.                                                             |
 | Formato            | PNG RGB opaco, 1920 × 1080 exactos; escena completa dentro de 16:9.                                                                              |
 | Calidad aparente   | Mayor claridad de materiales, cantos, malla y motivos, con límites propios de la reconstrucción generativa.                                      |
-| Trazabilidad       | Referencia intacta, nativo, prompts, inventario y huellas SHA-256 guardados.                                                                     |
+| Trazabilidad       | Metadatos históricos de la referencia (PNG no incluido), nativo, prompts, inventario y huellas SHA-256 guardados.                                |
 | Entrega anterior   | Conservada; los nuevos archivos usan nombres de escritorio en la misma carpeta.                                                                  |
 | Recursos editables | No se incluyen capas ni máscaras; las coordenadas son aproximadas.                                                                               |
 
-La referencia sin modificar conserva la persona y las palabras únicamente para comparación. El archivo que debe usarse como resultado limpio es **escritorio-limpio-full-hd.png**.
+La referencia original usada en la creación contenía la persona y las palabras; ese PNG no está incluido en la carpeta actual. El archivo que debe usarse como resultado limpio es **escritorio-limpio-full-hd.png**.

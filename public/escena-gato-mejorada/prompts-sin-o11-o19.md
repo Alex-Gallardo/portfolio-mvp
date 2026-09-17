@@ -2,9 +2,17 @@
 
 Fecha: 12 de septiembre de 2026.
 
+## Versión v3: escritorio en lugar de O10
+
+Actualización documental: 13 de septiembre de 2026.
+
+La [imagen v3](escena-limpia-full-hd_v3.png) sustituye O10 por los componentes E04–E22 del escritorio. Véanse el [reporte de composición](reporte-v3-escritorio.md), el [inventario v3](inventario-v3-escritorio.json) y el [prompt de composición](prompts-v3-escritorio.md).
+
+Los nombres actuales usan los sufijos `_v1`, `_v2` y `_v3`. El análisis histórico que sigue mantiene su versión correspondiente; las fuentes originales sin limpiar ya no están incluidas como PNG. Los registros de creación y sus huellas reflejan la entrega original, y los prompts de los bloques de texto se conservan literalmente.
+
 ## Método
 
-Edición con la herramienta integrada `image_gen`, una pasada, sobre [escena-limpia-full-hd.png](escena-limpia-full-hd.png). Se retiraron nueve registros y se conservó expresamente O10, además de O20 y O22.
+Edición con la herramienta integrada `image_gen`, una pasada, sobre [escena-limpia-full-hd_v1.png](escena-limpia-full-hd_v1.png). Se retiraron nueve registros y se conservó expresamente O10, además de O20 y O22.
 
 ## Prompt exacto
 
@@ -37,11 +45,11 @@ Output a single finished image, exactly 1920 x 1080 pixels Full HD, 16:9 landsca
 
 ## Salida y exportación
 
-La salida nativa seleccionada se conserva en [escena-limpia-sin-o11-o19-nativa.png](escena-limpia-sin-o11-o19-nativa.png), de 1672 × 941.
+La salida nativa seleccionada se conserva en [escena-limpia-nativa_v2.png](escena-limpia-nativa_v2.png), de 1672 × 941.
 
 Se exportó a 1920 × 1080 mediante escalado uniforme Lanczos3 y ajuste central mínimo (`fit: cover`, `position: centre`). La adaptación geométrica es de aproximadamente un píxel de altura según redondeo. No se hizo otra edición creativa fuera del generador.
 
-- [Imagen final Full HD](escena-limpia-sin-o11-o19-full-hd.png).
+- [Imagen final Full HD](escena-limpia-full-hd_v2.png).
 - [Reporte de análisis y cambios](reporte-sin-o11-o19.md).
 - [Inventario de la variante](inventario-sin-o11-o19.json).
 

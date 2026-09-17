@@ -3,15 +3,15 @@
   "fecha": "2026-09-12",
   "idioma": "es",
   "herramienta_edicion": "image_gen integrada; dos pasadas",
-  "archivo_final": "escena-limpia-full-hd.png",
+  "archivo_final": "escena-limpia-full-hd_v1.png",
   "variantes": [
     {
       "id": "sin-o11-o19",
       "titulo": "Escena limpia sin los objetos O11 a O19",
       "fecha": "2026-09-12",
-      "imagen_base": "escena-limpia-full-hd.png",
-      "archivo_final": "escena-limpia-sin-o11-o19-full-hd.png",
-      "archivo_nativo": "escena-limpia-sin-o11-o19-nativa.png",
+      "imagen_base": "escena-limpia-full-hd_v1.png",
+      "archivo_final": "escena-limpia-full-hd_v2.png",
+      "archivo_nativo": "escena-limpia-nativa_v2.png",
       "inventario": "inventario-sin-o11-o19.json",
       "reporte": "reporte-sin-o11-o19.md",
       "prompts": "prompts-sin-o11-o19.md",
@@ -19,25 +19,100 @@
       "objetos_conservados": 23,
       "objeto_clave_conservado": "O10",
       "nota": "El inventario principal sigue describiendo la imagen base. Consultar el inventario de la variante para los estados y coordenadas actuales."
+    },
+    {
+      "id": "v3-escritorio",
+      "titulo": "Escritorio en lugar de O10",
+      "fecha": "2026-09-13",
+      "imagen_base": "escena-limpia-full-hd_v2.png",
+      "imagen_donante": "../escena-escritorio/escritorio-limpio-full-hd.png",
+      "archivo_final": "escena-limpia-full-hd_v3.png",
+      "archivo_nativo": "escena-limpia-nativa_v3.png",
+      "inventario": "inventario-v3-escritorio.json",
+      "reporte": "reporte-v3-escritorio.md",
+      "prompts": "prompts-v3-escritorio.md",
+      "objeto_sustituido": "O10",
+      "componentes_incorporados": [
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20",
+        "E21",
+        "E22"
+      ],
+      "objetos_presentes": 41
+    },
+    {
+      "id": "v4-sin-envases",
+      "titulo": "Escena v4 sin los envases O07 y O08",
+      "fecha": "2026-09-13",
+      "variante_base": "v3-escritorio",
+      "imagen_base": "escena-limpia-full-hd_v3.png",
+      "archivo_final": "escena-limpia-full-hd_v4.png",
+      "archivo_nativo": "escena-limpia-nativa_v4.png",
+      "inventario": "inventario-v4-sin-envases.json",
+      "reporte": "reporte-v4-sin-envases.md",
+      "prompts": "prompts-v4-sin-envases.md",
+      "objetos_eliminados": ["O07", "O08"],
+      "objetos_presentes": 39,
+      "componentes_escritorio_conservados": [
+        "E04",
+        "E05",
+        "E06",
+        "E07",
+        "E08",
+        "E09",
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18",
+        "E19",
+        "E20",
+        "E21",
+        "E22"
+      ],
+      "nota": "Copia de v3: se retiran los dos envases de la izquierda. O09 y E07/E08 se conservan. Los inventarios anteriores mantienen sus estados históricos."
     }
   ],
   "imagenes": {
     "original": {
-      "archivo": "referencia/original.png",
+      "archivo": null,
       "width": 1782,
       "height": 757,
       "bytes": 972326,
-      "sha256": "7095B4163B7A63FF1FBA34E03B9E8043336FB6588F50945F71220C919EBA716C"
+      "sha256": "7095B4163B7A63FF1FBA34E03B9E8043336FB6588F50945F71220C919EBA716C",
+      "archivo_historico": "referencia/original.png",
+      "disponible": false,
+      "estado": "referencia_historica_no_incluida",
+      "nota": "El PNG original dejó de estar incluido tras la reorganización. Se conservan sus dimensiones y huella histórica; no es una ruta activa."
     },
     "nativa": {
-      "archivo": "escena-limpia-nativa.png",
+      "archivo": "escena-limpia-nativa_v1.png",
       "width": 1672,
       "height": 941,
       "bytes": 1859975,
       "sha256": "CC965419FCD5D4D78163C9F53CAB9CF6586C210B8B48F00FA461529B132912F9"
     },
     "final": {
-      "archivo": "escena-limpia-full-hd.png",
+      "archivo": "escena-limpia-full-hd_v1.png",
       "width": 1920,
       "height": 1080,
       "bytes": 3490545,
@@ -648,6 +723,18 @@
     "Microtexturas, zonas extendidas y detalles antes ambiguos son reconstrucciones generativas.",
     "No se entregan capas, máscaras, recortes transparentes ni modelos 3D.",
     "Ausencia de texto comprobada mediante inspección visual; no mediante certificación OCR.",
-    "Las letras originales se conservan únicamente en el archivo de referencia sin modificar."
-  ]
+    "La referencia original con textos no está incluida actualmente; se conservan sus metadatos históricos."
+  ],
+  "actualizacion_documental": "2026-09-13",
+  "organizacion_actual": {
+    "carpeta": "public/escena-gato-mejorada",
+    "versiones": {
+      "v1": "escena-limpia-full-hd_v1.png",
+      "v2": "escena-limpia-full-hd_v2.png",
+      "v3": "escena-limpia-full-hd_v3.png",
+      "v4": "escena-limpia-full-hd_v4.png"
+    },
+    "nota": "Los nombres anteriores de los registros de integridad se conservan como datos históricos, no como rutas activas."
+  },
+  "variante_mas_reciente": "v4-sin-envases"
 }

@@ -2,9 +2,17 @@
 
 Fecha: 12 de septiembre de 2026.
 
+## Uso del conjunto en la escena v3
+
+Actualización documental: 13 de septiembre de 2026.
+
+Los componentes **E04–E22** se incorporaron a la [escena v3 de la habitación](../escena-gato-mejorada/escena-limpia-full-hd_v3.png). El [reporte de composición](../escena-gato-mejorada/reporte-v3-escritorio.md) y el [inventario de la v3](../escena-gato-mejorada/inventario-v3-escritorio.json) registran sus posiciones nuevas. Esta carpeta sigue documentando la imagen donante del escritorio.
+
+Las rutas actuales pertenecen a `public/escena-escritorio/`. Los registros de creación y las huellas históricas siguientes describen la entrega original; el PNG de referencia sin limpiar ya no está incluido. Los prompts dentro de los bloques de texto se conservan literalmente.
+
 ## Método y selección
 
-Se utilizó la herramienta integrada `image_gen`. La primera entrada fue [referencia/escritorio-original.png](referencia/escritorio-original.png). Las siguientes pasadas editaron el resultado inmediatamente anterior.
+Se utilizó la herramienta integrada `image_gen`. La primera entrada fue la referencia original histórica; ese PNG ya no está incluido en la carpeta actual. Las siguientes pasadas editaron el resultado inmediatamente anterior.
 
 Se generaron tres pasadas. **La segunda es la seleccionada y guardada** en [escritorio-limpio-nativa.png](escritorio-limpio-nativa.png). La tercera prueba no aportó una mejora clara del teclado y alteró parte del patrón de la alfombra; se descartó como entrega final.
 
