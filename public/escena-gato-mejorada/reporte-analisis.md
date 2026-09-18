@@ -2,6 +2,12 @@
 
 Fecha: 12 de septiembre de 2026.
 
+## Versión actual v5: monitor sin contenido
+
+Actualización: 16 de septiembre de 2026. La [imagen v5](escena-limpia-full-hd_v5.png) elimina E08 (interfaz) y E09 (ilustración de café), pertenecientes al grupo `Monitor; contenido de pantalla`. E07 conserva el monitor físico con pantalla vacía. Véanse el [reporte v5](reporte-v5-monitor-vacio.md) y el [prompt](prompts-v5-monitor-vacio.md).
+
+Se actualizó directamente [inventario-objetos.json](inventario-objetos.json): sus campos superiores corresponden a v5 y su sección `historial_inventarios.v1` conserva íntegro el inventario anterior. El análisis de v1 que sigue es histórico. Los inventarios separados de v2, v3 y v4 permanecen intactos; no se creó otro JSON.
+
 ## Versión v4: retirada de los envases O07 y O08
 
 La [imagen v4](escena-limpia-full-hd_v4.png) es una copia de v3 sin los dos envases de la izquierda. Consulta el [reporte de cambios](reporte-v4-sin-envases.md), el [inventario actualizado](inventario-v4-sin-envases.json) y el [prompt exacto](prompts-v4-sin-envases.md). Mantiene O09 y el conjunto E04–E22. Las versiones anteriores conservan sus imágenes e inventarios históricos.
@@ -12,7 +18,7 @@ Actualización documental: 13 de septiembre de 2026.
 
 La [imagen v3](escena-limpia-full-hd_v3.png) sustituye O10 por los componentes E04–E22 del escritorio. Véanse el [reporte de composición](reporte-v3-escritorio.md), el [inventario v3](inventario-v3-escritorio.json) y el [prompt de composición](prompts-v3-escritorio.md).
 
-Los nombres actuales usan los sufijos `_v1`, `_v2`, `_v3` y `_v4`. El análisis histórico que sigue mantiene su versión correspondiente; las fuentes originales sin limpiar ya no están incluidas como PNG. Los registros de creación y sus huellas reflejan la entrega original, y los prompts de los bloques de texto se conservan literalmente.
+Los nombres actuales usan los sufijos `_v1`, `_v2`, `_v3`, `_v4` y `_v5`. El análisis histórico que sigue mantiene su versión correspondiente; las fuentes originales sin limpiar ya no están incluidas como PNG. Los registros de creación y sus huellas reflejan la entrega original, y los prompts de los bloques de texto se conservan literalmente.
 
 ## Variante posterior: sin O11–O19
 
@@ -28,14 +34,14 @@ La imagen original es una referencia visual: sus textos publicitarios se trataro
 
 ### Archivos de esta carpeta
 
-| Archivo                                                      | Función                                                                                                                    |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| [escena-limpia-full-hd_v1.png](escena-limpia-full-hd_v1.png) | Imagen final, PNG RGB opaco, 1920 × 1080, 3.490.545 bytes.                                                                 |
-| [escena-limpia-nativa_v1.png](escena-limpia-nativa_v1.png)   | Salida seleccionada del generador, 1672 × 941, sin la normalización posterior de dimensiones.                              |
-| Referencia original histórica (PNG no incluido)              | Se conservan su análisis, dimensiones y huella en el inventario. El archivo dejó de estar incluido tras la reorganización. |
-| [inventario-objetos.json](inventario-objetos.json)           | Inventario de 32 objetos/componentes, coordenadas aproximadas, observaciones, paleta y huellas SHA-256.                    |
-| [prompts-edicion.md](prompts-edicion.md)                     | Instrucciones exactas de las dos pasadas de edición y explicación de la exportación.                                       |
-| [reporte-analisis.md](reporte-analisis.md)                   | Este reporte.                                                                                                              |
+| Archivo                                                      | Función                                                                                                                                   |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [escena-limpia-full-hd_v1.png](escena-limpia-full-hd_v1.png) | Imagen final, PNG RGB opaco, 1920 × 1080, 3.490.545 bytes.                                                                                |
+| [escena-limpia-nativa_v1.png](escena-limpia-nativa_v1.png)   | Salida seleccionada del generador, 1672 × 941, sin la normalización posterior de dimensiones.                                             |
+| Referencia original histórica (PNG no incluido)              | Se conservan su análisis, dimensiones y huella en el inventario. El archivo dejó de estar incluido tras la reorganización.                |
+| [inventario-objetos.json](inventario-objetos.json)           | Inventario actual de v5. El registro histórico de 32 objetos de v1, sus coordenadas, paleta y huellas está en `historial_inventarios.v1`. |
+| [prompts-edicion.md](prompts-edicion.md)                     | Instrucciones exactas de las dos pasadas de edición y explicación de la exportación.                                                      |
+| [reporte-analisis.md](reporte-analisis.md)                   | Este reporte.                                                                                                                             |
 
 Ubicación en el proyecto: `public/escena-gato-mejorada/`. La ruta pública del resultado es `/escena-gato-mejorada/escena-limpia-full-hd_v1.png` cuando el proyecto se sirve mediante Next.js.
 

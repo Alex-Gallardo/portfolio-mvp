@@ -8,7 +8,7 @@ Actualización documental: 13 de septiembre de 2026.
 
 La [imagen v3](escena-limpia-full-hd_v3.png) sustituye O10 por los componentes E04–E22 del escritorio. Véanse el [reporte de composición](reporte-v3-escritorio.md), el [inventario v3](inventario-v3-escritorio.json) y el [prompt de composición](prompts-v3-escritorio.md).
 
-Los nombres actuales usan los sufijos `_v1`, `_v2` y `_v3`. El análisis histórico que sigue mantiene su versión correspondiente; las fuentes originales sin limpiar ya no están incluidas como PNG. Los registros de creación y sus huellas reflejan la entrega original, y los prompts de los bloques de texto se conservan literalmente.
+Esta documentación histórica cubre las versiones `_v1`, `_v2` y `_v3`; consulta el [índice de versiones](README.md) para la entrega actual. El análisis histórico que sigue mantiene su versión correspondiente; las fuentes originales sin limpiar ya no están incluidas como PNG. Los registros de creación y sus huellas reflejan la entrega original, y los prompts de los bloques de texto se conservan literalmente.
 
 ## Resultado
 
@@ -131,7 +131,7 @@ La revisión confirma continuidad de la composición, no identidad exacta de cad
 
 Se actualizaron los archivos relacionados para registrar la variante:
 
-- [inventario-objetos.json](inventario-objetos.json): añade la variante y sus enlaces, conservando el inventario de la imagen base.
+- [inventario-objetos.json](inventario-objetos.json): añadió esta variante y sus enlaces. Desde v5, la instantánea de la imagen base se conserva en la sección `historial_inventarios.v1` de ese mismo archivo, cuyo nivel superior describe la versión actual.
 - [reporte-analisis.md](reporte-analisis.md): incorpora un acceso a esta versión derivada y aclara qué imagen describe el análisis original.
 - [prompts-edicion.md](prompts-edicion.md): enlaza el nuevo prompt sin modificar los prompts de la creación anterior.
 

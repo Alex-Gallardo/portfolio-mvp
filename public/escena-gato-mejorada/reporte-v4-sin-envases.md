@@ -2,6 +2,10 @@
 
 Fecha: 13 de septiembre de 2026.
 
+## Edición posterior: v5
+
+Desde el 16 de septiembre de 2026, la [v5](escena-limpia-full-hd_v5.png) elimina E08/E09 y conserva el monitor físico con pantalla vacía. Su estado actual está en [inventario-objetos.json](inventario-objetos.json), actualizado directamente; el contenido anterior de ese archivo se conserva en `historial_inventarios.v1`. El [reporte v5](reporte-v5-monitor-vacio.md) explica los cambios. Este documento y [su inventario v4](inventario-v4-sin-envases.json) describen la versión histórica con contenido en pantalla.
+
 ## Resultado
 
 Se creó [escena-limpia-full-hd_v4.png](escena-limpia-full-hd_v4.png) como una nueva copia de la [v3](escena-limpia-full-hd_v3.png). Se eliminaron únicamente los dos envases situados en la esquina inferior izquierda: **O07**, blanco/rosa/lavanda, y **O08**, amarillo/lavanda. La zona quedó libre y se reconstruyeron el mueble crema, sus apoyos, el suelo y la continuidad de la alfombra.
@@ -124,7 +128,7 @@ La salida nativa mide 1672 × 941. La entrega Full HD mide **1920 × 1080**, PNG
 
 ## Registros actualizados
 
-El [inventario principal](inventario-objetos.json) registra v4 como variante más reciente sin cambiar sus objetos históricos de v1. El [inventario v3](inventario-v3-escritorio.json) incorpora el enlace a su derivada; el reporte y prompt de v3 señalan esta nueva copia conservando sus descripciones originales.
+En la entrega de v4, el [inventario principal](inventario-objetos.json) registró v4 como variante más reciente; aquella instantánea está ahora en `historial_inventarios.v1`. El [inventario v3](inventario-v3-escritorio.json) incorpora el enlace a su derivada; el reporte y prompt de v3 señalan esta nueva copia conservando sus descripciones originales.
 
 El [índice de la habitación](README.md), el [reporte principal](reporte-analisis.md), el [índice del escritorio](../escena-escritorio/README.md) y el [inventario del donante](../escena-escritorio/escritorio-inventario-objetos.json) enlazan la nueva versión o registran la continuidad de E04–E22. Las ocho imágenes previas —v1, v2, v3 y escritorio, cada una con su salida nativa— se conservaron sin modificar su contenido.
 
