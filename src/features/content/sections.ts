@@ -30,6 +30,7 @@ export const PAGE_SECTIONS: Record<string, { key: string; label: string }[]> = {
     { key: "hero", label: "Hero" },
     { key: "education", label: "Educación interactiva" },
     { key: "projects", label: "Proyectos Web3" },
+    { key: "posts", label: "Últimos posts crypto" },
     { key: "faq", label: "FAQ" },
     { key: "cta", label: "CTA de cierre" },
   ],
