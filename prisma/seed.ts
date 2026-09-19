@@ -372,6 +372,13 @@ async function main() {
         body: "Interfaces claras para un mundo complejo.",
         order: 0,
       },
+      {
+        key: "crypto.posts",
+        page: "crypto",
+        title: "Últimos artículos sobre crypto",
+        body: "",
+        order: 1,
+      },
       // --- DISEÑO 3D ---
       {
         key: "design.hero",
@@ -512,8 +519,9 @@ async function main() {
           { key: "hero", visible: true, order: 0 },
           { key: "education", visible: true, order: 1 },
           { key: "projects", visible: true, order: 2 },
-          { key: "faq", visible: true, order: 3 },
-          { key: "cta", visible: true, order: 4 },
+          { key: "posts", visible: true, order: 3 },
+          { key: "faq", visible: true, order: 4 },
+          { key: "cta", visible: true, order: 5 },
         ],
       },
     ],
