@@ -1,15 +1,21 @@
 .footer {
-  position: relative;
-  isolation: isolate;
   margin-top: var(--sp-24);
   padding-block: var(--sp-16) var(--sp-8);
   background: var(--bg);
   transition: background-color 700ms var(--ease);
 }
 
-/* Decorative layers stay behind the content and fade into the page over 48px. */
-.footer::before,
-.footer::after {
+.grid {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1fr; /* móvil: apilado */
+  gap: var(--sp-8);
+}
+
+/* Keep both backgrounds inside the columns, with a 48px fade into the page. */
+.grid::before,
+.grid::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -22,40 +28,34 @@
   transition: opacity 700ms var(--ease);
 }
 
-.footer::before {
+.grid::before {
   background-image:
     linear-gradient(rgba(250, 250, 250, 0.78), rgba(250, 250, 250, 0.88)),
     url("/design/imagegen/personaje-paisaje-1920x1080.png");
 }
 
 /* Crossfade both layers so daylight cannot bleed through the night mask. */
-.footer::after {
+.grid::after {
   background-image:
     linear-gradient(rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.8)),
     url("/design/imagegen/personaje-paisaje-noche-1920x1080.png");
   opacity: 0;
 }
 
-:global(html[data-theme="dark"]) .footer::before {
+:global(html[data-theme="dark"]) .grid::before {
   opacity: 0;
 }
 
-:global(html[data-theme="dark"]) .footer::after {
+:global(html[data-theme="dark"]) .grid::after {
   opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .footer,
-  .footer::before,
-  .footer::after {
+  .grid::before,
+  .grid::after {
     transition: none;
   }
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr; /* móvil: apilado */
-  gap: var(--sp-8);
 }
 
 .brand {
