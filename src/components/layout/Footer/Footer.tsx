@@ -31,68 +31,70 @@ export function Footer() {
   return (
     <footer className={styles.footer}>
       <ContactSection />
-      <div className={`container ${styles.grid}`}>
-        {/* Marca + tagline + redes */}
-        <div className={styles.brandCol}>
-          <span className={styles.brand}>Portfolio</span>
-          <p className={styles.tagline}>
-            Desarrollo, diseño y SEO técnico para que tu marca destaque.
-          </p>
-          <ul className={styles.social}>
-            {SOCIAL.map((s) => (
-              <li key={s.label}>
-                <a
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.socialLink}
-                >
-                  {s.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className={`${styles.fullSection} ${styles.grid}`}>
+        <section className={styles.section}>
+          {/* Marca + tagline + redes */}
+          <div className={styles.brandCol}>
+            <span className={styles.brand}>Portfolio</span>
+            <p className={styles.tagline}>
+              Desarrollo, diseño y SEO técnico para que tu marca destaque.
+            </p>
+            <ul className={styles.social}>
+              {SOCIAL.map((s) => (
+                <li key={s.label}>
+                  <a
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.socialLink}
+                  >
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        {/* Navegación */}
-        <nav className={styles.col} aria-label="Navegación del pie">
-          <h2 className={styles.colTitle}>Navegación</h2>
-          <ul className={styles.list}>
-            {NAV.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className={styles.link}>
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+          {/* Navegación */}
+          <nav className={styles.col} aria-label="Navegación del pie">
+            <h2 className={styles.colTitle}>Navegación</h2>
+            <ul className={styles.list}>
+              {NAV.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className={styles.link}>
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        {/* Legal */}
-        <nav className={styles.col} aria-label="Enlaces legales">
-          <h2 className={styles.colTitle}>Legal</h2>
-          <ul className={styles.list}>
-            {LEGAL.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className={styles.link}>
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+          {/* Legal */}
+          <nav className={styles.col} aria-label="Enlaces legales">
+            <h2 className={styles.colTitle}>Legal</h2>
+            <ul className={styles.list}>
+              {LEGAL.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className={styles.link}>
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        {/* CTA al formulario de arriba (ContactSection con id="contacto") */}
-        <div className={styles.col}>
-          <h2 className={styles.colTitle}>¿Tienes una idea?</h2>
-          <p className={styles.tagline}>Cuéntamela y te respondo con un plan claro.</p>
-          <Link href="/#contacto" className={styles.link} data-track="footer-contact">
-            Escríbeme →
-          </Link>
-        </div>
+          {/* CTA al formulario de arriba (ContactSection con id="contacto") */}
+          <div className={styles.col}>
+            <h2 className={styles.colTitle}>¿Tienes una idea?</h2>
+            <p className={styles.tagline}>Cuéntamela y te respondo con un plan claro.</p>
+            <Link href="/#contacto" className={styles.link} data-track="footer-contact">
+              Escríbeme →
+            </Link>
+          </div>
+        </section>
       </div>
 
-      <div className={`container ${styles.bottom}`}>
+      <div className={` ${styles.bottom}`}>
         <p>© {year} Portfolio. Todos los derechos reservados.</p>
       </div>
     </footer>
