@@ -1,50 +1,239 @@
+/* Tarjeta de post: portada a sangre + contenido superpuesto sobre un degradado.
+   El texto siempre va en claro porque vive encima de la imagen (en ambos temas). */
 .link {
+  display: block;
+  height: 100%;
+  border-radius: var(--card-radius);
   text-decoration: none;
   color: inherit;
-  display: block;
+  --card-radius: calc(var(--radius-lg) * 1.4);
+  --ink: #ffffff;
+  --ink-soft: rgba(255, 255, 255, 0.76);
 }
+.link:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 3px;
+}
+
 .card {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  padding: 0; /* anulamos el padding de Card para que la portada pegue a los bordes */
+  justify-content: flex-end;
   height: 100%;
+  min-height: 340px;
+  /* En una sola columna la tarjeta ocupa todo el ancho: acotamos el alto
+     para que no se convierta en un bloque desproporcionado. */
+  max-height: 420px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+  background: var(--bg-elev);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
 }
-.card:focus-visible {
-  outline: 2px solid var(--brand-500);
-  outline-offset: 2px;
+.link:hover .card,
+.link:focus-visible .card {
+  transform: translateY(-6px);
+  border-color: color-mix(in srgb, var(--brand-500) 45%, var(--border));
+  box-shadow:
+    var(--shadow-md),
+    0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+/* ---- Portada ---- */
+.media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
 }
 .cover,
 .coverPlaceholder {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   object-fit: cover;
+  transform: scale(1.01);
+  transition:
+    transform var(--dur-slow) var(--ease),
+    filter var(--dur) var(--ease);
 }
 .coverPlaceholder {
-  background: linear-gradient(135deg, var(--brand-50), var(--border));
+  background:
+    radial-gradient(120% 90% at 20% 15%, var(--brand-500), transparent 60%),
+    linear-gradient(140deg, var(--brand-700), #0e0e11 70%);
 }
+.link:hover .cover,
+.link:focus-visible .cover,
+.link:hover .coverPlaceholder,
+.link:focus-visible .coverPlaceholder {
+  transform: scale(1.08);
+  filter: saturate(1.08);
+}
+
+/* Degradado que garantiza contraste del texto sobre cualquier imagen. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to top,
+      rgba(6, 6, 10, 0.97) 0%,
+      rgba(6, 6, 10, 0.93) 38%,
+      rgba(6, 6, 10, 0.78) 56%,
+      rgba(6, 6, 10, 0.34) 76%,
+      rgba(6, 6, 10, 0) 100%
+    ),
+    linear-gradient(to top, rgba(6, 6, 10, 0.45), rgba(6, 6, 10, 0.1));
+  transition: opacity var(--dur) var(--ease);
+}
+
+/* ---- Chip de lectura (esquina superior) ---- */
+.readChip {
+  position: absolute;
+  z-index: 2;
+  top: var(--sp-4);
+  right: var(--sp-4);
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: var(--radius-full);
+  background: rgba(10, 10, 15, 0.45);
+  backdrop-filter: blur(var(--glass-blur));
+  color: var(--ink);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* ---- Contenido ---- */
 .body {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
   padding: var(--sp-6);
+  color: var(--ink);
+  transition: transform var(--dur) var(--ease);
 }
+.link:hover .body,
+.link:focus-visible .body {
+  transform: translateY(-2px);
+}
+
 .tags {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
 }
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(var(--glass-blur));
+  color: var(--ink);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
 .title {
   font-family: var(--font-display);
   font-size: var(--fs-lg);
-  line-height: 1.25;
+  line-height: 1.2;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
 .excerpt {
-  color: var(--fg-muted);
   font-size: var(--fs-sm);
+  color: var(--ink-soft);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
 .meta {
-  margin-top: var(--sp-1);
   font-size: var(--fs-xs);
-  color: var(--fg-muted);
+  color: var(--ink-soft);
+}
+
+/* ---- CTA tipo píldora ---- */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(var(--glass-blur));
+  color: var(--ink);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+.ctaIcon {
+  width: 1.1em;
+  height: 1.1em;
+  transition: transform var(--dur) var(--ease);
+}
+.link:hover .cta,
+.link:focus-visible .cta {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #0e0e11;
+}
+.link:hover .ctaIcon,
+.link:focus-visible .ctaIcon {
+  transform: translateX(4px);
+}
+
+@media (min-width: 768px) {
+  .card {
+    min-height: 420px;
+    max-height: none;
+    aspect-ratio: 3 / 4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .cover,
+  .coverPlaceholder,
+  .body,
+  .cta,
+  .ctaIcon,
+  .scrim {
+    transition: none;
+  }
+  .link:hover .card,
+  .link:focus-visible .card,
+  .link:hover .body,
+  .link:focus-visible .body,
+  .link:hover .cover,
+  .link:focus-visible .cover,
+  .link:hover .coverPlaceholder,
+  .link:focus-visible .coverPlaceholder,
+  .link:hover .ctaIcon,
+  .link:focus-visible .ctaIcon {
+    transform: none;
+  }
 }
