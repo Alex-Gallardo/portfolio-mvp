@@ -1,44 +1,38 @@
 /* Tarjeta de post: portada a sangre + contenido superpuesto sobre un degradado.
 
-   Sobre el tema: el texto vive encima de la foto, así que la tinta se mantiene
-   clara en ambos temas (no se puede garantizar contraste con tinta oscura sobre
-   una imagen arbitraria). Lo que sí cambia con el tema es todo lo que no está
-   sobre la imagen: densidad del scrim, marco, sombras, glass de los chips, el
-   CTA sólido y el placeholder sin portada. Todos esos valores están declarados
-   como tokens locales en .link y redefinidos en el bloque de tema oscuro. */
+   Sobre el tema: el velo (scrim) es claro con tinta oscura en tema claro, y
+   oscuro con tinta clara en tema oscuro. En ambos casos es lo bastante denso
+   en la zona del texto como para garantizar contraste sobre cualquier foto.
+
+   Los colores planos (tinta, chips, CTA) viven como tokens locales en .link y
+   se redefinen en el bloque de tema oscuro; como sus propiedades tienen
+   transición, acompañan el fundido del body al cambiar de tema.
+
+   Los degradados, en cambio, no se pueden interpolar: si cambiaran vía token
+   saltarían de golpe. Por eso el scrim y el placeholder tienen una capa por
+   tema (::before claro, ::after oscuro) y el tema solo cruza sus opacidades. */
 .link {
   /* --- Tokens locales: tema CLARO (por defecto) --- */
   --card-radius: calc(var(--radius-lg) * 1.4);
 
-  --ink: #ffffff;
-  --ink-soft: rgba(255, 255, 255, 0.8);
+  --ink: #0e0e11;
+  --ink-soft: rgba(14, 14, 17, 0.72);
 
-  /* Scrim neutro cálido y algo menos denso: la tarjeta respira sobre un fondo
-     claro sin perder el contraste mínimo del título. */
-  --scrim:
-    linear-gradient(
-      to top,
-      rgba(24, 20, 28, 0.95) 0%,
-      rgba(24, 20, 28, 0.9) 38%,
-      rgba(24, 20, 28, 0.74) 56%,
-      rgba(24, 20, 28, 0.3) 76%,
-      rgba(24, 20, 28, 0) 100%
-    ),
-    linear-gradient(to top, rgba(24, 20, 28, 0.38), rgba(24, 20, 28, 0.08));
+  --chip-bg: rgba(14, 14, 17, 0.06);
+  --chip-border: rgba(14, 14, 17, 0.14);
+  /* El chip de lectura va sobre la foto sin velo: glass denso para leerse
+     sobre cualquier imagen. */
+  --read-chip-bg: rgba(255, 255, 255, 0.78);
+  --read-chip-border: rgba(255, 255, 255, 0.9);
 
-  /* Glass con más presencia: sobre fotos claras un alpha bajo desaparece. */
-  --chip-bg: rgba(255, 255, 255, 0.2);
-  --chip-border: rgba(255, 255, 255, 0.34);
-  --read-chip-bg: rgba(24, 20, 28, 0.5);
-
-  /* En claro el CTA sólido toma el color de marca en lugar de blanco plano. */
   --cta-solid-bg: var(--brand-600);
   --cta-solid-ink: #ffffff;
 
-  --lift-shadow: 0 16px 40px rgba(24, 20, 28, 0.22);
-  --placeholder:
-    radial-gradient(120% 90% at 20% 15%, var(--brand-500), transparent 62%),
-    linear-gradient(140deg, var(--brand-600), var(--brand-700) 70%);
+  --lift-shadow: 0 16px 40px rgba(24, 20, 28, 0.18);
+
+  /* Opacidad de cada capa de degradado según el tema. */
+  --layer-light: 1;
+  --layer-dark: 0;
 
   display: block;
   height: 100%;
@@ -50,30 +44,21 @@
 /* --- Tokens locales: tema OSCURO --- */
 :global(html[data-theme="dark"]) .link,
 :global([data-theme="dark"]) .link {
+  --ink: #ffffff;
   --ink-soft: rgba(255, 255, 255, 0.76);
-
-  --scrim:
-    linear-gradient(
-      to top,
-      rgba(6, 6, 10, 0.97) 0%,
-      rgba(6, 6, 10, 0.93) 38%,
-      rgba(6, 6, 10, 0.78) 56%,
-      rgba(6, 6, 10, 0.34) 76%,
-      rgba(6, 6, 10, 0) 100%
-    ),
-    linear-gradient(to top, rgba(6, 6, 10, 0.45), rgba(6, 6, 10, 0.1));
 
   --chip-bg: rgba(255, 255, 255, 0.14);
   --chip-border: rgba(255, 255, 255, 0.22);
   --read-chip-bg: rgba(10, 10, 15, 0.45);
+  --read-chip-border: rgba(255, 255, 255, 0.22);
 
   --cta-solid-bg: #ffffff;
   --cta-solid-ink: #0e0e11;
 
   --lift-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
-  --placeholder:
-    radial-gradient(120% 90% at 20% 15%, var(--brand-500), transparent 60%),
-    linear-gradient(140deg, var(--brand-700), #0e0e11 70%);
+
+  --layer-light: 0;
+  --layer-dark: 1;
 }
 
 .link:focus-visible {
@@ -101,7 +86,8 @@
   transition:
     transform var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease),
-    border-color var(--dur) var(--ease);
+    border-color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease);
 }
 .link:hover .card,
 .link:focus-visible .card {
@@ -128,7 +114,7 @@
     filter var(--dur) var(--ease);
 }
 .coverPlaceholder {
-  background: var(--placeholder);
+  position: relative;
 }
 .link:hover .cover,
 .link:focus-visible .cover,
@@ -138,12 +124,67 @@
   filter: saturate(1.08);
 }
 
-/* Degradado que garantiza contraste del texto sobre cualquier imagen. */
+/* ---- Capas de degradado por tema (placeholder y scrim) ---- */
+.coverPlaceholder::before,
+.coverPlaceholder::after,
+.scrim::before,
+.scrim::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.coverPlaceholder::before,
+.scrim::before {
+  opacity: var(--layer-light);
+}
+.coverPlaceholder::after,
+.scrim::after {
+  opacity: var(--layer-dark);
+}
+
+/* Placeholder sin portada */
+.coverPlaceholder::before {
+  background:
+    radial-gradient(120% 90% at 20% 15%, var(--brand-500), transparent 62%),
+    linear-gradient(140deg, var(--brand-600), var(--brand-700) 70%);
+}
+.coverPlaceholder::after {
+  background:
+    radial-gradient(120% 90% at 20% 15%, var(--brand-500), transparent 60%),
+    linear-gradient(140deg, var(--brand-700), #0e0e11 70%);
+}
+
+/* Velo que garantiza contraste del texto sobre cualquier imagen. */
 .scrim {
   position: absolute;
   inset: 0;
-  background: var(--scrim);
-  transition: opacity var(--dur) var(--ease);
+}
+/* Claro: velo blanco (tono de --bg) con tinta oscura encima. */
+.scrim::before {
+  background:
+    linear-gradient(
+      to top,
+      rgba(250, 250, 250, 0.97) 0%,
+      rgba(250, 250, 250, 0.93) 38%,
+      rgba(250, 250, 250, 0.8) 56%,
+      rgba(250, 250, 250, 0.34) 76%,
+      rgba(250, 250, 250, 0) 100%
+    ),
+    linear-gradient(to top, rgba(250, 250, 250, 0.3), rgba(250, 250, 250, 0));
+}
+/* Oscuro: velo casi negro con tinta clara encima. */
+.scrim::after {
+  background:
+    linear-gradient(
+      to top,
+      rgba(6, 6, 10, 0.97) 0%,
+      rgba(6, 6, 10, 0.93) 38%,
+      rgba(6, 6, 10, 0.78) 56%,
+      rgba(6, 6, 10, 0.34) 76%,
+      rgba(6, 6, 10, 0) 100%
+    ),
+    linear-gradient(to top, rgba(6, 6, 10, 0.45), rgba(6, 6, 10, 0.1));
 }
 
 /* ---- Chip de lectura (esquina superior) ---- */
@@ -153,7 +194,7 @@
   top: var(--sp-4);
   right: var(--sp-4);
   padding: var(--sp-1) var(--sp-3);
-  border: 1px solid var(--chip-border);
+  border: 1px solid var(--read-chip-border);
   border-radius: var(--radius-full);
   background: var(--read-chip-bg);
   backdrop-filter: blur(var(--glass-blur));
@@ -223,6 +264,18 @@
   color: var(--ink-soft);
 }
 
+/* Tinta y glass acompañan el fundido del cambio de tema. */
+.readChip,
+.tag,
+.title,
+.excerpt,
+.meta {
+  transition:
+    color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
 /* ---- CTA tipo píldora ---- */
 .cta {
   display: inline-flex;
@@ -239,7 +292,7 @@
   font-size: var(--fs-sm);
   font-weight: 600;
   transition:
-    background var(--dur) var(--ease),
+    background-color var(--dur) var(--ease),
     color var(--dur) var(--ease),
     border-color var(--dur) var(--ease);
 }
@@ -271,10 +324,18 @@
   .card,
   .cover,
   .coverPlaceholder,
+  .coverPlaceholder::before,
+  .coverPlaceholder::after,
+  .scrim::before,
+  .scrim::after,
+  .readChip,
+  .tag,
+  .title,
+  .excerpt,
+  .meta,
   .body,
   .cta,
-  .ctaIcon,
-  .scrim {
+  .ctaIcon {
     transition: none;
   }
   .link:hover .card,
