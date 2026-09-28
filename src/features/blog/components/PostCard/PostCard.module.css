@@ -1,15 +1,81 @@
 /* Tarjeta de post: portada a sangre + contenido superpuesto sobre un degradado.
-   El texto siempre va en claro porque vive encima de la imagen (en ambos temas). */
+
+   Sobre el tema: el texto vive encima de la foto, así que la tinta se mantiene
+   clara en ambos temas (no se puede garantizar contraste con tinta oscura sobre
+   una imagen arbitraria). Lo que sí cambia con el tema es todo lo que no está
+   sobre la imagen: densidad del scrim, marco, sombras, glass de los chips, el
+   CTA sólido y el placeholder sin portada. Todos esos valores están declarados
+   como tokens locales en .link y redefinidos en el bloque de tema oscuro. */
 .link {
+  /* --- Tokens locales: tema CLARO (por defecto) --- */
+  --card-radius: calc(var(--radius-lg) * 1.4);
+
+  --ink: #ffffff;
+  --ink-soft: rgba(255, 255, 255, 0.8);
+
+  /* Scrim neutro cálido y algo menos denso: la tarjeta respira sobre un fondo
+     claro sin perder el contraste mínimo del título. */
+  --scrim:
+    linear-gradient(
+      to top,
+      rgba(24, 20, 28, 0.95) 0%,
+      rgba(24, 20, 28, 0.9) 38%,
+      rgba(24, 20, 28, 0.74) 56%,
+      rgba(24, 20, 28, 0.3) 76%,
+      rgba(24, 20, 28, 0) 100%
+    ),
+    linear-gradient(to top, rgba(24, 20, 28, 0.38), rgba(24, 20, 28, 0.08));
+
+  /* Glass con más presencia: sobre fotos claras un alpha bajo desaparece. */
+  --chip-bg: rgba(255, 255, 255, 0.2);
+  --chip-border: rgba(255, 255, 255, 0.34);
+  --read-chip-bg: rgba(24, 20, 28, 0.5);
+
+  /* En claro el CTA sólido toma el color de marca en lugar de blanco plano. */
+  --cta-solid-bg: var(--brand-600);
+  --cta-solid-ink: #ffffff;
+
+  --lift-shadow: 0 16px 40px rgba(24, 20, 28, 0.22);
+  --placeholder:
+    radial-gradient(120% 90% at 20% 15%, var(--brand-500), transparent 62%),
+    linear-gradient(140deg, var(--brand-600), var(--brand-700) 70%);
+
   display: block;
   height: 100%;
   border-radius: var(--card-radius);
   text-decoration: none;
   color: inherit;
-  --card-radius: calc(var(--radius-lg) * 1.4);
-  --ink: #ffffff;
-  --ink-soft: rgba(255, 255, 255, 0.76);
 }
+
+/* --- Tokens locales: tema OSCURO --- */
+:global(html[data-theme="dark"]) .link,
+:global([data-theme="dark"]) .link {
+  --ink-soft: rgba(255, 255, 255, 0.76);
+
+  --scrim:
+    linear-gradient(
+      to top,
+      rgba(6, 6, 10, 0.97) 0%,
+      rgba(6, 6, 10, 0.93) 38%,
+      rgba(6, 6, 10, 0.78) 56%,
+      rgba(6, 6, 10, 0.34) 76%,
+      rgba(6, 6, 10, 0) 100%
+    ),
+    linear-gradient(to top, rgba(6, 6, 10, 0.45), rgba(6, 6, 10, 0.1));
+
+  --chip-bg: rgba(255, 255, 255, 0.14);
+  --chip-border: rgba(255, 255, 255, 0.22);
+  --read-chip-bg: rgba(10, 10, 15, 0.45);
+
+  --cta-solid-bg: #ffffff;
+  --cta-solid-ink: #0e0e11;
+
+  --lift-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+  --placeholder:
+    radial-gradient(120% 90% at 20% 15%, var(--brand-500), transparent 60%),
+    linear-gradient(140deg, var(--brand-700), #0e0e11 70%);
+}
+
 .link:focus-visible {
   outline: 2px solid var(--brand-500);
   outline-offset: 3px;
@@ -41,9 +107,7 @@
 .link:focus-visible .card {
   transform: translateY(-6px);
   border-color: color-mix(in srgb, var(--brand-500) 45%, var(--border));
-  box-shadow:
-    var(--shadow-md),
-    0 18px 48px rgba(0, 0, 0, 0.28);
+  box-shadow: var(--shadow-md), var(--lift-shadow);
 }
 
 /* ---- Portada ---- */
@@ -64,9 +128,7 @@
     filter var(--dur) var(--ease);
 }
 .coverPlaceholder {
-  background:
-    radial-gradient(120% 90% at 20% 15%, var(--brand-500), transparent 60%),
-    linear-gradient(140deg, var(--brand-700), #0e0e11 70%);
+  background: var(--placeholder);
 }
 .link:hover .cover,
 .link:focus-visible .cover,
@@ -80,16 +142,7 @@
 .scrim {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(
-      to top,
-      rgba(6, 6, 10, 0.97) 0%,
-      rgba(6, 6, 10, 0.93) 38%,
-      rgba(6, 6, 10, 0.78) 56%,
-      rgba(6, 6, 10, 0.34) 76%,
-      rgba(6, 6, 10, 0) 100%
-    ),
-    linear-gradient(to top, rgba(6, 6, 10, 0.45), rgba(6, 6, 10, 0.1));
+  background: var(--scrim);
   transition: opacity var(--dur) var(--ease);
 }
 
@@ -100,9 +153,9 @@
   top: var(--sp-4);
   right: var(--sp-4);
   padding: var(--sp-1) var(--sp-3);
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid var(--chip-border);
   border-radius: var(--radius-full);
-  background: rgba(10, 10, 15, 0.45);
+  background: var(--read-chip-bg);
   backdrop-filter: blur(var(--glass-blur));
   color: var(--ink);
   font-size: var(--fs-xs);
@@ -135,9 +188,9 @@
   display: inline-flex;
   align-items: center;
   padding: var(--sp-1) var(--sp-3);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid var(--chip-border);
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--chip-bg);
   backdrop-filter: blur(var(--glass-blur));
   color: var(--ink);
   font-size: var(--fs-xs);
@@ -178,9 +231,9 @@
   gap: var(--sp-2);
   margin-top: var(--sp-3);
   padding: var(--sp-3) var(--sp-4);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1px solid var(--chip-border);
   border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--chip-bg);
   backdrop-filter: blur(var(--glass-blur));
   color: var(--ink);
   font-size: var(--fs-sm);
@@ -197,9 +250,9 @@
 }
 .link:hover .cta,
 .link:focus-visible .cta {
-  background: #ffffff;
-  border-color: #ffffff;
-  color: #0e0e11;
+  background: var(--cta-solid-bg);
+  border-color: var(--cta-solid-bg);
+  color: var(--cta-solid-ink);
 }
 .link:hover .ctaIcon,
 .link:focus-visible .ctaIcon {
