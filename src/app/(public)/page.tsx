@@ -140,24 +140,19 @@ export default async function HomePage() {
   });
   const websiteLd = websiteJsonLd({ name: branding.name });
 
+  // Línea tipo terminal dentro del monitor del hero: "~/alex · dev full-stack"
+  const heroHandle =
+    branding.name
+      .trim()
+      .split(/\s+/)[0]
+      ?.toLowerCase()
+      .normalize("NFD")
+      .replace(/[^a-z0-9-]/g, "") || "portfolio";
+  const heroEyebrow = `~/${heroHandle} · dev full-stack`;
+
   // --- registro de secciones (clave → nodo) ---
   const sections: Record<string, React.ReactNode> = {
-    hero: (
-      <HeroHome
-        title={hero.title ?? undefined}
-        subtitle={hero.body}
-        slides={[
-          { src: "/hero/dia-1.webp", alt: "Equipo trabajando bajo cielo despejado" },
-          { src: "/hero/dia-2.webp", alt: "La escena con torres de libros" },
-          { src: "/hero/dia-3.webp", alt: "La escena floreciendo en un prado" },
-        ]}
-        slidesDark={[
-          { src: "/hero/noche-1.webp", alt: "Equipo trabajando bajo cielo estrellado" },
-          { src: "/hero/noche-2.webp", alt: "La escena nocturna con torres de libros" },
-          { src: "/hero/noche-3.webp", alt: "La escena nocturna floreciendo" },
-        ]}
-      />
-    ),
+    hero: <HeroHome title={hero.title ?? undefined} subtitle={hero.body} eyebrow={heroEyebrow} />,
     about: <AboutBrief title={about.title ?? undefined} body={about.body || undefined} />,
     stack: <StackBand />,
     resources:

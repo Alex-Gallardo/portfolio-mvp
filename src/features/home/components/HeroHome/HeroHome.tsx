@@ -1,179 +1,356 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import Image from "next/image";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
-import styles from "./HeroHome.module.css";
+import { getImageProps } from "next/image";
 
-interface HeroSlide {
-  /** Ruta en /public o URL. Déjalo vacío para usar el placeholder con degradado. */
-  src?: string;
-  alt: string;
-}
+import { useThemeStore } from "@/stores/useThemeStore";
+import { HERO_CAMERA_DESKTOP, HERO_CAMERA_MOBILE } from "@/features/home/hero-scroll/camera-data";
+import {
+  HERO_MOBILE_QUERY,
+  HERO_POSTERS,
+  HERO_POSTER_SIZE,
+  pickHeroVideo,
+  type HeroTheme,
+} from "@/features/home/hero-scroll/hero-media";
+import {
+  frameForProgress,
+  frameFromTime,
+  getScreenRect,
+  getScrollProgress,
+  seekTimeForFrame,
+  smoothstep,
+} from "@/features/home/hero-scroll/screen-rect";
+import styles from "./HeroHome.module.css";
 
 interface HeroHomeProps {
   title?: string;
   subtitle?: string;
-  /** Secuencia en modo día (imagen 1 → 2 → 3). Si no se pasa, usa placeholders. */
-  slides?: HeroSlide[];
-  /** Secuencia en modo noche (imagen 4 → 5 → 6). Si no se pasa, reutiliza `slides`. */
-  slidesDark?: HeroSlide[];
+  /** Línea tipo terminal sobre el H1, dentro del monitor. */
+  eyebrow?: string;
 }
 
-/** Tiempo entre cada paso de la secuencia (ms). La duración del fundido vive en el CSS (--hero-fade). */
-const STEP_MS = 2000;
-/** Pequeño respiro antes de arrancar cuando el hero entra a la vista. */
-const START_DELAY_MS = 450;
+const DEFAULT_TITLE = "Construyo experiencias web rápidas que posicionan y convierten.";
+const DEFAULT_SUBTITLE =
+  "Desarrollo, diseño y SEO técnico para que tu marca destaque en buscadores y en la era de la IA.";
+const DEFAULT_EYEBROW = "~/portfolio · dev full-stack";
 
-// Reemplaza por tus imágenes reales en /public:
-//   slides:     [{ src: "/hero/dia-1.webp", alt: "..." }, ...]  (cielo → libros → prado)
-//   slidesDark: [{ src: "/hero/noche-1.webp", alt: "..." }, ...] (estrellas → libros → prado)
-const DEFAULT_SLIDES: HeroSlide[] = [
-  { alt: "Vista previa del proyecto 1" },
-  { alt: "Vista previa del proyecto 2" },
-  { alt: "Vista previa del proyecto 3" },
-];
-const DEFAULT_SLIDES_DARK: HeroSlide[] = DEFAULT_SLIDES;
+/** Ancho de la capa de diseño que se coloca sobre el monitor (ver HeroHome.module.css). */
+const DESIGN_WIDTH = 1200;
+/** Inercia del progreso: suaviza los saltos de la rueda del mouse. */
+const EASING = 0.14;
 
 // ─────────────────────────────────────────────────────────────
-// Lectura de "prefers-reduced-motion" como VALOR DERIVADO.
-// Usamos useSyncExternalStore (la forma idiomática de leer un
-// sistema externo del navegador) en lugar de setState dentro de
-// un efecto. Ventajas:
-//   • No dispara la regla react-hooks/set-state-in-effect.
-//   • Es SSR-safe: en el servidor devuelve `false` (no hay window),
-//     así evitamos errores de hidratación en Next.js.
-//   • Reacciona en vivo si el usuario cambia la preferencia.
-// Las funciones se definen FUERA del componente para que su
-// referencia sea estable (si no, useSyncExternalStore re-suscribe
-// en cada render).
+// Media queries como valor derivado (useSyncExternalStore): SSR-safe
+// y sin setState dentro de efectos. Las funciones viven fuera del
+// componente para que su referencia sea estable.
 // ─────────────────────────────────────────────────────────────
-function subscribeReducedMotion(callback: () => void) {
-  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-  mq.addEventListener("change", callback);
-  return () => mq.removeEventListener("change", callback);
-}
-function getReducedMotionSnapshot() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-function useReducedMotion() {
-  return useSyncExternalStore(
-    subscribeReducedMotion, // suscripción (solo corre en el cliente)
-    getReducedMotionSnapshot, // snapshot en el cliente
-    () => false, // snapshot en el servidor
-  );
-}
-
-export function HeroHome({ title, subtitle, slides, slidesDark }: HeroHomeProps) {
-  const day = slides && slides.length > 0 ? slides : DEFAULT_SLIDES;
-  const night =
-    slidesDark && slidesDark.length > 0
-      ? slidesDark
-      : slides && slides.length > 0
-        ? slides
-        : DEFAULT_SLIDES_DARK;
-  const len = Math.max(day.length, night.length);
-
-  const prefersReducedMotion = useReducedMotion();
-  const heroRef = useRef<HTMLElement | null>(null);
-  const [started, setStarted] = useState(false);
-  const [step, setStep] = useState(0); // capa más alta visible de la secuencia (0 → len-1)
-
-  // Si el usuario pidió menos movimiento, mostramos directamente la imagen final
-  // como valor DERIVADO — sin animar y sin tocar el estado.
-  const effectiveStep = prefersReducedMotion ? len - 1 : step;
-
-  // Arranca cuando el hero entra en viewport (IntersectionObserver).
-  // Se desactiva por completo cuando hay reduced-motion.
-  useEffect(() => {
-    if (prefersReducedMotion || started) return;
-
-    const node = heroRef.current;
-    if (!node) return;
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setStarted(true); // ✅ dentro del callback de una suscripción: permitido
-          io.disconnect(); // one-shot: no se repite
-        }
-      },
-      { threshold: 0.35 },
-    );
-    io.observe(node);
-    return () => io.disconnect();
-  }, [prefersReducedMotion, started]);
-
-  // Avanza la secuencia 0 → 1 → 2 una sola vez.
-  // (Para fondo estático: comenta este efecto y usa effectiveStep = len - 1.)
-  useEffect(() => {
-    if (prefersReducedMotion || !started || step >= len - 1) return;
-    const delay = step === 0 ? START_DELAY_MS : STEP_MS;
-    const id = window.setTimeout(
-      () => setStep((s) => Math.min(s + 1, len - 1)), // ✅ dentro de callback: permitido
-      delay,
-    );
-    return () => window.clearTimeout(id);
-  }, [prefersReducedMotion, started, step, len]);
-
-  const renderLayer = (item: HeroSlide | undefined, i: number, priority: boolean) => {
-    const visible = i <= effectiveStep;
-    return (
-      <div
-        key={i}
-        className={`${styles.layer} ${visible ? styles.layerOn : ""}`}
-        style={{ zIndex: i + 1 }}
-      >
-        {item?.src ? (
-          <Image
-            src={item.src}
-            alt={item.alt}
-            fill
-            sizes="100vw"
-            className={styles.img}
-            priority={priority}
-            loading={priority ? undefined : "lazy"}
-          />
-        ) : (
-          <div className={`${styles.placeholder} ${styles[`variant${i % 3}`]}`} />
-        )}
-      </div>
-    );
+function createMediaQueryStore(query: string) {
+  return {
+    subscribe(callback: () => void) {
+      const media = window.matchMedia(query);
+      media.addEventListener("change", callback);
+      return () => media.removeEventListener("change", callback);
+    },
+    getSnapshot: () => window.matchMedia(query).matches,
+    getServerSnapshot: () => false,
   };
+}
+
+const reducedMotionStore = createMediaQueryStore("(prefers-reduced-motion: reduce)");
+const mobileStore = createMediaQueryStore(HERO_MOBILE_QUERY);
+
+function useMediaQueryStore(store: ReturnType<typeof createMediaQueryStore>) {
+  return useSyncExternalStore(store.subscribe, store.getSnapshot, store.getServerSnapshot);
+}
+
+export function HeroHome({ title, subtitle, eyebrow }: HeroHomeProps) {
+  const heading = title ?? DEFAULT_TITLE;
+  const body = subtitle ?? DEFAULT_SUBTITLE;
+  const tag = eyebrow ?? DEFAULT_EYEBROW;
+
+  const theme = useThemeStore((s) => s.theme);
+  const prefersReducedMotion = useMediaQueryStore(reducedMotionStore);
+  const isMobile = useMediaQueryStore(mobileStore);
+
+  const rootRef = useRef<HTMLElement | null>(null);
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const screenRef = useRef<HTMLDivElement | null>(null);
+  const actionsRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    const stage = stageRef.current;
+    const video = videoRef.current;
+    const screen = screenRef.current;
+    const actions = actionsRef.current;
+    const panel = panelRef.current;
+    if (!root || !stage || !video || !screen || !actions || !panel) return;
+
+    // Durante la hidratación las media queries llegan con el valor del servidor (false).
+    // Si no coinciden con el navegador, React vuelve a renderizar enseguida con el valor
+    // real: no arrancamos nada en esta pasada para no descargar el video equivocado.
+    if (
+      reducedMotionStore.getSnapshot() !== prefersReducedMotion ||
+      mobileStore.getSnapshot() !== isMobile
+    ) {
+      return;
+    }
+
+    // Hero estático: el CSS ya muestra todo; solo nos aseguramos de que los CTAs respondan.
+    if (prefersReducedMotion) {
+      actions.inert = false;
+      return;
+    }
+
+    const camera = isMobile ? HERO_CAMERA_MOBILE : HERO_CAMERA_DESKTOP;
+    const src = pickHeroVideo(
+      isMobile ? "mobile" : "desktop",
+      theme,
+      window.innerWidth,
+      window.devicePixelRatio || 1,
+    );
+
+    let cancelled = false;
+    let objectUrl: string | null = null;
+    let shownFrame = -1;
+    let targetFrame = 0;
+    let raf = 0;
+    let inView = false;
+
+    const readProgress = () => {
+      const bounds = root.getBoundingClientRect();
+      return getScrollProgress(bounds.top, bounds.height, window.innerHeight);
+    };
+
+    let eased = readProgress();
+
+    // El CSS ya coloca el texto sobre el monitor en el frame 0;
+    // aquí solo aplicamos el delta de cámara del frame que el video muestra.
+    const place = (frame: number) => {
+      const width = stage.clientWidth;
+      const height = stage.clientHeight;
+      const base = getScreenRect(camera, 0, width, height);
+      const rect = getScreenRect(camera, frame, width, height);
+      if (base.width === 0) return;
+      screen.style.setProperty("--hero-dx", `${(rect.left - base.left).toFixed(2)}px`);
+      screen.style.setProperty("--hero-dy", `${(rect.top - base.top).toFixed(2)}px`);
+      screen.style.setProperty("--hero-ds", (rect.width / base.width).toFixed(5));
+    };
+
+    // En teléfonos altos, object-fit: cover recorta los lados del monitor:
+    // el padding mantiene el texto dentro de la parte visible del último frame.
+    const fitPadding = () => {
+      if (!isMobile) {
+        screen.style.removeProperty("--pad-inline");
+        return;
+      }
+      const width = stage.clientWidth;
+      const last = getScreenRect(camera, camera.frames - 1, width, stage.clientHeight);
+      if (last.width === 0) return;
+      const overflow = Math.max(0, -last.left, last.left + last.width - width);
+      const unitsPerPx = DESIGN_WIDTH / last.width;
+      screen.style.setProperty("--pad-inline", String(Math.round(overflow * unitsPerPx + 70)));
+    };
+
+    const choreograph = (progress: number) => {
+      const glow = smoothstep(0.4, 0.56, progress);
+      const cta = smoothstep(0.64, 0.78, progress);
+      stage.style.setProperty("--hero-intro", (1 - smoothstep(0.01, 0.08, progress)).toFixed(3));
+      stage.style.setProperty("--hero-glow", glow.toFixed(3));
+      stage.style.setProperty("--hero-title", (0.8 + 0.2 * glow).toFixed(3));
+      stage.style.setProperty("--hero-sub", smoothstep(0.56, 0.7, progress).toFixed(3));
+      stage.style.setProperty("--hero-cta", cta.toFixed(3));
+      stage.style.setProperty("--hero-out", smoothstep(0.94, 1, progress).toFixed(3));
+      const hidden = cta < 0.5;
+      actions.inert = hidden;
+      panel.inert = hidden;
+    };
+
+    // Un seek a la vez: el siguiente se pide cuando el video confirma el anterior.
+    const seek = () => {
+      if (cancelled || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || video.seeking) {
+        return;
+      }
+      if (targetFrame === shownFrame) return;
+      video.currentTime = seekTimeForFrame(targetFrame, camera.fps);
+    };
+
+    const onSeeked = () => {
+      shownFrame = frameFromTime(video.currentTime, camera.fps, camera.frames);
+      place(shownFrame);
+      stage.dataset.videoReady = "true";
+      seek();
+    };
+
+    const onLoadedData = () => {
+      shownFrame = -1;
+      seek();
+    };
+
+    const tick = () => {
+      raf = 0;
+      const progress = readProgress();
+      eased += (progress - eased) * EASING;
+      if (Math.abs(progress - eased) < 0.0005) eased = progress;
+      targetFrame = frameForProgress(eased, camera.frames);
+      choreograph(eased);
+      seek();
+      if (inView && eased !== progress) raf = window.requestAnimationFrame(tick);
+    };
+
+    const wake = () => {
+      if (inView && !raf) raf = window.requestAnimationFrame(tick);
+    };
+
+    const onResize = () => {
+      fitPadding();
+      place(Math.max(shownFrame, 0));
+      wake();
+    };
+
+    // El archivo completo en memoria hace que cada seek sea instantáneo.
+    const loadVideo = async () => {
+      try {
+        const response = await fetch(src);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const blob = await response.blob();
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(blob);
+        video.src = objectUrl;
+      } catch {
+        if (cancelled) return;
+        video.src = src;
+      }
+    };
+
+    const onVideoError = () => {
+      if (objectUrl && video.src === objectUrl) video.src = src;
+    };
+
+    // No compite con el LCP: el video se pide cuando la página terminó de cargar.
+    const startLoading = () => void loadVideo();
+
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = entry?.isIntersecting ?? false;
+      wake();
+    });
+
+    fitPadding();
+    place(0);
+    choreograph(eased);
+    targetFrame = frameForProgress(eased, camera.frames);
+
+    video.addEventListener("loadeddata", onLoadedData);
+    video.addEventListener("seeked", onSeeked);
+    video.addEventListener("error", onVideoError);
+    window.addEventListener("scroll", wake, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    observer.observe(root);
+
+    if (document.readyState === "complete") startLoading();
+    else window.addEventListener("load", startLoading, { once: true });
+
+    return () => {
+      cancelled = true;
+      if (raf) window.cancelAnimationFrame(raf);
+      observer.disconnect();
+      window.removeEventListener("scroll", wake);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("load", startLoading);
+      video.removeEventListener("loadeddata", onLoadedData);
+      video.removeEventListener("seeked", onSeeked);
+      video.removeEventListener("error", onVideoError);
+      video.removeAttribute("src");
+      video.load();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      delete stage.dataset.videoReady;
+    };
+  }, [prefersReducedMotion, isMobile, theme]);
 
   return (
-    <section className={styles.hero} ref={heroRef}>
-      {/* Fondo a sangre completa: secuencias día/noche en capas + scrim de legibilidad */}
-      <div className={styles.bg} aria-hidden="true">
-        <div className={`${styles.stack} ${styles.dayStack}`}>
-          {Array.from({ length: len }).map((_, i) => renderLayer(day[i], i, i === 0))}
-        </div>
-        <div className={`${styles.stack} ${styles.nightStack}`}>
-          {Array.from({ length: len }).map((_, i) => renderLayer(night[i], i, i === 0))}
-        </div>
-        <div className={styles.scrim} />
-      </div>
+    <section ref={rootRef} className={styles.hero} aria-labelledby="home-hero-title">
+      <div ref={stageRef} className={styles.stage}>
+        <ThemePoster theme="light" className={`${styles.poster} ${styles.posterDay}`} />
+        <ThemePoster theme="dark" className={`${styles.poster} ${styles.posterNight}`} />
+        <video
+          ref={videoRef}
+          className={styles.video}
+          muted
+          playsInline
+          preload="auto"
+          disablePictureInPicture
+          aria-hidden="true"
+          tabIndex={-1}
+        />
+        <div className={styles.scrim} aria-hidden="true" />
 
-      {/* Contenido centrado encima del fondo */}
-      <div className={styles.inner}>
-        <div className={styles.content}>
-          <h1 className={`${styles.title} ${styles.reveal}`}>
-            {title ?? "Construyo experiencias web rápidas que posicionan y convierten."}
+        {/* Capa de texto: en modo scroll vive dentro del monitor */}
+        <div ref={screenRef} className={styles.screen}>
+          <p className={styles.eyebrow}>{tag}</p>
+          <h1 id="home-hero-title" className={styles.title}>
+            {heading}
           </h1>
-          <p className={`${styles.sub} ${styles.reveal}`}>
-            {subtitle ??
-              "Desarrollo, diseño y SEO técnico para que tu marca destaque en buscadores y en la era de la IA."}
-          </p>
-          <div className={`${styles.actions} ${styles.reveal}`}>
-            <Link href="/#contacto" className={styles.secondary} data-track="home-hero-primary">
-              Hablemos de tu proyecto
-            </Link>
-            <Link href="/recursos" className={styles.secondary} data-track="home-hero-resources">
-              Ver recursos gratis
-            </Link>
+          <p className={styles.sub}>{body}</p>
+          <div ref={actionsRef} className={styles.actions}>
+            <HeroActions />
           </div>
+        </div>
+
+        <div className={styles.fade} aria-hidden="true" />
+
+        {/* Vertical: subtítulo y CTAs bajo el monitor (el CSS oculta los del monitor) */}
+        <div ref={panelRef} className={styles.panel}>
+          <p className={styles.panelText}>{body}</p>
+          <div className={styles.panelActions}>
+            <HeroActions />
+          </div>
+        </div>
+
+        <div className={styles.intro} aria-hidden="true">
+          <span className={styles.mouse} />
+          <span>Desliza para encender</span>
         </div>
       </div>
     </section>
+  );
+}
+
+function HeroActions() {
+  return (
+    <>
+      <Link href="/#contacto" className={styles.primary} data-track="home-hero-primary">
+        Hablemos de tu proyecto
+      </Link>
+      <Link href="/recursos" className={styles.secondary} data-track="home-hero-resources">
+        Ver recursos gratis
+      </Link>
+    </>
+  );
+}
+
+/**
+ * Poster del frame 0 (candidato a LCP) con dirección de arte horizontal/vertical.
+ * Se renderizan los dos temas y el CSS oculta el que no aplica; con loading="lazy"
+ * el oculto no se descarga (patrón recomendado en la doc de next/image para temas).
+ */
+function ThemePoster({ theme, className }: { theme: HeroTheme; className: string }) {
+  const common = { alt: "", sizes: "100vw" };
+  const {
+    props: { srcSet: mobileSrcSet },
+  } = getImageProps({ ...common, ...HERO_POSTER_SIZE.mobile, src: HERO_POSTERS.mobile[theme] });
+  const { props: desktop } = getImageProps({
+    ...common,
+    ...HERO_POSTER_SIZE.desktop,
+    src: HERO_POSTERS.desktop[theme],
+  });
+
+  return (
+    <picture className={className}>
+      <source media={HERO_MOBILE_QUERY} srcSet={mobileSrcSet} sizes={common.sizes} />
+      <img {...desktop} alt="" fetchPriority="high" />
+    </picture>
   );
 }
