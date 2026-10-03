@@ -1,9 +1,20 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Pixelify_Sans } from "next/font/google";
 import { type ResourceCategory } from "@prisma/client";
 import { CATEGORY_LABELS } from "../categories";
 import { DownloadButton } from "../DownloadButton";
 import styles from "./ResourceCard.module.css";
+
+/** Fuente pixel con alcance de componente: next/font la auto-hospeda y sólo
+ *  la precarga en las rutas que pintan cards. El resumen sigue en Inter:
+ *  un párrafo entero en pixel font se lee peor. */
+const pixelFont = Pixelify_Sans({
+  subsets: ["latin"],
+  variable: "--font-pixel",
+  display: "swap",
+});
 
 export interface ResourceCardData {
   slug: string;
@@ -29,6 +40,29 @@ const MAX_FORMAT_TAGS = 3;
 
 const numberFmt = new Intl.NumberFormat("es-GT");
 
+/**
+ * Destellos 8-bit sobre el marco. Mismo truco que Skills: duraciones con
+ * decimales primos entre sí → el patrón combinado tarda minutos en repetirse
+ * y se percibe aleatorio, no como un pulso.
+ *
+ * Los de borde sobresalen lo justo para no cortarse contra el padding del
+ * Carousel (8px arriba, 4px a los lados); abajo hay sitio de sobra.
+ * `extra` → sólo se encienden al desenvolver la card (hover/foco).
+ */
+type Spark = { x: string; y: string; d: number; big?: boolean; extra?: boolean };
+
+const SPARKS: Spark[] = [
+  { x: "88%", y: "3px", d: 4.3 },
+  { x: "3px", y: "31%", d: 5.3 },
+  { x: "calc(100% - 6px)", y: "54%", d: 3.7, big: true },
+  { x: "14%", y: "calc(100% - 2px)", d: 6.1, big: true },
+  { x: "76%", y: "24%", d: 4.7 },
+  { x: "34%", y: "3px", d: 5.9 },
+  { x: "calc(100% - 3px)", y: "14%", d: 3.1, extra: true },
+  { x: "3px", y: "72%", d: 4.1, extra: true },
+  { x: "58%", y: "calc(100% - 2px)", d: 3.4, big: true, extra: true },
+];
+
 /** Server Component: `Date.now()` se evalúa en el servidor, sin riesgo de
  *  hydration mismatch. Si algún día esto pasa a "use client", calcula
  *  `isNew` en el data layer y pásalo como prop. */
@@ -37,6 +71,30 @@ function isRecent(date: ResourceCardData["publishedAt"]): boolean {
   const published = new Date(date).getTime();
   if (Number.isNaN(published)) return false;
   return Date.now() - published < NEW_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+}
+
+/** FNV-1a del slug → semilla estable entre renders. Desincroniza las cards
+ *  hermanas de un grid, que si no destellarían todas a la vez. */
+function seedFrom(slug: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < slug.length; i++) {
+    h ^= slug.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/** Fracción determinista en [0, 1) para un canal de la semilla. */
+function noise(seed: number, channel: number): number {
+  let x = (seed ^ Math.imul(channel + 1, 0x9e3779b9)) >>> 0;
+  x = Math.imul(x ^ (x >>> 16), 0x45d9f3b);
+  x = Math.imul(x ^ (x >>> 16), 0x45d9f3b);
+  return ((x ^ (x >>> 16)) >>> 0) / 4294967296;
+}
+
+/** Retraso negativo: el ciclo arranca ya empezado, sin ráfaga al montar. */
+function phase(seed: number, channel: number, cycle: number): string {
+  return `-${(noise(seed, channel) * cycle).toFixed(2)}s`;
 }
 
 export function ResourceCard({
@@ -53,8 +111,27 @@ export function ResourceCard({
   const showNew = isRecent(resource.publishedAt);
   const isPopular = resource.downloadCount >= POPULAR_THRESHOLD;
 
+  const seed = seedFrom(resource.slug);
+  const flip = (seed & 1) === 1; // espejo horizontal: cards vecinas no calcan el dibujo
+
   return (
-    <article className={styles.card}>
+    <article
+      className={`${styles.card} ${pixelFont.variable}`}
+      style={
+        {
+          "--icon-download": CTA_ICON_MASK,
+          "--glint-delay": phase(seed, 90, 7.3),
+          "--gem-delay": phase(seed, 91, 3.3),
+          "--star-delay": phase(seed, 92, 4.1),
+        } as CSSProperties
+      }
+    >
+      {/* Chasis: bloque con grosor + contorno escalonado + superficie
+          biselada. Va detrás (z-index -1): el contenido sigue en flujo. */}
+      <span className={styles.chassis} aria-hidden="true" />
+      {/* Suelo con dithering: el pedestal sobre el que descansa el CTA */}
+      <span className={styles.ground} aria-hidden="true" />
+
       <div className={styles.media}>
         {resource.coverUrl ? (
           <Image
@@ -67,22 +144,28 @@ export function ResourceCard({
           />
         ) : (
           <div className={styles.coverFallback} aria-hidden="true">
-            <PackageIcon className={styles.fallbackIcon} />
+            <SpriteIcon sprite={SPRITES.chest} scale={5} className={styles.fallbackIcon} />
           </div>
         )}
 
+        <span className={styles.screen} aria-hidden="true" />
         <span className={styles.sheen} aria-hidden="true" />
 
         <div className={styles.mediaTop}>
           <span className={styles.badge}>{categoryLabel}</span>
-          {showNew ? <span className={styles.badgeNew}>Nuevo</span> : null}
+          {showNew ? (
+            <span className={styles.badgeNew}>
+              <SpriteIcon sprite={SPRITES.star} />
+              Nuevo
+            </span>
+          ) : null}
         </div>
 
         {/* Afordancia de "la portada también lleva al detalle".
             Oculto en táctil: ahí toda la card es tappable. */}
         <span className={styles.peek} aria-hidden="true">
           Ver detalles
-          <ArrowIcon className={styles.peekIcon} />
+          <SpriteIcon sprite={SPRITES.arrow} className={styles.peekIcon} />
         </span>
       </div>
 
@@ -98,7 +181,7 @@ export function ResourceCard({
         <p className={styles.summary}>{resource.summary}</p>
       </div>
 
-      {/* Línea de troquel: separa "qué es" de "qué recibo". */}
+      {/* Inventario: separa "qué es" de "qué recibo". */}
       <div className={styles.manifest}>
         <ul className={styles.contents}>
           {formats.map((format) => (
@@ -107,15 +190,26 @@ export function ResourceCard({
             </li>
           ))}
           <li className={styles.contentsItem}>
-            <FileIcon className={styles.metaIcon} />
-            {resource.fileCount} archivo{resource.fileCount === 1 ? "" : "s"}
+            {/* Casilla de inventario con contador de pila. El "×" es sólo
+                visual: un lector de pantalla oye "2 archivos". */}
+            <span className={styles.slot}>
+              <SpriteIcon sprite={SPRITES.file} />
+              <span className={styles.stack}>
+                <span aria-hidden="true">×</span>
+                {resource.fileCount}
+              </span>
+            </span>{" "}
+            archivo{resource.fileCount === 1 ? "" : "s"}
           </li>
           {resource.fileSize ? <li className={styles.contentsItem}>{resource.fileSize}</li> : null}
         </ul>
 
         {resource.downloadCount > 0 ? (
           <p className={`${styles.downloads} ${isPopular ? styles.downloadsHot : ""}`}>
-            <DownloadIcon className={styles.metaIcon} />
+            <SpriteIcon
+              sprite={isPopular ? SPRITES.star : SPRITES.download}
+              className={styles.metaIcon}
+            />
             <span>
               <strong>{numberFmt.format(resource.downloadCount)}</strong> descarga
               {resource.downloadCount === 1 ? "" : "s"}
@@ -132,72 +226,109 @@ export function ResourceCard({
         />
 
         <p className={styles.trust}>
-          <ShieldIcon className={styles.trustIcon} />
+          <SpriteIcon sprite={SPRITES.shield} className={styles.trustIcon} />
           <span>Gratis · Sin spam · 30 seg</span>
         </p>
       </div>
+
+      <span className={styles.sparks} aria-hidden="true">
+        {SPARKS.map((s, i) => (
+          <i
+            key={i}
+            className={styles.spark}
+            data-big={s.big || undefined}
+            data-extra={s.extra || undefined}
+            style={
+              {
+                "--x": flip ? `calc(100% - (${s.x}))` : s.x,
+                "--y": s.y,
+                "--d": `${s.d}s`,
+                "--delay": phase(seed, i, s.d),
+              } as CSSProperties
+            }
+          />
+        ))}
+      </span>
     </article>
   );
 }
 
-/* ---------- Iconos ---------- */
+/* ---------- Sprites ----------
+   Cada icono es su propio mapa de píxeles: "#" pinta, "." queda vacío.
+   Se dibujan a escala entera (2× por defecto) para que cada píxel caiga
+   en píxeles reales de pantalla y no se emborrone. */
 
-type IconProps = { className?: string };
+type Sprite = { cols: number; rows: number; d: string };
 
-const iconBase = {
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 2,
-  strokeLinecap: "round",
-  strokeLinejoin: "round",
-  "aria-hidden": true,
-} as const;
-
-function FileIcon({ className }: IconProps) {
-  return (
-    <svg {...iconBase} className={className}>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <path d="M14 2v6h6" />
-    </svg>
-  );
+/** Convierte el mapa en un único path, fusionando rachas horizontales. */
+function sprite(map: readonly string[]): Sprite {
+  let d = "";
+  map.forEach((row, y) => {
+    for (let x = 0; x < row.length; x++) {
+      if (row[x] !== "#") continue;
+      let run = 1;
+      while (row[x + run] === "#") run++;
+      d += `M${x} ${y}h${run}v1h-${run}z`;
+      x += run - 1;
+    }
+  });
+  return { cols: map[0]?.length ?? 0, rows: map.length, d };
 }
 
-function DownloadIcon({ className }: IconProps) {
-  return (
-    <svg {...iconBase} className={className}>
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <path d="m7 10 5 5 5-5" />
-      <path d="M12 15V3" />
-    </svg>
-  );
-}
+const SPRITES = {
+  file: sprite(["####...", "#..##..", "#..#.#.", "#..####", "#.....#", "#.###.#", "#######"]),
+  download: sprite(["...#...", "...#...", ".#####.", "..###..", "...#...", "#.....#", "#######"]),
+  star: sprite(["...#...", "..###..", "#######", ".#####.", "..###..", ".##.##.", "##...##"]),
+  shield: sprite(["#######", "#.....#", "#....##", "#.#.#.#", "#..#..#", ".#...#.", "..###.."]),
+  arrow: sprite(["...#...", "...##..", "...###.", "#######", "...###.", "...##..", "...#..."]),
+  chest: sprite([
+    ".######.",
+    "#......#",
+    "#......#",
+    "########",
+    "#..##..#",
+    "#......#",
+    "#......#",
+    "########",
+  ]),
+  ctaDownload: sprite([
+    "...##...",
+    "...##...",
+    ".######.",
+    "..####..",
+    "...##...",
+    "##....##",
+    "##....##",
+    "########",
+  ]),
+};
 
-function ShieldIcon({ className }: IconProps) {
-  return (
-    <svg {...iconBase} className={className}>
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      <path d="m9 12 2 2 4-4" />
-    </svg>
-  );
-}
+/** El icono del CTA vive como máscara CSS para no tocar DownloadButton:
+ *  se genera desde el mismo sprite y viaja como custom property. */
+const CTA_ICON_MASK = `url("data:image/svg+xml,${encodeURIComponent(
+  `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${SPRITES.ctaDownload.cols} ${SPRITES.ctaDownload.rows}' shape-rendering='crispEdges'><path d='${SPRITES.ctaDownload.d}'/></svg>`,
+)}")`;
 
-function ArrowIcon({ className }: IconProps) {
+function SpriteIcon({
+  sprite: { cols, rows, d },
+  scale = 2,
+  className,
+}: {
+  sprite: Sprite;
+  scale?: number;
+  className?: string;
+}) {
   return (
-    <svg {...iconBase} className={className}>
-      <path d="M5 12h14" />
-      <path d="m12 5 7 7-7 7" />
-    </svg>
-  );
-}
-
-function PackageIcon({ className }: IconProps) {
-  return (
-    <svg {...iconBase} className={className}>
-      <path d="m7.5 4.27 9 5.15" />
-      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-      <path d="m3.3 7 8.7 5 8.7-5" />
-      <path d="M12 22V12" />
+    <svg
+      viewBox={`0 0 ${cols} ${rows}`}
+      width={cols * scale}
+      height={rows * scale}
+      fill="currentColor"
+      shapeRendering="crispEdges"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d={d} />
     </svg>
   );
 }
