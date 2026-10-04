@@ -19,7 +19,7 @@
 .wrap {
   max-width: var(--container);
   margin: 0 auto;
-  padding: var(--sp-12) var(--gutter) var(--sp-24);
+  padding: var(--sp-16) var(--gutter) var(--sp-24);
   display: flex;
   flex-direction: column;
   gap: var(--sp-12);
@@ -106,35 +106,6 @@
   text-align: center;
   color: var(--fg-muted);
   padding: var(--sp-12);
-}
-
-/* Prueba social en pixel, entre dos gemas */
-.social {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  margin: 0;
-  color: var(--px-ink);
-  font-family: var(--font-pixel), var(--font-display);
-  font-size: var(--fs-base);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.social strong {
-  color: var(--fg);
-  font-size: var(--fs-lg);
-  font-weight: 700;
-}
-
-.social::before,
-.social::after {
-  content: "";
-  width: 6px;
-  height: 6px;
-  background: var(--resource-3);
-  box-shadow: inset -2px -2px 0 0 var(--resource-1);
 }
 
 @media (min-width: 768px) {

@@ -2,64 +2,90 @@ import { hash } from "./loop";
 import { PAL, rect, type Ctx } from "./draw";
 
 /**
- * Cabaña común a la tienda y al taller: pared de tablas, zócalo, suelo de
- * tablones, viga y postes de esquina. Mismos materiales en ambas escenas,
- * así el CTA se lee como una extensión de la tienda.
+ * Cabaña común a la tienda y al taller: techo de tablones, viga maestra,
+ * muro de piedra, zócalo de madera y suelo de baldosas. Mismos materiales
+ * en ambas escenas, así el CTA se lee como una extensión de la tienda.
  */
 export function drawRoom(
   c: Ctx,
   W: number,
   H: number,
-  { beamH, floorY, seed = 0 }: { beamH: number; floorY: number; seed?: number },
+  {
+    beamY = 0,
+    beamH,
+    floorY,
+    seed = 0,
+  }: { beamY?: number; beamH: number; floorY: number; seed?: number },
 ) {
-  // Pared de tablas horizontales
-  rect(c, 0, 0, W, floorY, PAL.w2);
-  let row = 0;
-  for (let y = beamH; y < floorY; y += 7, row++) {
-    const r = row + seed * 97;
-    const tone = hash(r * 7 + 1) > 0.72 ? PAL.w3 : PAL.w2;
-    rect(c, 0, y, W, 6, tone);
-    rect(c, 0, y, W, 1, tone === PAL.w3 ? PAL.w4 : PAL.w3);
-    rect(c, 0, y + 6, W, 1, PAL.w1);
-    for (let j = 0; j < 3; j++) {
-      rect(c, Math.floor(hash(r * 31 + j * 5) * W), y, 1, 6, PAL.w1);
-      rect(c, Math.floor(hash(r * 17 + j * 3 + 2) * W), y + 2 + (j % 3), 2, 1, PAL.w1);
+  const wallTop = beamY + beamH;
+
+  // Techo de tablones en sombra
+  if (beamY > 0) {
+    rect(c, 0, 0, W, beamY, PAL.w0);
+    for (let x = 0; x < W; x += 9) {
+      rect(c, x, 0, 1, beamY, PAL.ink);
+      rect(c, x + 1, 0, 1, beamY, PAL.w1);
     }
   }
 
+  // Muro de piedra: sillares de 10×5 a matajunta, con luz arriba
+  rect(c, 0, wallTop, W, floorY - wallTop, PAL.q1);
+  let row = 0;
+  for (let y = wallTop + 1; y < floorY; y += 6, row++) {
+    const off = row % 2 ? 5 : 0;
+    for (let x = -off; x < W; x += 11) {
+      const n = hash(row * 131 + Math.floor(x / 11) + seed * 977);
+      const tone = n > 0.82 ? PAL.q3 : n > 0.3 ? PAL.q2 : PAL.q1;
+      rect(c, x, y, 10, 5, tone);
+      rect(c, x, y, 10, 1, n > 0.82 ? PAL.q4 : PAL.q3);
+      rect(c, x + 9, y + 1, 1, 4, PAL.q0);
+      if (n < 0.08) rect(c, x + 3, y + 2, 3, 1, PAL.q0); // grieta
+    }
+  }
+
+  // Viga maestra
+  rect(c, 0, beamY, W, beamH, PAL.w1);
+  rect(c, 0, beamY, W, 1, PAL.w3);
+  rect(c, 0, beamY + 1, W, 1, PAL.w2);
+  rect(c, 0, beamY + beamH - 1, W, 1, PAL.ink);
+  for (let x = 14; x < W; x += 48) {
+    rect(c, x, beamY + 2, 2, 2, PAL.s2); // clavos
+  }
+
   // Zócalo de tablas verticales
-  const wainTop = floorY - Math.max(8, Math.round(H * 0.1));
+  const wainTop = floorY - Math.max(10, Math.round(H * 0.08));
   rect(c, 0, wainTop, W, floorY - wainTop, PAL.w1);
   for (let x = 0; x < W; x += 6) {
-    rect(c, x + 1, wainTop + 2, 1, floorY - wainTop - 2, PAL.w2);
-    rect(c, x + 5, wainTop + 2, 1, floorY - wainTop - 2, PAL.w0);
+    rect(c, x + 1, wainTop + 3, 1, floorY - wainTop - 3, PAL.w2);
+    rect(c, x + 5, wainTop + 3, 1, floorY - wainTop - 3, PAL.w0);
   }
   rect(c, 0, wainTop, W, 2, PAL.w4);
   rect(c, 0, wainTop + 2, W, 1, PAL.w0);
 
-  // Suelo de tablones: más altos cuanto más cerca de la cámara
-  rect(c, 0, floorY, W, H - floorY, PAL.w3);
-  rect(c, 0, floorY, W, 1, PAL.w0);
+  // Suelo de baldosas: más altas cuanto más cerca de la cámara
+  rect(c, 0, floorY, W, H - floorY, PAL.q2);
+  rect(c, 0, floorY, W, 1, PAL.ink);
   let fy = floorY + 1;
-  let fh = 3;
+  let fh = 4;
   let frow = 0;
   while (fy < H) {
-    rect(c, 0, fy, W, fh, frow % 2 ? PAL.w3 : PAL.w4);
-    rect(c, 0, fy + fh - 1, W, 1, PAL.w2);
-    const off = Math.floor(hash(frow + 90 + seed) * 24);
-    for (let x = off; x < W; x += 24) rect(c, x, fy, 1, fh, PAL.w2);
+    const tw = 10 + fh * 2;
+    const off = frow % 2 ? Math.round(tw / 2) : 0;
+    for (let x = -off; x < W; x += tw) {
+      const n = hash(frow * 53 + Math.floor((x + off) / tw) + seed * 31);
+      rect(c, x, fy, tw - 1, fh - 1, n > 0.6 ? PAL.q3 : PAL.q2);
+      rect(c, x, fy, tw - 1, 1, n > 0.6 ? PAL.q4 : PAL.q3);
+    }
+    rect(c, 0, fy + fh - 1, W, 1, PAL.q1);
     fy += fh;
-    fh = Math.min(fh + 1, 7);
+    fh = Math.min(fh + 1, 9);
     frow++;
   }
 
-  // Viga superior y postes de esquina
-  rect(c, 0, 0, W, beamH, PAL.w1);
-  rect(c, 0, beamH - 1, W, 1, PAL.w0);
-  rect(c, 0, 1, W, 1, PAL.w2);
+  // Postes de esquina
   for (const x of [0, W - 4]) {
-    rect(c, x, 0, 4, floorY, PAL.w1);
-    rect(c, x + 1, 0, 1, floorY, PAL.w2);
-    rect(c, x + 3, 0, 1, floorY, PAL.w0);
+    rect(c, x, wallTop, 4, floorY - wallTop, PAL.w1);
+    rect(c, x + 1, wallTop, 1, floorY - wallTop, PAL.w3);
+    rect(c, x + 3, wallTop, 1, floorY - wallTop, PAL.w0);
   }
 }
