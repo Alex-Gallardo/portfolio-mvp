@@ -1,0 +1,364 @@
+/* =====================================================
+   RecursosHero — la tienda del aventurero
+
+   Escena pixel animada (canvas) a sangre, 80% del alto de
+   pantalla, detrás de un letrero con el título y los
+   filtros. Mismo lenguaje que las ResourceCard: esquinas
+   escalonadas, contorno de 2px, bisel, paleta posterizada
+   y destellos 8-bit que sobresalen del marco.
+   ===================================================== */
+
+.hero {
+  /* ---- Paleta pixel · modo día ---- */
+  --px-ink: color-mix(in srgb, var(--resource-1) 72%, #000);
+  --px-ink-shadow: color-mix(in srgb, var(--resource-2) 35%, transparent);
+  --px-outline: color-mix(in srgb, var(--resource-2) 18%, #d4d1d8);
+  --px-hi: color-mix(in srgb, var(--resource-3) 30%, #fff);
+  --px-lo: color-mix(in srgb, var(--resource-2) 14%, var(--border));
+  --px-depth: color-mix(in srgb, var(--resource-1) 14%, #c4b5ad);
+  --panel-bg: color-mix(in srgb, var(--resource-soft) 60%, var(--bg-elev));
+  --chip-bg: var(--bg-elev);
+  --spark-1: var(--resource-1);
+  --spark-2: var(--resource-2);
+  --spark-glow: color-mix(in srgb, var(--resource-2) 55%, transparent);
+  /* Fondo mientras carga la escena: los tonos de la cabaña de día */
+  --scene-wall: #6a3f25;
+  --scene-floor: #8c5a33;
+  --px-grad: linear-gradient(
+    90deg,
+    var(--resource-1) 0 20%,
+    color-mix(in srgb, var(--resource-1), var(--resource-2)) 0 40%,
+    var(--resource-2) 0 60%,
+    color-mix(in srgb, var(--resource-2), var(--resource-3)) 0 80%,
+    var(--resource-3) 0
+  );
+
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  min-height: max(80svh, 520px);
+  /* Arriba: nav flotante + ventana de la tienda (≈23 % del alto).
+     Abajo: mostrador con sus objetos (≈30 %). El letrero, entre ambos. */
+  padding: max(18svh, 120px) var(--gutter) max(25svh, 128px);
+  overflow: hidden;
+}
+
+/* ---- Paleta pixel · modo noche ---- */
+[data-theme="dark"] .hero {
+  --px-ink: var(--resource-1);
+  --px-ink-shadow: color-mix(in srgb, var(--resource-1) 30%, transparent);
+  --px-outline: color-mix(in srgb, var(--resource-2) 12%, #2b2b36);
+  --px-hi: rgb(255 212 59 / 0.09);
+  --px-lo: rgb(0 0 0 / 0.38);
+  --px-depth: rgb(0 0 0 / 0.55);
+  --panel-bg: color-mix(in srgb, var(--resource-soft) 45%, var(--bg-elev));
+  --spark-1: var(--resource-3);
+  --spark-glow: rgb(255 212 59 / 0.7);
+  --scene-wall: #2a2034;
+  --scene-floor: #3a2a36;
+}
+
+/* ---------- Escena ---------- */
+
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: linear-gradient(var(--scene-wall) 0 84%, var(--scene-floor) 0);
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  image-rendering: pixelated;
+  opacity: 0;
+  transition: opacity 400ms steps(4, end);
+}
+
+.canvas[data-ready] {
+  opacity: 1;
+}
+
+/* Fundido tramado superior: da fondo a la nav flotante (su texto
+   sigue el tema) y enmarca la escena igual que el fundido inferior. */
+.scene::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 1;
+  height: 92px;
+  /* Sólido bajo el texto de la nav; tramado sólo en la transición */
+  background:
+    linear-gradient(var(--bg), var(--bg)) top / 100% 52px no-repeat,
+    conic-gradient(var(--bg) 25%, transparent 0 50%, var(--bg) 0 75%, transparent 0) 0 0 / 8px 8px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0 57%,
+    rgb(0 0 0 / 0.7) 0 76%,
+    rgb(0 0 0 / 0.35) 0 92%,
+    transparent 0
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0 57%,
+    rgb(0 0 0 / 0.7) 0 76%,
+    rgb(0 0 0 / 0.35) 0 92%,
+    transparent 0
+  );
+  pointer-events: none;
+}
+
+/* Fundido con tramado hacia el fondo de la página */
+.scene::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 44px;
+  background:
+    linear-gradient(var(--bg), var(--bg)) bottom / 100% 8px no-repeat,
+    conic-gradient(var(--bg) 25%, transparent 0 50%, var(--bg) 0 75%, transparent 0) 0 0 / 8px 8px;
+  -webkit-mask-image: linear-gradient(
+    to top,
+    #000 0 30%,
+    rgb(0 0 0 / 0.6) 0 60%,
+    rgb(0 0 0 / 0.25) 0 85%,
+    transparent 0
+  );
+  mask-image: linear-gradient(
+    to top,
+    #000 0 30%,
+    rgb(0 0 0 / 0.6) 0 60%,
+    rgb(0 0 0 / 0.25) 0 85%,
+    transparent 0
+  );
+  pointer-events: none;
+}
+
+/* ---------- Esquinas escalonadas ---------- */
+
+.panel::before,
+.panel::after,
+.chip,
+.cue {
+  clip-path: polygon(
+    0 calc(var(--n) * 2),
+    var(--n) calc(var(--n) * 2),
+    var(--n) var(--n),
+    calc(var(--n) * 2) var(--n),
+    calc(var(--n) * 2) 0,
+    calc(100% - var(--n) * 2) 0,
+    calc(100% - var(--n) * 2) var(--n),
+    calc(100% - var(--n)) var(--n),
+    calc(100% - var(--n)) calc(var(--n) * 2),
+    100% calc(var(--n) * 2),
+    100% calc(100% - var(--n) * 2),
+    calc(100% - var(--n)) calc(100% - var(--n) * 2),
+    calc(100% - var(--n)) calc(100% - var(--n)),
+    calc(100% - var(--n) * 2) calc(100% - var(--n)),
+    calc(100% - var(--n) * 2) 100%,
+    calc(var(--n) * 2) 100%,
+    calc(var(--n) * 2) calc(100% - var(--n)),
+    var(--n) calc(100% - var(--n)),
+    var(--n) calc(100% - var(--n) * 2),
+    0 calc(100% - var(--n) * 2)
+  );
+}
+
+/* ---------- Letrero ---------- */
+
+/* Contorno escalonado + superficie biselada, como el chasis de
+   las cards. El grosor inferior es una sombra dura que sigue la
+   forma escalonada (drop-shadow respeta el recorte). */
+.panel {
+  --n: 4px;
+  position: relative;
+  isolation: isolate;
+  /* ≈47 % del ancho en escritorio: repisas y armería quedan a la vista */
+  width: min(100%, 620px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-6);
+  text-align: center;
+  filter: drop-shadow(0 6px 0 var(--px-depth));
+}
+
+.panel::before,
+.panel::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+}
+
+.panel::before {
+  inset: 0;
+  background: var(--px-outline);
+}
+
+.panel::after {
+  inset: 2px;
+  background: var(--panel-bg);
+  box-shadow:
+    inset 2px 2px 0 0 var(--px-hi),
+    inset -2px -2px 0 0 var(--px-lo);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--px-ink);
+  font-family: var(--font-pixel), var(--font-display);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Gema pixel a ambos lados */
+.eyebrow::before,
+.eyebrow::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--resource-3);
+  box-shadow: inset -2px -2px 0 0 var(--resource-1);
+}
+
+.title {
+  margin: 0;
+  max-width: 22ch;
+  font-family: var(--font-pixel), var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+  text-shadow: 3px 3px 0 var(--px-ink-shadow);
+}
+
+.sub {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--fg-muted);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+/* ---------- Filtros: botones pixel ---------- */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+
+.chip {
+  --n: 2px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 0.7rem 2px;
+  background: var(--chip-bg);
+  box-shadow:
+    inset 0 0 0 2px var(--px-outline),
+    inset 0 -4px 0 0 var(--px-lo);
+  color: var(--fg-muted);
+  font-family: var(--font-pixel), var(--font-display);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition:
+    transform var(--dur-fast) steps(2, end),
+    color var(--dur-fast) steps(2, end);
+}
+
+.chip:hover {
+  color: var(--fg);
+  transform: translateY(-2px);
+}
+
+.chip:active {
+  transform: translateY(1px);
+}
+
+/* Activo: paleta posterizada con texto oscuro (AA sobre toda la franja) */
+.chip[aria-current="page"] {
+  background: var(--px-grad);
+  box-shadow:
+    inset 0 2px 0 0 rgb(255 255 255 / 0.45),
+    inset 0 -4px 0 0 rgb(122 38 20 / 0.32);
+  color: #1a0f08;
+  font-weight: 700;
+}
+
+.chip:focus-visible,
+.cue:focus-visible {
+  clip-path: none;
+  outline: 3px solid var(--px-ink);
+  outline-offset: 2px;
+}
+
+/* ---------- Flecha hacia el catálogo ---------- */
+
+.cue {
+  --n: 2px;
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--sp-12) + 8px);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-left: -20px;
+  background: var(--panel-bg);
+  box-shadow:
+    inset 0 0 0 2px var(--px-outline),
+    inset 0 -4px 0 0 var(--px-lo);
+  color: var(--px-ink);
+  animation: cue-bob 1.2s steps(2, end) infinite;
+}
+
+@keyframes cue-bob {
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+/* ---------- Utilidades ---------- */
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 640px) {
+  .panel {
+    padding: var(--sp-6) var(--sp-4);
+  }
+
+  .chip {
+    padding-inline: 0.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cue {
+    animation: none;
+  }
+}

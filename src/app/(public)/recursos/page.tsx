@@ -1,11 +1,13 @@
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { withPublicDatabaseFallback } from "@/lib/prisma-fallback";
 import {
   ResourceCard,
   type ResourceCardData,
 } from "@/features/resources/ResourceCard/ResourceCard";
-import { RESOURCE_CATEGORIES, isResourceCategory } from "@/features/resources/categories";
+import { isResourceCategory } from "@/features/resources/categories";
+import { CATALOG_ID, RecursosHero } from "@/features/resources/RecursosHero/RecursosHero";
+import { WorkshopCta } from "@/features/resources/WorkshopCta/WorkshopCta";
+import { pixelFont } from "@/features/resources/pixelFont";
 import { type ResourceCategory } from "@prisma/client";
 import styles from "./recursos.module.css";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -96,66 +98,40 @@ export default async function RecursosPage({
   };
 
   return (
-    <section className={styles.wrap}>
+    <div className={`${styles.page} ${pixelFont.variable}`}>
       <JsonLd data={collectionLd} />
-      <header className={styles.hero}>
-        <h1 className={styles.heroTitle}>Recursos gratis para acelerar tu proyecto</h1>
-        <p className={styles.heroSub}>
-          Plantillas, checklists y guías que uso a diario. Descárgalas gratis.
-        </p>
+      <RecursosHero activeCategory={activeCategory} />
 
-        <nav className={styles.chips} aria-label="Filtrar por categoría">
-          <Link
-            href="/recursos"
-            className={styles.chip}
-            aria-current={!activeCategory ? "page" : undefined}
-          >
-            Todos
-          </Link>
-          {RESOURCE_CATEGORIES.map((c) => (
-            <Link
-              key={c.value}
-              href={`/recursos?categoria=${c.value}`}
-              className={styles.chip}
-              aria-current={activeCategory === c.value ? "page" : undefined}
-            >
-              {c.label}
-            </Link>
-          ))}
-        </nav>
-      </header>
+      <section id={CATALOG_ID} className={styles.wrap} aria-label="Catálogo de recursos">
+        {featured ? (
+          <div className={styles.featured}>
+            <span className={styles.featuredTag}>Destacado</span>
+            <ResourceCard resource={toCard(featured as CardSource)} />
+          </div>
+        ) : null}
 
-      {featured ? (
-        <div className={styles.featured}>
-          <span className={styles.featuredTag}>Destacado</span>
-          <ResourceCard resource={toCard(featured as CardSource)} />
-        </div>
-      ) : null}
+        {gridResources.length === 0 ? (
+          <p className={styles.empty}>
+            {activeCategory
+              ? "No hay recursos en esta categoría todavía."
+              : "Pronto subiré nuevos recursos. ¡Vuelve pronto!"}
+          </p>
+        ) : (
+          <div className={styles.grid}>
+            {gridResources.map((r) => (
+              <ResourceCard key={r.slug} resource={toCard(r)} />
+            ))}
+          </div>
+        )}
 
-      {gridResources.length === 0 ? (
-        <p className={styles.empty}>
-          {activeCategory
-            ? "No hay recursos en esta categoría todavía."
-            : "Pronto subiré nuevos recursos. ¡Vuelve pronto!"}
-        </p>
-      ) : (
-        <div className={styles.grid}>
-          {gridResources.map((r) => (
-            <ResourceCard key={r.slug} resource={toCard(r)} />
-          ))}
-        </div>
-      )}
+        {totalDownloads > 0 ? (
+          <p className={styles.social}>
+            <strong>+{totalDownloads}</strong> descargas y contando
+          </p>
+        ) : null}
 
-      {totalDownloads > 0 ? (
-        <p className={styles.social}>+{totalDownloads} descargas y contando 🚀</p>
-      ) : null}
-
-      <div className={styles.cta}>
-        <h2 className={styles.ctaTitle}>¿Necesitas ayuda implementándolos?</h2>
-        <Link href="/servicios" className={styles.ctaBtn}>
-          Ver servicios
-        </Link>
-      </div>
-    </section>
+        <WorkshopCta />
+      </section>
+    </div>
   );
 }

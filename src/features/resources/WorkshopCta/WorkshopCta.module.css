@@ -1,0 +1,249 @@
+/* =====================================================
+   WorkshopCta — el taller de encargos
+
+   Marco pixel (contorno escalonado + grosor) con la escena
+   del taller animada dentro y un letrero centrado. Misma
+   gramática que el hero y las cards.
+   ===================================================== */
+
+.cta {
+  /* ---- Paleta pixel · modo día ---- */
+  --px-ink: color-mix(in srgb, var(--resource-1) 72%, #000);
+  --px-ink-shadow: color-mix(in srgb, var(--resource-2) 35%, transparent);
+  --px-outline: color-mix(in srgb, var(--resource-2) 18%, #d4d1d8);
+  --px-hi: color-mix(in srgb, var(--resource-3) 30%, #fff);
+  --px-lo: color-mix(in srgb, var(--resource-2) 14%, var(--border));
+  --px-depth: color-mix(in srgb, var(--resource-1) 14%, #c4b5ad);
+  --panel-bg: color-mix(in srgb, var(--resource-soft) 60%, var(--bg-elev));
+  --scene-wall: #6a3f25;
+  --scene-floor: #8c5a33;
+  /* Botón de servicios: el azul de marca, posterizado. El texto blanco
+     cae sobre la banda central (brand-600): contraste > 6:1. */
+  --btn-grad: linear-gradient(
+    90deg,
+    var(--brand-700) 0 18%,
+    var(--brand-600) 0 82%,
+    var(--brand-500) 0
+  );
+
+  --n: 4px;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  min-height: 360px;
+  padding: var(--sp-12) var(--sp-6);
+  filter: drop-shadow(0 6px 0 var(--px-depth));
+}
+
+/* ---- Paleta pixel · modo noche ---- */
+[data-theme="dark"] .cta {
+  --px-ink: var(--resource-1);
+  --px-ink-shadow: color-mix(in srgb, var(--resource-1) 30%, transparent);
+  --px-outline: color-mix(in srgb, var(--resource-2) 12%, #2b2b36);
+  --px-hi: rgb(255 212 59 / 0.09);
+  --px-lo: rgb(0 0 0 / 0.38);
+  --px-depth: rgb(0 0 0 / 0.55);
+  --panel-bg: color-mix(in srgb, var(--resource-soft) 45%, var(--bg-elev));
+  --scene-wall: #2a2034;
+  --scene-floor: #3a2a36;
+}
+
+/* ---------- Esquinas escalonadas ---------- */
+
+.cta::before,
+.scene,
+.panel::before,
+.panel::after,
+.btn {
+  clip-path: polygon(
+    0 calc(var(--n) * 2),
+    var(--n) calc(var(--n) * 2),
+    var(--n) var(--n),
+    calc(var(--n) * 2) var(--n),
+    calc(var(--n) * 2) 0,
+    calc(100% - var(--n) * 2) 0,
+    calc(100% - var(--n) * 2) var(--n),
+    calc(100% - var(--n)) var(--n),
+    calc(100% - var(--n)) calc(var(--n) * 2),
+    100% calc(var(--n) * 2),
+    100% calc(100% - var(--n) * 2),
+    calc(100% - var(--n)) calc(100% - var(--n) * 2),
+    calc(100% - var(--n)) calc(100% - var(--n)),
+    calc(100% - var(--n) * 2) calc(100% - var(--n)),
+    calc(100% - var(--n) * 2) 100%,
+    calc(var(--n) * 2) 100%,
+    calc(var(--n) * 2) calc(100% - var(--n)),
+    var(--n) calc(100% - var(--n)),
+    var(--n) calc(100% - var(--n) * 2),
+    0 calc(100% - var(--n) * 2)
+  );
+}
+
+/* Contorno del marco */
+.cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: var(--px-outline);
+}
+
+/* ---------- Escena ---------- */
+
+.scene {
+  position: absolute;
+  inset: 3px;
+  z-index: -1;
+  overflow: hidden;
+  background: linear-gradient(var(--scene-wall) 0 86%, var(--scene-floor) 0);
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  image-rendering: pixelated;
+  opacity: 0;
+  transition: opacity 400ms steps(4, end);
+}
+
+.canvas[data-ready] {
+  opacity: 1;
+}
+
+/* ---------- Letrero ---------- */
+
+.panel {
+  --n: 3px;
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 520px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-6) var(--sp-6) var(--sp-8);
+  text-align: center;
+  filter: drop-shadow(0 4px 0 var(--px-depth));
+}
+
+.panel::before,
+.panel::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+}
+
+.panel::before {
+  inset: 0;
+  background: var(--px-outline);
+}
+
+.panel::after {
+  inset: 2px;
+  background: var(--panel-bg);
+  box-shadow:
+    inset 2px 2px 0 0 var(--px-hi),
+    inset -2px -2px 0 0 var(--px-lo);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--px-ink);
+  font-family: var(--font-pixel), var(--font-display);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.eyebrow::before,
+.eyebrow::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--resource-3);
+  box-shadow: inset -2px -2px 0 0 var(--resource-1);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-pixel), var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  line-height: 1.15;
+  text-wrap: balance;
+  text-shadow: 2px 2px 0 var(--px-ink-shadow);
+}
+
+.sub {
+  margin: 0;
+  max-width: 40ch;
+  color: var(--fg-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+
+/* Botón 8-bit: bisel, grosor inferior que se hunde al pulsar */
+.btn {
+  --n: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: var(--sp-2);
+  padding: 0 var(--sp-8) 3px;
+  background: var(--btn-grad);
+  box-shadow:
+    inset 0 2px 0 0 rgb(255 255 255 / 0.35),
+    inset 0 -4px 0 0 rgb(10 14 60 / 0.4);
+  color: #fff;
+  font-family: var(--font-pixel), var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  transition:
+    transform var(--dur-fast) steps(2, end),
+    filter var(--dur-fast) steps(2, end);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.btn:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 2px 0 0 rgb(255 255 255 / 0.25),
+    inset 0 -2px 0 0 rgb(10 14 60 / 0.4);
+}
+
+.btn:focus-visible {
+  clip-path: none;
+  outline: 3px solid var(--px-ink);
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .cta {
+    min-height: 420px;
+    padding: var(--sp-8) var(--sp-4);
+  }
+
+  .panel {
+    padding: var(--sp-6) var(--sp-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:hover,
+  .btn:active {
+    transform: none;
+  }
+}
