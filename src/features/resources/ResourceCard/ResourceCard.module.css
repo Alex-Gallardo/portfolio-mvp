@@ -1,23 +1,66 @@
 /* =====================================================
    ResourceCard — escalón 1 del funnel (lead magnet)
 
-   Metáfora: un paquete envuelto.
-   · Reposo  → calmado y COMPLETO. Todo lo que hace falta
-               para decidir está visible sin hover (táctil
-               no tiene hover: el reposo es la card real).
-   · Hover   → se desenvuelve: borde cálido, glow, sheen
-               cruzando la portada y CTA con más presencia.
+   Metáfora: un ítem de inventario 8-bit.
+   · Reposo  → calmado y COMPLETO, pero vivo: los destellos
+               centellean siempre (táctil no tiene hover:
+               el reposo es la card real).
+   · Hover   → el bloque se eleva: crece su grosor, el
+               contorno se tiñe con la paleta posterizada,
+               salen destellos extra y el CTA cicla color.
 
-   Firma visual: la línea de troquel punteada que separa
-   "qué es" de "qué recibo" — el borde por donde se abre.
+   Gramática pixel: esquinas escalonadas, contornos de 2px,
+   bisel luz/sombra, degradados en bandas (sin suavizado)
+   y transiciones en steps() — se mueve por fotogramas.
    ===================================================== */
 
 .card {
   /* Un solo gutter manda en todo el interior: portada, texto,
-     manifiesto y acciones alinean contra el mismo eje. */
+     inventario y acciones alinean contra el mismo eje. */
   --gutter: var(--sp-3);
-  --media-radius: calc(var(--radius-lg) - var(--sp-2));
-  --hairline: color-mix(in srgb, var(--fg) 8%, transparent);
+  --n: 2px; /* peldaño de las esquinas escalonadas */
+  --depth: 6px; /* grosor del bloque */
+  --lift: 4px; /* lo que sube al desenvolver */
+
+  /* ---- Paleta pixel · modo día ---- */
+  --px-ink: color-mix(in srgb, var(--resource-1) 72%, #000); /* coral legible (AA) */
+  --px-ink-shadow: color-mix(in srgb, var(--resource-2) 35%, transparent);
+  --px-outline: color-mix(in srgb, var(--resource-2) 18%, #d4d1d8);
+  --px-depth: color-mix(in srgb, var(--resource-1) 14%, #c4b5ad);
+  --px-depth-hot: color-mix(in srgb, var(--resource-1) 55%, #c4b5ad);
+  --px-hi: color-mix(in srgb, var(--resource-3) 30%, #fff);
+  --px-lo: color-mix(in srgb, var(--resource-2) 14%, var(--border));
+  --px-dither: color-mix(in srgb, var(--resource-2) 22%, transparent);
+  --px-slot: var(--resource-soft);
+  --px-slot-line: color-mix(in srgb, var(--resource-2) 30%, transparent);
+  --px-media-line: rgb(58 36 26 / 0.45);
+
+  /* El degradado de marca, posterizado: mismos 3 colores + 2 mezclas
+     en bandas duras. Es la firma pixel de toda la pieza. */
+  --px-m12: color-mix(in srgb, var(--resource-1), var(--resource-2));
+  --px-m23: color-mix(in srgb, var(--resource-2), var(--resource-3));
+  --px-grad: linear-gradient(
+    90deg,
+    var(--resource-1) 0 20%,
+    var(--px-m12) 0 40%,
+    var(--resource-2) 0 60%,
+    var(--px-m23) 0 80%,
+    var(--resource-3) 0
+  );
+  --px-grad-diag: linear-gradient(
+    135deg,
+    var(--resource-1) 0 20%,
+    var(--px-m12) 0 40%,
+    var(--resource-2) 0 60%,
+    var(--px-m23) 0 80%,
+    var(--resource-3) 0
+  );
+
+  /* Destellos: coral/ámbar para que se vean sobre blanco */
+  --spark-core: #fff;
+  --spark-1: var(--resource-1);
+  --spark-2: var(--resource-2);
+  --spark-glow: color-mix(in srgb, var(--resource-2) 55%, transparent);
 
   position: relative;
   isolation: isolate;
@@ -27,69 +70,188 @@
   flex-direction: column;
   gap: var(--gutter);
   height: 100%;
-  padding: var(--gutter);
-
-  background: var(--bg-elev);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  /* +4px: el contorno y el bisel viven dentro de la caja;
+     abajo, además, el grosor del bloque. */
+  padding: calc(var(--gutter) + 4px) calc(var(--gutter) + 4px)
+    calc(var(--gutter) + 4px + var(--depth));
 
   transition:
-    transform var(--dur) var(--ease),
-    box-shadow var(--dur) var(--ease),
-    border-color var(--dur) var(--ease);
+    transform var(--dur) steps(2, end),
+    box-shadow var(--dur) var(--ease);
+}
+
+/* ---- Paleta pixel · modo noche ---- */
+[data-theme="dark"] .card {
+  --px-ink: var(--resource-1);
+  --px-ink-shadow: color-mix(in srgb, var(--resource-1) 30%, transparent);
+  --px-outline: color-mix(in srgb, var(--resource-2) 12%, #2b2b36);
+  --px-depth: color-mix(in srgb, var(--resource-2) 7%, #1f1c22);
+  --px-depth-hot: color-mix(in srgb, var(--resource-1) 50%, #1f1c22);
+  --px-hi: rgb(255 212 59 / 0.09);
+  --px-lo: rgb(0 0 0 / 0.38);
+  --px-dither: color-mix(in srgb, var(--resource-1) 13%, transparent);
+  --px-slot-line: color-mix(in srgb, var(--resource-2) 22%, transparent);
+  --px-media-line: rgb(0 0 0 / 0.6);
+
+  /* Oro y blanco con resplandor: brillan sobre el fondo oscuro */
+  --spark-1: var(--resource-3);
+  --spark-glow: rgb(255 212 59 / 0.7);
 }
 
 .card:hover,
 .card:focus-within {
-  transform: translateY(-6px);
+  transform: translateY(calc(-1 * var(--lift)));
   box-shadow: var(--resource-glow);
-  border-color: transparent;
 }
 
-/* Borde degradado (coral → ámbar → dorado) que aparece al desenvolver */
-.card::before {
+/* ---------- Esquinas escalonadas ----------
+   Escalera de 2 peldaños de --n px. Una sola regla para todas
+   las piezas: cada una fija su --n y comparten el mismo dibujo. */
+
+.chassis,
+.chassis::before,
+.chassis::after,
+.media,
+.badge,
+.badgeNew,
+.peek,
+.format,
+.slot,
+.downloadBtn {
+  clip-path: polygon(
+    0 calc(var(--n) * 2),
+    var(--n) calc(var(--n) * 2),
+    var(--n) var(--n),
+    calc(var(--n) * 2) var(--n),
+    calc(var(--n) * 2) 0,
+    calc(100% - var(--n) * 2) 0,
+    calc(100% - var(--n) * 2) var(--n),
+    calc(100% - var(--n)) var(--n),
+    calc(100% - var(--n)) calc(var(--n) * 2),
+    100% calc(var(--n) * 2),
+    100% calc(100% - var(--n) * 2),
+    calc(100% - var(--n)) calc(100% - var(--n) * 2),
+    calc(100% - var(--n)) calc(100% - var(--n)),
+    calc(100% - var(--n) * 2) calc(100% - var(--n)),
+    calc(100% - var(--n) * 2) 100%,
+    calc(var(--n) * 2) 100%,
+    calc(var(--n) * 2) calc(100% - var(--n)),
+    var(--n) calc(100% - var(--n)),
+    var(--n) calc(100% - var(--n) * 2),
+    0 calc(100% - var(--n) * 2)
+  );
+}
+
+/* ---------- Chasis: grosor + contorno + superficie ---------- */
+
+/* El propio chasis es la cara inferior del bloque (su grosor).
+   En hover se estira hacia abajo lo mismo que sube la card:
+   la base queda plantada y el bloque "crece". */
+.chassis {
+  --n: 4px;
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--px-depth);
+  pointer-events: none;
+  transition: bottom var(--dur) steps(2, end);
+}
+
+/* Contorno: forma escalonada completa. La superficie se monta
+   encima 2px más adentro, así el contorno sigue la escalera. */
+.chassis::before,
+.chassis::after {
   content: "";
   position: absolute;
-  inset: -1px;
-  z-index: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: var(--resource-grad);
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity var(--dur) var(--ease);
-  pointer-events: none;
+  transition: inset var(--dur) steps(2, end);
 }
 
-.card:hover::before,
-.card:focus-within::before {
+.chassis::before {
+  inset: 0 0 var(--depth);
+  background: var(--px-outline);
+}
+
+/* Superficie con bisel: luz arriba-izquierda, sombra abajo-derecha */
+.chassis::after {
+  inset: 2px 2px calc(var(--depth) + 2px);
+  background: var(--bg-elev);
+  box-shadow:
+    inset 2px 2px 0 0 var(--px-hi),
+    inset -2px -2px 0 0 var(--px-lo);
+}
+
+.card:hover .chassis,
+.card:focus-within .chassis {
+  bottom: calc(-1 * var(--lift));
+  background: var(--px-depth-hot);
+}
+
+/* Al desenvolver, el contorno se tiñe con la paleta posterizada
+   y engorda de 2 a 4px. */
+.card:hover .chassis::before,
+.card:focus-within .chassis::before {
+  bottom: calc(var(--depth) + var(--lift));
+  background: var(--px-grad-diag);
+}
+
+.card:hover .chassis::after,
+.card:focus-within .chassis::after {
+  inset: 4px 4px calc(var(--depth) + var(--lift) + 4px);
+}
+
+/* Suelo con dithering en bandas: el pedestal del CTA */
+.ground {
+  position: absolute;
+  z-index: -1;
+  inset: auto 4px calc(var(--depth) + 4px);
+  height: 26%;
+  background: conic-gradient(
+      var(--px-dither) 25%,
+      transparent 0 50%,
+      var(--px-dither) 0 75%,
+      transparent 0
+    )
+    0 0 / 4px 4px;
+  -webkit-mask-image: linear-gradient(
+    to top,
+    #000 0 25%,
+    rgb(0 0 0 / 0.55) 0 50%,
+    rgb(0 0 0 / 0.25) 0 75%,
+    transparent 0
+  );
+  mask-image: linear-gradient(
+    to top,
+    #000 0 25%,
+    rgb(0 0 0 / 0.55) 0 50%,
+    rgb(0 0 0 / 0.25) 0 75%,
+    transparent 0
+  );
+  opacity: 0.75;
+  pointer-events: none;
+  transition: opacity var(--dur) steps(2, end);
+}
+
+.card:hover .ground,
+.card:focus-within .ground {
   opacity: 1;
 }
 
 /* ---------- Portada ---------- */
 
 .media {
+  --n: 2px;
   position: relative;
   aspect-ratio: 16 / 10;
-  border-radius: var(--media-radius);
   overflow: hidden;
   isolation: isolate;
   background: var(--resource-soft);
-  box-shadow: inset 0 0 0 1px var(--hairline);
 }
 
 .cover {
   object-fit: cover;
   transition:
-    transform var(--dur-slow) var(--ease),
-    filter var(--dur) var(--ease);
+    transform var(--dur-slow) steps(3, end),
+    filter var(--dur) steps(2, end);
 }
 
 /* La portada ES el producto: en hover se acerca y gana vida,
@@ -99,38 +261,22 @@
   filter: saturate(1.08);
 }
 
-/* Scrim superior permanente: garantiza contraste del badge
-   sobre cualquier imagen, clara u oscura. */
-.media::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  z-index: 1;
-  height: 46%;
-  background: linear-gradient(
-    to bottom,
-    rgba(10, 7, 5, 0.6),
-    rgba(10, 7, 5, 0.18) 55%,
-    transparent
-  );
-  pointer-events: none;
-}
+/* Sin scrims sobre la imagen: los sellos llevan su propio fondo
+   opaco, así el contraste no depende de la portada y la imagen
+   no se ensucia con bandas oscuras. */
 
-/* Scrim inferior: sólo aparece para sostener el "Ver detalles" */
-.media::after {
-  content: "";
+/* Pantalla: contorno + bisel interior + scanlines sutiles.
+   Unifica cualquier portada bajo el mismo lenguaje pixel. */
+.screen {
   position: absolute;
-  inset: auto 0 0;
-  z-index: 1;
-  height: 40%;
-  background: linear-gradient(to top, rgba(10, 7, 5, 0.55), transparent);
-  opacity: 0;
-  transition: opacity var(--dur) var(--ease);
+  inset: 0;
+  z-index: 2;
+  background: repeating-linear-gradient(0deg, rgb(0 0 0 / 0.04) 0 1px, transparent 1px 3px);
+  box-shadow:
+    inset 0 0 0 2px var(--px-media-line),
+    inset 4px 4px 0 0 rgb(255 255 255 / 0.16),
+    inset -4px -4px 0 0 rgb(0 0 0 / 0.2);
   pointer-events: none;
-}
-
-.card:hover .media::after {
-  opacity: 1;
 }
 
 /* Fallback cuando no hay portada: mantiene el ritmo del grid
@@ -141,32 +287,36 @@
   display: grid;
   place-items: center;
   background:
-    repeating-linear-gradient(135deg, transparent 0 10px, var(--hairline) 10px 11px),
+    conic-gradient(var(--px-dither) 25%, transparent 0 50%, var(--px-dither) 0 75%, transparent 0) 0
+      0 / 8px 8px,
     var(--resource-soft);
 }
 
 .fallbackIcon {
-  width: 2.75rem;
-  height: 2.75rem;
-  color: var(--resource-1);
-  opacity: 0.5;
+  color: var(--px-ink);
+  opacity: 0.55;
 }
 
-/* Destello que cruza la portada: el papel de regalo rasgándose */
+/* Reflejo pixel: dos barras que cruzan la portada por fotogramas */
 .sheen {
   position: absolute;
-  inset-block: -20%;
-  left: -30%;
+  inset: 0;
   z-index: 2;
-  width: 34%;
-  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-  transform: translateX(-160%) skewX(-16deg);
+  background: linear-gradient(
+      105deg,
+      transparent 0 10px,
+      rgb(255 255 255 / 0.32) 0 26px,
+      transparent 0 32px,
+      rgb(255 255 255 / 0.32) 0 38px,
+      transparent 0
+    ) -60px
+    0 / 60px 100% no-repeat;
   pointer-events: none;
 }
 
 .card:hover .sheen {
-  transform: translateX(460%) skewX(-16deg);
-  transition: transform 900ms var(--ease);
+  background-position: calc(100% + 60px) 0;
+  transition: background-position 800ms steps(12, end);
 }
 
 /* ---------- Sellos sobre la portada ---------- */
@@ -180,43 +330,60 @@
   gap: var(--sp-2);
 }
 
-.badge {
+.badge,
+.badgeNew,
+.peek {
+  --n: 2px;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: var(--sp-1) var(--sp-3);
-  border-radius: var(--radius-full);
-  background: rgba(18, 12, 9, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: #fff;
+  padding: 0.38rem 0.6rem 0.34rem;
+  font-family: var(--font-pixel), var(--font-display);
   font-size: var(--fs-xs);
   font-weight: 600;
-  letter-spacing: 0.02em;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
+.badge {
+  gap: 0.45rem;
+  background: rgb(18 12 9 / 0.8);
+  box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.14);
+  color: #fff;
+}
+
+/* Gema de 6px con sombreado pixel; centellea a su ritmo */
 .badge::before {
   content: "";
-  width: 0.45rem;
-  height: 0.45rem;
+  width: 6px;
+  height: 6px;
   flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--resource-grad);
+  background: var(--resource-3);
+  box-shadow: inset -2px -2px 0 0 var(--resource-1);
+  animation: px-gem 3.3s step-end var(--gem-delay, 0s) infinite;
 }
 
-/* Único elemento con el degradado sólido arriba: se gana el ojo
+@keyframes px-gem {
+  0% {
+    background-color: #fff;
+    box-shadow: inset -2px -2px 0 0 var(--resource-3);
+  }
+  6% {
+    background-color: var(--resource-3);
+    box-shadow: inset -2px -2px 0 0 var(--resource-1);
+  }
+}
+
+/* Único elemento con la paleta sólida arriba: se gana el ojo
    porque comunica escasez temporal, no decora. */
 .badgeNew {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--sp-1) var(--sp-3);
-  border-radius: var(--radius-full);
-  background: var(--resource-grad);
+  gap: 0.35rem;
+  background: var(--px-grad);
+  box-shadow:
+    inset 0 2px 0 0 rgb(255 255 255 / 0.45),
+    inset 0 -2px 0 0 rgb(122 38 20 / 0.3);
   color: #1a0f08;
-  font-size: var(--fs-xs);
   font-weight: 700;
-  letter-spacing: 0.02em;
 }
 
 .peek {
@@ -224,23 +391,15 @@
   z-index: 3;
   right: var(--sp-2);
   bottom: var(--sp-2);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: var(--sp-1) var(--sp-3);
-  border-radius: var(--radius-full);
-  background: rgba(18, 12, 9, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  gap: 0.4rem;
+  background: rgb(18 12 9 / 0.82);
+  box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.16);
   color: #fff;
-  font-size: var(--fs-xs);
-  font-weight: 600;
   opacity: 0;
   transform: translateY(6px);
   transition:
-    opacity var(--dur) var(--ease),
-    transform var(--dur) var(--ease);
+    opacity var(--dur) steps(2, end),
+    transform var(--dur) steps(2, end);
   pointer-events: none;
 }
 
@@ -251,9 +410,7 @@
 }
 
 .peekIcon {
-  width: 0.85rem;
-  height: 0.85rem;
-  transition: transform var(--dur) var(--ease);
+  transition: transform var(--dur) steps(2, end);
 }
 
 .card:hover .peekIcon {
@@ -277,9 +434,11 @@
 
 .title {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-pixel), var(--font-display);
   font-size: var(--fs-lg);
-  line-height: 1.25;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
   text-wrap: balance;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -291,12 +450,16 @@
 .titleLink {
   color: var(--fg);
   text-decoration: none;
-  transition: color var(--dur-fast) var(--ease);
+  transition:
+    color var(--dur-fast) steps(2, end),
+    text-shadow var(--dur-fast) steps(2, end);
 }
 
+/* Sombra dura de 2px: el título "se levanta" como un sprite */
 .titleLink:hover,
 .card:hover .titleLink {
-  color: var(--resource-1);
+  color: var(--px-ink);
+  text-shadow: 2px 2px 0 var(--px-ink-shadow);
 }
 
 /* Stretched link: toda la card lleva al detalle (ley de Fitts),
@@ -306,7 +469,6 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  border-radius: inherit;
 }
 
 .summary {
@@ -322,10 +484,11 @@
   overflow: hidden;
 }
 
-/* Foco visible en la card entera, no en el texto del título */
+/* Foco visible en la card entera, no en el texto del título.
+   Contorno cuadrado (selección pixel) en tinta AA de ambos temas. */
 .card:has(.titleLink:focus-visible) {
-  outline: 2px solid var(--resource-2);
-  outline-offset: 3px;
+  outline: 3px solid var(--px-ink);
+  outline-offset: 4px;
 }
 
 @supports selector(:has(*)) {
@@ -336,14 +499,14 @@
 
 @supports not selector(:has(*)) {
   .titleLink:focus-visible {
-    outline: 2px solid var(--resource-2);
+    outline: 3px solid var(--px-ink);
     outline-offset: 2px;
-    border-radius: var(--radius-sm);
   }
 }
 
-/* ---------- Manifiesto: la línea de troquel ---------- */
+/* ---------- Inventario: qué recibo ---------- */
 
+/* Línea de troquel en guiones pixel de 2px */
 .manifest {
   display: flex;
   align-items: center;
@@ -351,7 +514,8 @@
   flex-wrap: wrap;
   gap: var(--sp-2);
   padding-top: var(--gutter);
-  border-top: 1px dashed var(--border);
+  background: repeating-linear-gradient(90deg, var(--px-outline) 0 4px, transparent 0 8px) top
+    left / 100% 2px no-repeat;
 }
 
 .contents {
@@ -366,13 +530,15 @@
 
 /* El formato es el dato que decide la descarga: se lee primero */
 .format {
-  padding: 0.16rem 0.4rem;
-  border-radius: var(--radius-sm);
-  background: var(--resource-soft);
-  color: var(--resource-1);
-  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", monospace);
-  font-size: 0.68rem;
+  --n: 2px;
+  padding: 0.3rem 0.45rem 0.26rem;
+  background: var(--px-slot);
+  box-shadow: inset 0 0 0 2px var(--px-slot-line);
+  color: var(--px-ink);
+  font-family: var(--font-pixel), ui-monospace, "SFMono-Regular", monospace;
+  font-size: 0.72rem;
   font-weight: 700;
+  line-height: 1;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -380,21 +546,43 @@
 .contentsItem {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
   color: var(--fg-muted);
   font-size: var(--fs-xs);
 }
 
 .contentsItem + .contentsItem::before {
   content: "·";
-  margin-right: 0.3rem;
+  margin-right: 0.1rem;
   opacity: 0.6;
+}
+
+/* Casilla de inventario: sprite + contador de pila "×2" */
+.slot {
+  --n: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 24px;
+  padding: 0 0.45rem 0 0.4rem;
+  flex-shrink: 0;
+  background: var(--px-slot);
+  box-shadow: inset 0 0 0 2px var(--px-slot-line);
+  color: var(--px-ink);
+}
+
+.stack {
+  color: var(--fg);
+  font-family: var(--font-pixel), var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .downloads {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.4rem;
   margin: 0;
   color: var(--fg-muted);
   font-size: var(--fs-xs);
@@ -403,21 +591,33 @@
 
 .downloads strong {
   color: var(--fg);
+  font-family: var(--font-pixel), var(--font-display);
   font-weight: 700;
 }
 
 /* Prueba social sólo cuando el número realmente convence */
-.downloadsHot {
-  color: var(--resource-1);
+.downloadsHot,
+.downloadsHot strong {
+  color: var(--px-ink);
 }
 
-.downloadsHot strong {
-  color: var(--resource-1);
+/* La estrella de "popular" centellea de vez en cuando */
+.downloadsHot .metaIcon {
+  animation: px-star 4.1s step-end var(--star-delay, 0s) infinite;
+}
+
+@keyframes px-star {
+  0% {
+    color: var(--resource-3);
+    filter: drop-shadow(0 0 2px var(--resource-3));
+  }
+  5% {
+    color: var(--px-ink);
+    filter: none;
+  }
 }
 
 .metaIcon {
-  width: 0.9rem;
-  height: 0.9rem;
   flex-shrink: 0;
 }
 
@@ -432,76 +632,93 @@
   gap: var(--sp-2);
 }
 
+/* Botón 8-bit: paleta posterizada, bisel y grosor inferior que se
+   "hunde" al pulsar. Texto oscuro: blanco sobre ámbar/dorado no
+   llegaba a AA (~2:1); así supera 6:1 en toda la franja. */
 .downloadBtn {
-  --icon-download: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3Cpath d='M12 15V3'/%3E%3C/svg%3E");
-
+  --n: 3px;
   position: relative;
   overflow: hidden;
   width: 100%;
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: var(--sp-3) var(--sp-4);
-  background: var(--resource-grad);
-  background-size: 160% 100%;
-  background-position: 0% 0;
-  color: #fff;
+  gap: 0.55rem;
+  padding: var(--sp-3) var(--sp-4) calc(var(--sp-3) + 2px);
+  background: var(--px-grad);
+  background-size: 125% 100%;
+  background-position: 0 0;
+  color: #1a0f08;
   border: none;
-  border-radius: var(--radius-full);
+  font-family: var(--font-pixel), var(--font-display);
   font-weight: 700;
   font-size: var(--fs-sm);
+  letter-spacing: 0.03em;
   cursor: pointer;
-  /* Sombra contenida en reposo: en un grid de 6 cards, 6 halos
-     compitiendo es ruido. El halo se gana en hover. */
-  box-shadow: 0 3px 10px rgba(255, 107, 107, 0.18);
+  box-shadow:
+    inset 0 2px 0 0 rgb(255 255 255 / 0.45),
+    inset 0 -4px 0 0 rgb(122 38 20 / 0.32);
   transition:
-    transform var(--dur-fast) var(--ease),
-    box-shadow var(--dur) var(--ease),
-    background-position var(--dur-slow) var(--ease),
-    filter var(--dur-fast) var(--ease);
+    transform var(--dur-fast) steps(2, end),
+    box-shadow var(--dur-fast) steps(2, end),
+    background-position var(--dur) steps(3, end),
+    filter var(--dur-fast) steps(2, end);
 }
 
-/* Icono de descarga: afordancia explícita del CTA.
-   Vive aquí para no tocar DownloadButton; bórralo si ese
-   componente ya renderiza su propio icono. */
+/* Icono de descarga en pixel: afordancia explícita del CTA.
+   La máscara llega como --icon-download desde el componente
+   para no tocar DownloadButton. */
 .downloadBtn::before {
   content: "";
-  width: 1rem;
-  height: 1rem;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
   background: currentColor;
-  -webkit-mask: var(--icon-download) center / contain no-repeat;
-  mask: var(--icon-download) center / contain no-repeat;
-  transition: transform var(--dur) var(--ease);
+  -webkit-mask: var(--icon-download) center / 16px 16px no-repeat;
+  mask: var(--icon-download) center / 16px 16px no-repeat;
+  transition: transform var(--dur) steps(2, end);
 }
 
-/* Barrido de luz */
+/* Destello periódico que cruza el botón por fotogramas, siempre,
+   no sólo en hover. Cada card lleva su propio desfase. */
 .downloadBtn::after {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    110deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.45) 50%,
-    transparent 70%
-  );
-  background-size: 200% 100%;
-  background-position: -200% 0;
+      105deg,
+      transparent 0 6px,
+      rgb(255 255 255 / 0.5) 0 14px,
+      transparent 0 18px,
+      rgb(255 255 255 / 0.5) 0 22px,
+      transparent 0
+    ) -40px
+    0 / 40px 100% no-repeat;
+  animation: px-sweep 7.3s var(--glint-delay, 0s) infinite;
   pointer-events: none;
 }
 
+@keyframes px-sweep {
+  0% {
+    background-position: -40px 0;
+    animation-timing-function: steps(12, end);
+  }
+  12%,
+  100% {
+    background-position: calc(100% + 40px) 0;
+  }
+}
+
 /* El CTA reacciona también al hover de la card, no sólo al suyo:
-   el usuario ya declaró intención al entrar en la pieza. */
+   el usuario ya declaró intención al entrar en la pieza. Las
+   bandas se desplazan → ciclo de paleta, muy 8-bit. */
 .card:hover .downloadBtn {
   background-position: 100% 0;
-  box-shadow: var(--resource-glow);
 }
 
 .downloadBtn:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.05);
+  filter: brightness(1.06) saturate(1.05);
 }
 
 .downloadBtn:hover::before {
@@ -509,22 +726,31 @@
 }
 
 .downloadBtn:hover::after {
-  animation: card-shimmer 1.1s var(--ease) both;
+  animation: px-sweep-now 600ms steps(10, end) both;
+}
+
+@keyframes px-sweep-now {
+  from {
+    background-position: -40px 0;
+  }
+  to {
+    background-position: calc(100% + 40px) 0;
+  }
 }
 
 .downloadBtn:active {
-  transform: translateY(0) scale(0.985);
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 2px 0 0 rgb(255 255 255 / 0.3),
+    inset 0 -2px 0 0 rgb(122 38 20 / 0.32);
 }
 
+/* clip-path recortaría el outline: en foco el botón pasa a
+   esquina recta y gana un contorno de selección cuadrado. */
 .downloadBtn:focus-visible {
-  outline: 2px solid var(--resource-2);
+  clip-path: none;
+  outline: 3px solid var(--px-ink);
   outline-offset: 3px;
-}
-
-@keyframes card-shimmer {
-  to {
-    background-position: 200% 0;
-  }
 }
 
 .trust {
@@ -535,19 +761,110 @@
   margin: 0;
   color: var(--fg-muted);
   font-size: var(--fs-xs);
-  opacity: 0.85;
 }
 
 .trustIcon {
-  width: 0.9rem;
-  height: 0.9rem;
   flex-shrink: 0;
   color: var(--success);
 }
 
+/* ---------- Destellos 8-bit ----------
+   Mismo espíritu que Skills: la card NO emite luz, el brillo vive en
+   la partícula. Cada destello es un píxel que dibuja sus vecinos con
+   box-shadow (colores del tema) y cambia de fotograma con step-end:
+   punto → cruz → estrella → cruz → estallido → nada. */
+
+.sparks {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.spark {
+  --p: 2px;
+  --p2: calc(var(--p) * 2);
+  --p3: calc(var(--p) * 3);
+
+  --f-plus:
+    var(--p) 0 var(--spark-1), calc(-1 * var(--p)) 0 var(--spark-1), 0 var(--p) var(--spark-1),
+    0 calc(-1 * var(--p)) var(--spark-1);
+  --f-star:
+    var(--p) 0 var(--spark-1), calc(-1 * var(--p)) 0 var(--spark-1), 0 var(--p) var(--spark-1),
+    0 calc(-1 * var(--p)) var(--spark-1), var(--p2) 0 var(--spark-1),
+    calc(-1 * var(--p2)) 0 var(--spark-1), 0 var(--p2) var(--spark-1),
+    0 calc(-1 * var(--p2)) var(--spark-1), var(--p3) 0 var(--spark-2),
+    calc(-1 * var(--p3)) 0 var(--spark-2), 0 var(--p3) var(--spark-2),
+    0 calc(-1 * var(--p3)) var(--spark-2), var(--p) var(--p) var(--spark-2),
+    calc(-1 * var(--p)) var(--p) var(--spark-2), var(--p) calc(-1 * var(--p)) var(--spark-2),
+    calc(-1 * var(--p)) calc(-1 * var(--p)) var(--spark-2);
+  /* Sólo quedan las puntas: el destello se apaga desde el centro */
+  --f-burst:
+    var(--p3) 0 var(--spark-2), calc(-1 * var(--p3)) 0 var(--spark-2), 0 var(--p3) var(--spark-2),
+    0 calc(-1 * var(--p3)) var(--spark-2);
+
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--p);
+  height: var(--p);
+  margin: calc(var(--p) / -2) 0 0 calc(var(--p) / -2);
+  opacity: 0;
+  filter: drop-shadow(0 0 3px var(--spark-glow));
+  animation: px-twinkle var(--d, 4.3s) step-end var(--delay, 0s) infinite;
+}
+
+.spark[data-big] {
+  --p: 3px;
+}
+
+/* Extra: sólo cuando la card se desenvuelve */
+.spark[data-extra] {
+  visibility: hidden;
+}
+
+.card:hover .spark[data-extra],
+.card:focus-within .spark[data-extra] {
+  visibility: visible;
+}
+
+/* Asimétrica, como el ore-glint de Skills: ventana de ~13 % del
+   ciclo, invisible el resto. Esa proporción se percibe como rareza. */
+@keyframes px-twinkle {
+  0% {
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+    background-color: var(--spark-1);
+    box-shadow: none;
+  }
+  4% {
+    background-color: var(--spark-core);
+    box-shadow: var(--f-plus);
+  }
+  6.5% {
+    background-color: var(--spark-core);
+    box-shadow: var(--f-star);
+  }
+  9% {
+    background-color: var(--spark-core);
+    box-shadow: var(--f-plus);
+  }
+  11% {
+    background-color: transparent;
+    box-shadow: var(--f-burst);
+  }
+  13%,
+  100% {
+    opacity: 0;
+    box-shadow: none;
+  }
+}
+
 /* ---------- Respuesta al ancho de la propia card ---------- */
 
-/* Cards estrechas (2–3 columnas apretadas): el manifiesto se apila
+/* Cards estrechas (2–3 columnas apretadas): el inventario se apila
    en vez de romper en dos líneas desalineadas. */
 @container (max-width: 280px) {
   .manifest {
@@ -564,7 +881,7 @@
   /* Alinea los CTA entre cards del mismo row aunque el título
      ocupe 1 o 2 líneas. */
   .title {
-    min-height: calc(2 * 1.25em);
+    min-height: calc(2 * 1.2em);
   }
 
   .summary {
@@ -572,43 +889,50 @@
   }
 }
 
-/* ---------- Movimiento reducido ---------- */
+/* ---------- Movimiento reducido ----------
+   El reset global colapsa duraciones a 0.01ms; aquí además se
+   apagan los bucles y quedan dos destellos estáticos como adorno. */
 
 @media (prefers-reduced-motion: reduce) {
-  .card,
-  .cover,
-  .sheen,
-  .peek,
-  .peekIcon,
-  .downloadBtn,
-  .downloadBtn::before {
-    transition-duration: 1ms;
-    animation: none;
-  }
-
   .card:hover,
-  .card:focus-within {
+  .card:focus-within,
+  .card:hover .cover,
+  .peek,
+  .card:hover .peekIcon,
+  .downloadBtn:active,
+  .downloadBtn:hover::before {
     transform: none;
   }
 
-  .card:hover .cover {
-    transform: none;
+  .card:hover .chassis,
+  .card:focus-within .chassis {
+    bottom: 0;
   }
 
-  .sheen {
+  .card:hover .chassis::before,
+  .card:focus-within .chassis::before {
+    bottom: var(--depth);
+  }
+
+  .card:hover .chassis::after,
+  .card:focus-within .chassis::after {
+    inset: 4px 4px calc(var(--depth) + 4px);
+  }
+
+  .sheen,
+  .downloadBtn::after {
     display: none;
   }
 
-  .peek {
-    transform: none;
-  }
-
-  .downloadBtn:hover,
-  .downloadBtn:active {
-    transform: none;
-  }
-
-  .downloadBtn:hover::after {
+  .badge::before,
+  .downloadsHot .metaIcon,
+  .spark {
     animation: none;
+  }
+
+  .spark[data-big]:not([data-extra]) {
+    opacity: 0.75;
+    background-color: var(--spark-core);
+    box-shadow: var(--f-plus);
   }
 }

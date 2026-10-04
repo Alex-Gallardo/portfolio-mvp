@@ -21,7 +21,7 @@
 
   /* Full bleed: la cinta rompe el contenedor y toca los dos bordes.
      Si ya la montas fuera del container, borra estas dos líneas. */
-  width: 100vw;
+  width: 100%;
   margin-inline: calc(50% - 50vw);
 
   /* Abajo resta lo que ya aporta el hueco del tooltip: la sección
