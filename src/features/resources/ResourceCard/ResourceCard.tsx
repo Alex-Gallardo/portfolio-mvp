@@ -1,20 +1,13 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Pixelify_Sans } from "next/font/google";
 import { type ResourceCategory } from "@prisma/client";
 import { CATEGORY_LABELS } from "../categories";
 import { DownloadButton } from "../DownloadButton";
+// Fuente pixel compartida con el hero de /recursos. El resumen sigue en
+// Inter: un párrafo entero en pixel font se lee peor.
+import { pixelFont } from "../pixelFont";
 import styles from "./ResourceCard.module.css";
-
-/** Fuente pixel con alcance de componente: next/font la auto-hospeda y sólo
- *  la precarga en las rutas que pintan cards. El resumen sigue en Inter:
- *  un párrafo entero en pixel font se lee peor. */
-const pixelFont = Pixelify_Sans({
-  subsets: ["latin"],
-  variable: "--font-pixel",
-  display: "swap",
-});
 
 export interface ResourceCardData {
   slug: string;
