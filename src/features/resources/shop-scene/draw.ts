@@ -94,6 +94,32 @@ export const PAL = {
   h0: "#2e170c",
   h1: "#5b2f17",
   h2: "#80461f",
+  // piedra cálida (muros y baldosas)
+  q0: "#2f2630",
+  q1: "#4a3d48",
+  q2: "#615160",
+  q3: "#7b6977",
+  q4: "#9a8794",
+  // terracota (macetas)
+  t1: "#8a3f24",
+  t2: "#b8592f",
+  t3: "#dc8150",
+  // cortinas
+  v1: "#5a1838",
+  v2: "#86244f",
+  v3: "#b23a68",
+  // gato atigrado
+  m1: "#b4541e",
+  m2: "#e07a32",
+  m3: "#f6a65a",
+  // cielo
+  n0: "#0c1030",
+  n1: "#1b1f55",
+  n2: "#3a2d78",
+  n3: "#6b4fa0",
+  y0: "#5fb4f0",
+  y1: "#8fd0ff",
+  y2: "#cdecff",
   white: "#ffffff",
 } as const;
 
@@ -250,6 +276,28 @@ export function blit(
   ctx.globalAlpha = prev * alpha;
   ctx.drawImage(src, Math.round(x), Math.round(y));
   ctx.globalAlpha = prev;
+}
+
+/**
+ * Pinta un sprite cizallado por filas: la fila de abajo queda fija y la de
+ * arriba se desplaza `dx` px (o al revés con `anchor: "top"`). Así plantas,
+ * cortinas y papeles se mecen sin rotar píxeles.
+ */
+export function blitSheared(
+  ctx: Ctx,
+  s: Sprite,
+  x: number,
+  y: number,
+  dx: number,
+  pass: "base" | "emit" = "base",
+  anchor: "top" | "bottom" = "bottom",
+) {
+  const src = pass === "emit" ? s.emit : s.base;
+  if (!src) return;
+  for (let r = 0; r < s.h; r++) {
+    const k = anchor === "bottom" ? 1 - r / Math.max(1, s.h - 1) : r / Math.max(1, s.h - 1);
+    ctx.drawImage(src, 0, r, s.w, 1, Math.round(x + dx * k), Math.round(y) + r, s.w, 1);
+  }
 }
 
 /* ---------- Halos de luz ----------

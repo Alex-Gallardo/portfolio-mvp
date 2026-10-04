@@ -5,7 +5,8 @@ import {
   type ResourceCardData,
 } from "@/features/resources/ResourceCard/ResourceCard";
 import { isResourceCategory } from "@/features/resources/categories";
-import { CATALOG_ID, RecursosHero } from "@/features/resources/RecursosHero/RecursosHero";
+import { RecursosHero } from "@/features/resources/RecursosHero/RecursosHero";
+import { CATALOG_ID, RecursosIntro } from "@/features/resources/RecursosIntro/RecursosIntro";
 import { WorkshopCta } from "@/features/resources/WorkshopCta/WorkshopCta";
 import { pixelFont } from "@/features/resources/pixelFont";
 import { type ResourceCategory } from "@prisma/client";
@@ -45,7 +46,7 @@ export default async function RecursosPage({
   const { categoria } = await searchParams;
   const activeCategory = isResourceCategory(categoria) ? categoria : undefined;
 
-  const [resources, featured, totals] = await Promise.all([
+  const [resources, featured, totals, byCategory] = await Promise.all([
     withPublicDatabaseFallback(
       () =>
         prisma.resource.findMany({
@@ -73,9 +74,23 @@ export default async function RecursosPage({
         }),
       { _sum: { downloadCount: null } },
     ),
+    // Conteo por categoría para los filtros ("Diseño ×3")
+    withPublicDatabaseFallback(
+      () =>
+        prisma.resource.groupBy({
+          by: ["category"],
+          where: { status: "PUBLISHED" },
+          _count: { _all: true },
+        }),
+      [],
+    ),
   ]);
 
   const totalDownloads = totals._sum.downloadCount ?? 0;
+  const counts: Partial<Record<ResourceCategory, number>> = Object.fromEntries(
+    byCategory.map((g) => [g.category, g._count._all]),
+  );
+  const totalResources = byCategory.reduce((sum, g) => sum + g._count._all, 0);
   const featuredId = featured?.id;
   const gridResources = (resources as (CardSource & { id: string })[]).filter(
     (r) => !featuredId || r.id !== featuredId,
@@ -100,7 +115,13 @@ export default async function RecursosPage({
   return (
     <div className={`${styles.page} ${pixelFont.variable}`}>
       <JsonLd data={collectionLd} />
-      <RecursosHero activeCategory={activeCategory} />
+      <RecursosHero />
+      <RecursosIntro
+        activeCategory={activeCategory}
+        counts={counts}
+        totalResources={totalResources}
+        totalDownloads={totalDownloads}
+      />
 
       <section id={CATALOG_ID} className={styles.wrap} aria-label="Catálogo de recursos">
         {featured ? (
@@ -123,12 +144,6 @@ export default async function RecursosPage({
             ))}
           </div>
         )}
-
-        {totalDownloads > 0 ? (
-          <p className={styles.social}>
-            <strong>+{totalDownloads}</strong> descargas y contando
-          </p>
-        ) : null}
 
         <WorkshopCta />
       </section>

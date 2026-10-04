@@ -221,7 +221,7 @@ export function createWorkshopScene(): Scene {
     },
 
     ambient(mode) {
-      return mode === "night" ? "#5f5a8c" : "#f3e9d8";
+      return mode === "night" ? "#67619a" : "#f3e9d8";
     },
 
     lights(t, mode) {

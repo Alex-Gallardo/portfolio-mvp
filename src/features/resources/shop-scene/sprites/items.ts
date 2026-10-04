@@ -1,4 +1,4 @@
-import type { SpriteDef } from "./draw";
+import type { SpriteDef } from "../draw";
 
 /**
  * Mapas de píxeles de la tienda. "." = transparente; cada carácter se
@@ -251,56 +251,142 @@ export const SCROLL: SpriteDef = {
   key: { x: "k0", k: "k2", K: "k1" },
 };
 
-export const HAMMER: SpriteDef = {
+/* ---------- Tienda v2: más píxeles por objeto ---------- */
+
+/** Poción redonda grande, con sombra de líquido y brillo de cristal. */
+export const ROUND_POTION: SpriteDef = {
   map: [
-    "xxxxxxx",
-    "xsSSSsx",
-    "xsSSSsx",
-    "xxxwxxx",
-    "...w...",
-    "...w...",
-    "...w...",
-    "...w...",
-    "...x...",
+    "...xxx...",
+    "...xcx...",
+    "...xcx...",
+    "...xgx...",
+    "..xg.gx..",
+    ".xg...gx.",
+    "xgLLLLLgx",
+    "xLHLLLLDx",
+    "xLHLLLLDx",
+    "xLLLLLDDx",
+    ".xDLLLDx.",
+    "..xxxxx..",
   ],
-  key: { x: "ink", s: "s2", S: "s3", w: "w3" },
+  key: { x: "ink", c: "w4", g: "s4", L: "!liquid", D: "!liquidDark", H: "!k3" },
 };
 
-export const TONGS: SpriteDef = {
-  map: ["x...x", "s...s", ".s.s.", "..x..", ".w.w.", ".w.w.", ".w.w.", ".x.x."],
-  key: { x: "ink", s: "s3", w: "w2" },
-};
-
-export const SAW: SpriteDef = {
-  map: ["xxxx.....", "xwwx.....", "xwwsssssx", "xwwsSSSSx", "xxxs^s^s."],
-  key: { x: "ink", w: "w3", s: "s3", S: "s4", "^": "s2" },
-};
-
-export const FLASK: SpriteDef = {
+export const HEART_POTION: SpriteDef = {
   map: [
-    "..xgx..",
-    "..xgx..",
-    "..xgx..",
-    ".xg.gx.",
-    "xg...gx",
-    "xLLLLLx",
-    "xLHLLLx",
-    ".xLLLx.",
+    "...xcx...",
+    "...xgx...",
+    ".xxxgxxx.",
+    "xLLLxLLLx",
+    "xLHLLLLDx",
+    "xLLLLLLDx",
+    ".xLLLLDx.",
+    "..xLLDx..",
+    "...xDx...",
+    "....x....",
+  ],
+  key: { x: "ink", c: "w4", g: "s4", L: "!liquid", D: "!liquidDark", H: "!k3" },
+};
+
+export const FLASK_POTION: SpriteDef = {
+  map: [
+    "...xcx...",
+    "...xgx...",
+    "...xgx...",
+    "..xg.gx..",
+    "..xg.gx..",
+    ".xg...gx.",
+    ".xLLLLLx.",
+    "xLHLLLLDx",
+    "xLLLLLLDx",
+    "xLLLLLDDx",
+    "xxxxxxxxx",
+  ],
+  key: { x: "ink", c: "w4", g: "s4", L: "!liquid", D: "!liquidDark", H: "!k3" },
+};
+
+export const VIAL: SpriteDef = {
+  map: [
+    ".xcx.",
+    ".xcx.",
+    ".xgx.",
+    "xg.gx",
+    "xLLLx",
+    "xHLDx",
+    "xLLDx",
+    "xLLDx",
+    "xHLDx",
+    "xLLDx",
+    "xLLDx",
+    ".xxx.",
+  ],
+  key: { x: "ink", c: "w4", g: "s4", L: "!liquid", D: "!liquidDark", H: "!k3" },
+};
+
+/** Tarro con etiqueta; el contenido y la marca se tiñen. */
+export const LABEL_JAR: SpriteDef = {
+  map: [
+    ".xxxxxxx.",
+    ".xWwwwWx.",
+    "xxxxxxxxx",
+    "xgCCCCCCx",
+    "xgkkkkkCx",
+    "xgkKKKkCx",
+    "xgkkkkkCx",
+    "xgCCCCCCx",
+    "xCCCCCCCx",
+    ".xxxxxxx.",
+  ],
+  key: { x: "ink", W: "w4", w: "w2", g: "s4", C: "content", k: "k2", K: "mark" },
+};
+
+/** Huevo mágico de vitrina: cáscara y motas se tiñen. */
+export const EGG: SpriteDef = {
+  map: [
+    "..xxx..",
+    ".xSSSx.",
+    "xSHSSSx",
+    "xSSsSSx",
+    "xSSSSsx",
+    "xsSSSSx",
+    "xSSsSSx",
+    ".xSSSx.",
     "..xxx..",
   ],
-  key: { x: "ink", g: "s4", L: "!liquid", H: "!k3" },
+  key: { x: "ink", S: "shell", s: "spot", H: "k3" },
 };
 
-export const ANVIL: SpriteDef = {
+/** Gema tallada con luz propia. */
+export const GEM: SpriteDef = {
+  map: [".xxx.", "xHGDx", "xGGDx", ".xDx.", "..x.."],
+  key: { x: "ink", H: "!k3", G: "!gem", D: "!gemDark" },
+};
+
+export const COIN_SACK: SpriteDef = {
   map: [
-    "xxxxxxxxxxxxxxx.",
-    "xSSSSSSSSSSSSSsx",
-    ".xsssssssssssxx.",
-    "...xssssssx.....",
-    "....xsssx.......",
-    "...xsssssx......",
-    "..xsssssssx.....",
-    "..xxxxxxxxx.....",
+    "...x...x...",
+    "....xwx....",
+    "...xxwxx...",
+    "..xsSSSsx..",
+    ".xsSSSSSSx.",
+    "xsSSGGGSSSx",
+    "xsSGgggGSSx",
+    "xsSGgggGSSx",
+    "xsSSGGGSSSx",
+    ".xsSSSSSSx.",
+    "..xxxxxxx..",
   ],
-  key: { x: "ink", s: "s2", S: "s3" },
+  key: { x: "ink", w: "o2", s: "k0", S: "k1", G: "g3", g: "g2" },
+};
+
+/** Campana de la lámpara colgante (tres por lámpara). */
+export const BELL_LAMP: SpriteDef = {
+  map: ["...x...", "..xgx..", ".xgGgx.", "xgGGGgx", "xYYYYYx", ".xYWYx.", "..xxx.."],
+  key: { x: "ink", g: "g1", G: "g2", Y: "!g3", W: "!g4" },
+};
+
+/** Vela de candelabro (la llama es procedural). */
+export const CANDLE: SpriteDef = {
+  map: [".x.", "xkx", "xkx", "xKx", "xkx", "xkx"],
+  key: { x: "ink", k: "k3", K: "k1" },
 };

@@ -23,8 +23,8 @@ const DISSOLVE_MS = 420;
 function pixelScale(): number {
   const dpr = window.devicePixelRatio || 1;
   const portrait = window.innerWidth < window.innerHeight * 0.9;
-  const target = portrait ? 300 : 180;
-  return Math.max(2, Math.round((Math.max(window.innerHeight * 0.8, 520) * dpr) / target));
+  const target = portrait ? 340 : 240;
+  return Math.max(2, Math.round((Math.max(window.innerHeight * 0.95, 560) * dpr) / target));
 }
 
 const ditherPatterns = new Map<number, HTMLCanvasElement>();
