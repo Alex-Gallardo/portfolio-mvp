@@ -1,5 +1,6 @@
-/* El hero (RecursosHero) va a sangre fuera del contenedor; el catálogo y el
-   CTA del taller viven en .wrap. Tokens pixel compartidos por los sellos. */
+/* El hero va a sangre; debajo, el letrero y el catálogo en 3 columnas
+   (categorías · resultados · contexto), como un feed. Tokens pixel
+   compartidos por los sellos. */
 .page {
   --px-ink: color-mix(in srgb, var(--resource-1) 72%, #000);
   --px-grad: linear-gradient(
@@ -16,19 +17,84 @@
   --px-ink: var(--resource-1);
 }
 
-.wrap {
-  max-width: var(--container);
+/* ---------- Catálogo en 3 columnas ----------
+   ≥1200 px: categorías | resultados | contexto (laterales fijas al bajar).
+   900–1199: categorías | resultados, y el contexto debajo de los resultados.
+   <900: una columna; las categorías son una fila de chips fija arriba. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "side"
+    "main"
+    "aside";
+  gap: var(--sp-6);
+  max-width: 1360px;
   margin: 0 auto;
-  padding: var(--sp-16) var(--gutter) var(--sp-24);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-12);
-  /* Los filtros y la flecha del hero aterrizan aquí sin quedar bajo la nav */
+  padding: var(--sp-8) var(--gutter) var(--sp-16);
+  /* Filtros y pestañas aterrizan aquí sin quedar bajo la nav */
   scroll-margin-top: var(--sp-16);
 }
 
+.side {
+  grid-area: side;
+  position: sticky;
+  top: var(--sp-2);
+  z-index: 20;
+}
+
+.main {
+  grid-area: main;
+  container: catalog / inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+  min-width: 0;
+}
+
+.aside {
+  grid-area: aside;
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+    grid-template-areas:
+      "side main"
+      "side aside";
+    align-items: start;
+  }
+
+  .side {
+    top: calc(var(--sp-16) + var(--sp-6));
+  }
+}
+
+@media (min-width: 1200px) {
+  .layout {
+    grid-template-columns: 220px minmax(0, 1fr) 280px;
+    grid-template-areas: "side main aside";
+  }
+
+  .aside {
+    position: sticky;
+    top: calc(var(--sp-16) + var(--sp-6));
+  }
+}
+
+/* Cierre: el taller animado, a todo el ancho del contenedor */
+.closing {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--gutter) var(--sp-24);
+}
+
+/* El destacado declara el contenedor "resource-slot": si es ancho, la
+   ResourceCard pasa a horizontal (portada | texto). */
 .featured {
   position: relative;
+  container: resource-slot / inline-size;
 }
 
 /* Sello pixel: paleta posterizada, esquinas escalonadas y gema */
@@ -102,20 +168,10 @@
   gap: var(--sp-6);
 }
 
-.empty {
-  text-align: center;
-  color: var(--fg-muted);
-  padding: var(--sp-12);
-}
-
-@media (min-width: 768px) {
+/* La rejilla responde al ancho de la columna central, no del viewport */
+@container catalog (min-width: 520px) {
   .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (min-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
