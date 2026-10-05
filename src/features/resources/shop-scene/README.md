@@ -73,3 +73,13 @@ arco.
 3. Colócalo en `layout()` de la escena (estático → a `items`; animado → en `base`/`emissive`).
 4. Si da luz, añade un `Light` en `lights()`. Si destella, un `spark` con `k` entero.
 5. `npm test`, `npm run typecheck`, `npm run lint`.
+
+## El almacén (fondo del catálogo)
+
+`CellarBackdrop` envuelve el letrero, el catálogo y el taller con la escena `cellar`: el almacén
+de la tienda (muro de piedra, pilares, ventanucos con barrotes y antorchas). La escena va en una
+capa `sticky` del alto de la pantalla con `margin-bottom` negativo, así que el contenido se
+desplaza por encima mientras el muro "se queda quieto". `cellar-layout.ts` coloca la decoración
+(estandartes, cadenas, barriles, cajas, mapa, gemas) sólo en el borde libre que deja el catálogo
+(`CONTENT_MAX_CSS`); para eso el motor pasa a `layout()` los px CSS de cada píxel lógico. El hero
+funde hacia una franja oscura de suelo en corte y debajo empieza el techo del almacén.
