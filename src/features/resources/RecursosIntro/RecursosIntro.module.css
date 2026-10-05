@@ -3,8 +3,8 @@
 
    Va debajo del hero y se monta sobre su borde inferior,
    así asoma en el primer pantallazo y anuncia que hay más.
-   Mismo lenguaje pixel que cards, hero y taller: contorno
-   escalonado, bisel, grosor duro y paleta posterizada.
+   Ligero a propósito: filtros, orden y cifras viven en las
+   columnas del catálogo.
    ===================================================== */
 
 .intro {
@@ -15,18 +15,7 @@
   --px-hi: color-mix(in srgb, var(--resource-3) 30%, #fff);
   --px-lo: color-mix(in srgb, var(--resource-2) 14%, var(--border));
   --px-depth: color-mix(in srgb, var(--resource-1) 14%, #c4b5ad);
-  --px-slot: var(--resource-soft);
-  --px-slot-line: color-mix(in srgb, var(--resource-2) 30%, transparent);
   --panel-bg: color-mix(in srgb, var(--resource-soft) 60%, var(--bg-elev));
-  --tab-bg: var(--bg-elev);
-  --px-grad: linear-gradient(
-    90deg,
-    var(--resource-1) 0 20%,
-    color-mix(in srgb, var(--resource-1), var(--resource-2)) 0 40%,
-    var(--resource-2) 0 60%,
-    color-mix(in srgb, var(--resource-2), var(--resource-3)) 0 80%,
-    var(--resource-3) 0
-  );
 
   position: relative;
   z-index: 2;
@@ -44,16 +33,29 @@
   --px-hi: rgb(255 212 59 / 0.09);
   --px-lo: rgb(0 0 0 / 0.38);
   --px-depth: rgb(0 0 0 / 0.55);
-  --px-slot-line: color-mix(in srgb, var(--resource-2) 22%, transparent);
   --panel-bg: color-mix(in srgb, var(--resource-soft) 45%, var(--bg-elev));
 }
 
-/* ---------- Esquinas escalonadas ---------- */
+/* ---------- Letrero ---------- */
+
+.panel {
+  --n: 4px;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-8) var(--sp-6);
+  text-align: center;
+  filter: drop-shadow(0 6px 0 var(--px-depth));
+}
 
 .panel::before,
-.panel::after,
-.stat,
-.tab {
+.panel::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
   clip-path: polygon(
     0 calc(var(--n) * 2),
     var(--n) calc(var(--n) * 2),
@@ -78,26 +80,6 @@
   );
 }
 
-/* ---------- Letrero ---------- */
-
-.panel {
-  --n: 4px;
-  position: relative;
-  isolation: isolate;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-6);
-  padding: var(--sp-8) var(--sp-6) var(--sp-6);
-  filter: drop-shadow(0 6px 0 var(--px-depth));
-}
-
-.panel::before,
-.panel::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-}
-
 .panel::before {
   inset: 0;
   background: var(--px-outline);
@@ -109,18 +91,6 @@
   box-shadow:
     inset 2px 2px 0 0 var(--px-hi),
     inset -2px -2px 0 0 var(--px-lo);
-}
-
-.head {
-  display: grid;
-  gap: var(--sp-6);
-  align-items: center;
-}
-
-.copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-3);
 }
 
 .eyebrow {
@@ -136,7 +106,8 @@
   text-transform: uppercase;
 }
 
-.eyebrow::before {
+.eyebrow::before,
+.eyebrow::after {
   content: "";
   width: 6px;
   height: 6px;
@@ -146,7 +117,7 @@
 
 .title {
   margin: 0;
-  max-width: 22ch;
+  max-width: 24ch;
   font-family: var(--font-pixel), var(--font-display);
   font-size: var(--fs-2xl);
   font-weight: 600;
@@ -158,206 +129,19 @@
 
 .sub {
   margin: 0;
-  max-width: 48ch;
+  max-width: 52ch;
   color: var(--fg-muted);
   font-size: var(--fs-base);
   line-height: 1.6;
   text-wrap: pretty;
 }
 
-/* ---------- Inventario: la tienda en números ---------- */
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
-  gap: var(--sp-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.stat {
-  --n: 2px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
-  column-gap: 0.55rem;
-  align-items: center;
-  padding: 0.7rem 0.85rem;
-  background: var(--px-slot);
-  box-shadow:
-    inset 0 0 0 2px var(--px-slot-line),
-    inset 0 -4px 0 0 var(--px-lo);
-}
-
-.glyph {
-  grid-row: span 2;
-  color: var(--px-ink);
-}
-
-.stat strong {
-  color: var(--fg);
-  font-family: var(--font-pixel), var(--font-display);
-  font-size: var(--fs-lg);
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.stat span {
-  color: var(--fg-muted);
-  font-size: var(--fs-xs);
-}
-
-/* ---------- Filtros ---------- */
-
-/* Línea de troquel en guiones pixel, como en las cards.
-   min-width: 0 → la fila de pestañas se desliza en vez de ensanchar la página. */
-.filters {
-  min-width: 0;
-  padding-top: var(--sp-6);
-  background: repeating-linear-gradient(90deg, var(--px-outline) 0 4px, transparent 0 8px) top
-    left / 100% 2px no-repeat;
-}
-
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-2);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.tab {
-  --n: 2px;
-  /* Contiene el texto .srOnly: si no, escapa de la fila deslizable
-     (su bloque contenedor sería el panel) y ensancha la página en móvil. */
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 42px;
-  padding: 0 0.8rem 2px;
-  background: var(--tab-bg);
-  box-shadow:
-    inset 0 0 0 2px var(--px-outline),
-    inset 0 -4px 0 0 var(--px-lo);
-  color: var(--fg-muted);
-  font-family: var(--font-pixel), var(--font-display);
-  font-size: var(--fs-sm);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-decoration: none;
-  white-space: nowrap;
-  transition:
-    transform var(--dur-fast) steps(2, end),
-    color var(--dur-fast) steps(2, end);
-}
-
-.tab:hover {
-  color: var(--fg);
-  transform: translateY(-2px);
-}
-
-.tab:active {
-  transform: translateY(1px);
-}
-
-/* Categorías sin recursos: se ven atenuadas, pero siguen siendo enlaces */
-.tab[data-empty] {
-  opacity: 0.55;
-}
-
-.count {
-  padding: 0.15rem 0.35rem;
-  background: var(--px-slot);
-  box-shadow: inset 0 0 0 1px var(--px-slot-line);
-  color: var(--px-ink);
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-/* Activo: paleta posterizada con texto oscuro (AA en toda la franja) */
-.tab[aria-current="page"] {
-  background: var(--px-grad);
-  box-shadow:
-    inset 0 2px 0 0 rgb(255 255 255 / 0.45),
-    inset 0 -4px 0 0 rgb(122 38 20 / 0.32);
-  color: #1a0f08;
-  font-weight: 700;
-  opacity: 1;
-}
-
-.tab[aria-current="page"] .count {
-  background: rgb(255 255 255 / 0.55);
-  box-shadow: none;
-  color: #1a0f08;
-}
-
-.tab:focus-visible {
-  clip-path: none;
-  outline: 3px solid var(--px-ink);
-  outline-offset: 2px;
-}
-
-.srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* ---------- Escritorio: texto a la izquierda, inventario a la derecha ---------- */
-
-@media (min-width: 900px) {
-  .panel {
-    padding: var(--sp-8) var(--sp-8) var(--sp-6);
-  }
-
-  .head {
-    grid-template-columns: 1fr minmax(15rem, 22rem);
-  }
-
-  .stats {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ---------- Móvil: filtros en una fila que se desliza ---------- */
-
 @media (max-width: 640px) {
   .panel {
-    padding: var(--sp-6) var(--sp-4) var(--sp-4);
+    padding: var(--sp-6) var(--sp-4);
   }
 
-  .tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    margin-inline: calc(var(--sp-4) * -1);
-    padding: 4px var(--sp-4) 8px;
-    scroll-snap-type: x proximity;
-    scrollbar-width: none;
-    /* Bordes que se desvanecen: anuncian que hay más filtros a los lados */
-    -webkit-mask-image: linear-gradient(
-      90deg,
-      transparent,
-      #000 16px,
-      #000 calc(100% - 24px),
-      transparent
-    );
-    mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 24px), transparent);
-  }
-
-  .tabs::-webkit-scrollbar {
-    display: none;
-  }
-
-  .tabs > li {
-    scroll-snap-align: start;
+  .title {
+    font-size: var(--fs-xl);
   }
 }
