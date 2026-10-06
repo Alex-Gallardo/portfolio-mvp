@@ -96,7 +96,7 @@ export function mountScene(
     lctx = context(light);
     pctx = context(prev);
     fctx = context(fade);
-    scene.layout(W, H);
+    scene.layout(W, H, { pxCss: k / dpr });
     lastFrame = -1;
     draw(currentTime());
   }

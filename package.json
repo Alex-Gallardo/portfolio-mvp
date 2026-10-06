@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "tsx --test src/features/design/sequence.test.ts src/features/design/assets.test.ts src/features/home/hero-scroll/hero-scroll.test.ts src/lib/prisma-fallback.test.ts src/features/resources/shop-scene/loop.test.ts src/features/resources/shop-scene/shop-layout.test.ts",
+    "test": "tsx --test src/features/design/sequence.test.ts src/features/design/assets.test.ts src/features/home/hero-scroll/hero-scroll.test.ts src/lib/prisma-fallback.test.ts src/features/resources/shop-scene/loop.test.ts src/features/resources/shop-scene/shop-layout.test.ts src/features/resources/shop-scene/cellar-layout.test.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",

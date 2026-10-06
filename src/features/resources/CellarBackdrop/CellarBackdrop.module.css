@@ -1,0 +1,83 @@
+/* =====================================================
+   CellarBackdrop — el almacén detrás del catálogo
+
+   .stage es sticky y mide una pantalla; con margin-bottom
+   negativo, el contenido empieza arriba y se desplaza por
+   encima mientras el almacén "se queda quieto". El
+   contenedor es flex en columna para que ese margen
+   negativo no se colapse con el del letrero (-64px).
+   ===================================================== */
+
+.cellar {
+  /* Muro de piedra pixel mientras carga la escena (sólo CSS) */
+  --stone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='12' shape-rendering='crispEdges'%3E%3Crect width='22' height='12' fill='%233a2f36'/%3E%3Crect width='10' height='5' fill='%235b4d57'/%3E%3Crect x='11' width='10' height='5' fill='%234f424c'/%3E%3Crect y='6' width='4' height='5' fill='%234f424c'/%3E%3Crect x='5' y='6' width='10' height='5' fill='%235b4d57'/%3E%3Crect x='16' y='6' width='6' height='5' fill='%234f424c'/%3E%3C/svg%3E");
+
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+}
+
+/* En un flex en columna, margin: auto anula el estiramiento: sin esto,
+   letrero, catálogo y taller se encogerían a su contenido. */
+.cellar > * {
+  width: 100%;
+}
+
+[data-theme="dark"] .cellar {
+  --stone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='12' shape-rendering='crispEdges'%3E%3Crect width='22' height='12' fill='%2312101b'/%3E%3Crect width='10' height='5' fill='%23241d33'/%3E%3Crect x='11' width='10' height='5' fill='%231e1a2c'/%3E%3Crect y='6' width='4' height='5' fill='%231e1a2c'/%3E%3Crect x='5' y='6' width='10' height='5' fill='%23241d33'/%3E%3Crect x='16' y='6' width='6' height='5' fill='%231e1a2c'/%3E%3C/svg%3E");
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  z-index: -1;
+  /* lvh: cubre también cuando el navegador móvil oculta su barra */
+  height: 100vh;
+  height: 100lvh;
+  margin-bottom: -100vh;
+  margin-bottom: -100lvh;
+  overflow: hidden;
+  background: var(--stone) 0 0 / 66px 36px;
+  image-rendering: pixelated;
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  image-rendering: pixelated;
+  opacity: 0;
+  transition: opacity 400ms steps(4, end);
+}
+
+.canvas[data-ready] {
+  opacity: 1;
+}
+
+/* Salida del almacén: fundido tramado hacia el fondo de la página */
+.cellar::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  z-index: -1;
+  height: 72px;
+  background:
+    linear-gradient(var(--bg), var(--bg)) bottom / 100% 16px no-repeat,
+    conic-gradient(var(--bg) 25%, transparent 0 50%, var(--bg) 0 75%, transparent 0) 0 0 / 8px 8px;
+  -webkit-mask-image: linear-gradient(
+    to top,
+    #000 0 30%,
+    rgb(0 0 0 / 0.6) 0 60%,
+    rgb(0 0 0 / 0.25) 0 85%,
+    transparent 0
+  );
+  mask-image: linear-gradient(
+    to top,
+    #000 0 30%,
+    rgb(0 0 0 / 0.6) 0 60%,
+    rgb(0 0 0 / 0.25) 0 85%,
+    transparent 0
+  );
+  pointer-events: none;
+}

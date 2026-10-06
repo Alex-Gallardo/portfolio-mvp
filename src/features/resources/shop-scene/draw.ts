@@ -19,7 +19,8 @@ export type Light = {
 };
 
 export interface Scene {
-  layout(W: number, H: number): void;
+  /** `pxCss`: px CSS que ocupa cada píxel lógico (para saber qué tapa el contenido). */
+  layout(W: number, H: number, info: { pxCss: number }): void;
   /** Materiales: lo que la luz tiñe. */
   base(ctx: Ctx, t: number, mode: Mode): void;
   ambient(mode: Mode): string;

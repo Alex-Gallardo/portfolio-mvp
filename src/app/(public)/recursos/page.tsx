@@ -9,6 +9,7 @@ import { RESOURCE_CATEGORIES, isResourceCategory } from "@/features/resources/ca
 import { RecursosHero } from "@/features/resources/RecursosHero/RecursosHero";
 import { RecursosIntro } from "@/features/resources/RecursosIntro/RecursosIntro";
 import { WorkshopCta } from "@/features/resources/WorkshopCta/WorkshopCta";
+import { CellarBackdrop } from "@/features/resources/CellarBackdrop/CellarBackdrop";
 import { CatalogSidebar } from "@/features/resources/catalog/CatalogSidebar";
 import { CatalogToolbar } from "@/features/resources/catalog/CatalogToolbar";
 import { CatalogAside } from "@/features/resources/catalog/CatalogAside";
@@ -158,52 +159,54 @@ export default async function RecursosPage({
     <div className={`${styles.page} ${pixelFont.variable}`}>
       <JsonLd data={collectionLd} />
       <RecursosHero />
-      <RecursosIntro />
+      <CellarBackdrop>
+        <RecursosIntro />
 
-      <div id={CATALOG_ID} className={styles.layout}>
-        <div className={styles.side}>
-          <CatalogSidebar
-            activeCategory={activeCategory}
-            orden={orden}
-            counts={counts}
-            total={totalResources}
-          />
+        <div id={CATALOG_ID} className={styles.layout}>
+          <div className={styles.side}>
+            <CatalogSidebar
+              activeCategory={activeCategory}
+              orden={orden}
+              counts={counts}
+              total={totalResources}
+            />
+          </div>
+
+          <section className={styles.main} aria-labelledby="catalog-title">
+            <CatalogToolbar activeCategory={activeCategory} orden={orden} results={list.length} />
+
+            {featured ? (
+              <div className={styles.featured}>
+                <span className={styles.featuredTag}>Destacado</span>
+                <ResourceCard resource={toCard(featured)} priority />
+              </div>
+            ) : null}
+
+            {list.length === 0 ? (
+              <EmptyState activeCategory={activeCategory} orden={orden} />
+            ) : gridResources.length > 0 ? (
+              <div className={styles.grid}>
+                {gridResources.map((r) => (
+                  <ResourceCard key={r.slug} resource={toCard(r)} />
+                ))}
+              </div>
+            ) : null}
+          </section>
+
+          <div className={styles.aside}>
+            <CatalogAside
+              totalResources={totalResources}
+              totalDownloads={totalDownloads}
+              liveCategories={liveCategories}
+              top={top}
+            />
+          </div>
         </div>
 
-        <section className={styles.main} aria-labelledby="catalog-title">
-          <CatalogToolbar activeCategory={activeCategory} orden={orden} results={list.length} />
-
-          {featured ? (
-            <div className={styles.featured}>
-              <span className={styles.featuredTag}>Destacado</span>
-              <ResourceCard resource={toCard(featured)} priority />
-            </div>
-          ) : null}
-
-          {list.length === 0 ? (
-            <EmptyState activeCategory={activeCategory} orden={orden} />
-          ) : gridResources.length > 0 ? (
-            <div className={styles.grid}>
-              {gridResources.map((r) => (
-                <ResourceCard key={r.slug} resource={toCard(r)} />
-              ))}
-            </div>
-          ) : null}
-        </section>
-
-        <div className={styles.aside}>
-          <CatalogAside
-            totalResources={totalResources}
-            totalDownloads={totalDownloads}
-            liveCategories={liveCategories}
-            top={top}
-          />
+        <div className={styles.closing}>
+          <WorkshopCta />
         </div>
-      </div>
-
-      <div className={styles.closing}>
-        <WorkshopCta />
-      </div>
+      </CellarBackdrop>
     </div>
   );
 }

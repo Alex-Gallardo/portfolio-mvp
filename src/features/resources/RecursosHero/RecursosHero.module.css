@@ -15,6 +15,7 @@
   /* Fondo mientras carga la escena: los tonos de la tienda de día */
   --scene-wall: #6d5c5a;
   --scene-floor: #8c6a4c;
+  --hero-floor: #2b1d17;
 
   position: relative;
   isolation: isolate;
@@ -29,6 +30,7 @@
   --panel-bg: color-mix(in srgb, var(--resource-soft) 45%, var(--bg-elev));
   --scene-wall: #2a2238;
   --scene-floor: #3a2c3a;
+  --hero-floor: #0f0b14;
 }
 
 /* ---------- Escena ---------- */
@@ -82,15 +84,17 @@
   pointer-events: none;
 }
 
-/* Fundido con tramado hacia el fondo de la página */
+/* Fundido hacia el almacén: el suelo de la tienda se oscurece en una franja
+   de tierra/madera en corte, y debajo empieza el techo del almacén. */
 .scene::after {
   content: "";
   position: absolute;
   inset: auto 0 0;
   height: 44px;
   background:
-    linear-gradient(var(--bg), var(--bg)) bottom / 100% 8px no-repeat,
-    conic-gradient(var(--bg) 25%, transparent 0 50%, var(--bg) 0 75%, transparent 0) 0 0 / 8px 8px;
+    linear-gradient(var(--hero-floor), var(--hero-floor)) bottom / 100% 8px no-repeat,
+    conic-gradient(var(--hero-floor) 25%, transparent 0 50%, var(--hero-floor) 0 75%, transparent 0)
+      0 0 / 8px 8px;
   -webkit-mask-image: linear-gradient(
     to top,
     #000 0 30%,

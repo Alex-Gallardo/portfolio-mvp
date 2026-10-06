@@ -5,12 +5,13 @@ import { useThemeStore } from "@/stores/useThemeStore";
 import type { SceneHandle } from "./engine";
 import type { Mode, Scene } from "./draw";
 
-export type ShopSceneName = "shop" | "workshop";
+export type ShopSceneName = "shop" | "workshop" | "cellar";
 
 /** Cada escena es su propio chunk: no pesa en el bundle inicial de la página. */
 const LOADERS: Record<ShopSceneName, () => Promise<() => Scene>> = {
   shop: () => import("./shop").then((m) => m.createShopScene),
   workshop: () => import("./workshop").then((m) => m.createWorkshopScene),
+  cellar: () => import("./cellar").then((m) => m.createCellarScene),
 };
 
 /**

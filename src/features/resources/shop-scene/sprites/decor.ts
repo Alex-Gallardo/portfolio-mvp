@@ -104,3 +104,20 @@ export const COBWEB: SpriteDef = {
   ],
   key: { w: "k2" },
 };
+
+/** Antorcha en su aplique de hierro (la llama es procedural). */
+export const TORCH: SpriteDef = {
+  map: [
+    ".xxxxx.",
+    ".xsSsx.",
+    "..xsx..",
+    "..xwx..",
+    "..xwx..",
+    "xxxwxxx",
+    "xsxwxsx",
+    "..xwx..",
+    "..xwx..",
+    "...x...",
+  ],
+  key: { x: "ink", s: "s1", S: "s3", w: "w3" },
+};
