@@ -1,0 +1,1381 @@
+/* ==========================================================================
+   Ilustraciones clay del bento educativo
+   - Todo se mide en `em`: cada .stage fija su font-size a partir del ancho
+     de su contenedor (.art, container-type: inline-size), así la escena
+     escala entera sin recalcular nada.
+   - Los colores salen de los tokens --ce-* de CryptoEducation.module.css
+     (cambian con el tema).
+   - Bucles de 6s (concepto) + flotación de 4s (vida). Los estilos BASE son
+     el fotograma más descriptivo: es lo que se ve sin animación.
+   ========================================================================== */
+
+.stage {
+  --ce-io: cubic-bezier(0.65, 0, 0.35, 1);
+  position: relative;
+  width: calc(var(--sw) * 1em);
+  height: calc(var(--sh) * 1em);
+  margin-inline: auto;
+  font-size: min(calc(100cqi / var(--sw)), var(--max-em, 20px));
+}
+.stage * {
+  position: absolute;
+}
+
+/* ---------- material clay ---------- */
+.clay {
+  background: var(--c);
+  box-shadow:
+    inset 0.22em 0.28em 0.45em rgba(255, 255, 255, 0.55),
+    inset -0.25em -0.32em 0.5em rgba(0, 0, 0, 0.18),
+    0 0.5em 0.9em -0.3em var(--ce-obj-shadow);
+}
+
+/* sombra de contacto: se encoge cuando el objeto sube */
+.shadow {
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: 1.5em;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--ce-contact), transparent);
+  animation: ce-shadow 4s ease-in-out infinite;
+}
+
+/* destello de 4 puntas */
+.sparkle {
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--ce-spark-core), transparent 70%);
+  animation: ce-twinkle 2.6s ease-in-out var(--d, 0s) infinite;
+  z-index: 5;
+}
+.sparkle::before,
+.sparkle::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+.sparkle::before {
+  inset: 0 44%;
+  background: linear-gradient(transparent, var(--ce-spark), transparent);
+}
+.sparkle::after {
+  inset: 44% 0;
+  background: linear-gradient(90deg, transparent, var(--ce-spark), transparent);
+}
+
+.checkIcon,
+.sealCheck,
+.doneIcon {
+  position: static;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* pastilla de identidad (wallet + UX) */
+.badgeAvatar {
+  position: static;
+  width: 1.5em;
+  height: 1.5em;
+  flex: none;
+  border-radius: 50%;
+  background: conic-gradient(from 30deg, #ff7a8a, #ffc23d, #2dd4bf, #8b9bff, #ff7a8a);
+}
+.badgeCheck {
+  position: static;
+  display: grid;
+  place-items: center;
+  width: 1.5em;
+  height: 1.5em;
+  flex: none;
+  border-radius: 50%;
+  background: var(--ce-ok);
+  box-shadow: 0 0 0.8em var(--ce-ok-glow);
+}
+.checkIcon {
+  width: 70%;
+  height: 70%;
+}
+
+/* moneda plana (wallet + decor) */
+.coinFace {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  --c: var(--ce-gold);
+}
+.coinFace::before {
+  content: "";
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  border: 0.12em solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0.1em 0.2em rgba(0, 0, 0, 0.12);
+}
+.coinEth {
+  --c: var(--ce-indigo);
+}
+.coinGlyph {
+  position: static;
+  width: 50%;
+  height: 50%;
+  fill: rgba(120, 60, 0, 0.55);
+  filter: drop-shadow(0 0.06em 0 rgba(255, 255, 255, 0.6));
+}
+.coinEth .coinGlyph {
+  fill: rgba(25, 25, 90, 0.5);
+}
+
+/* cubo 3D (cadena + decor): solo las 3 caras visibles */
+.cube {
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(-24deg) rotateY(-38deg);
+}
+.face {
+  inset: 0;
+  border-radius: 0.45em;
+}
+.faceFront {
+  transform: translateZ(var(--half, 1.5em));
+  background: var(--ce-cube-front);
+  box-shadow:
+    inset 0.2em 0.25em 0.4em rgba(255, 255, 255, 0.4),
+    inset -0.2em -0.25em 0.4em rgba(0, 0, 0, 0.15);
+}
+.faceFront::before {
+  content: "";
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: 30%;
+  height: 10%;
+  border-radius: 0.2em;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0.6em 0 rgba(255, 255, 255, 0.35);
+}
+.faceSide {
+  transform: rotateY(90deg) translateZ(var(--half, 1.5em));
+  background: var(--ce-cube-side);
+  box-shadow: inset -0.2em -0.25em 0.4em rgba(0, 0, 0, 0.2);
+}
+.faceTop {
+  transform: rotateX(90deg) translateZ(var(--half, 1.5em));
+  background: var(--ce-cube-top);
+  box-shadow: inset 0.2em 0.2em 0.4em rgba(255, 255, 255, 0.5);
+}
+
+/* ==========================================================================
+   01 · WALLET  (24 × 17)
+   ========================================================================== */
+.walletStage {
+  --sw: 24;
+  --sh: 17;
+  /* aire para las monedas que salen por encima de la cartera */
+  margin-top: 1.6em;
+}
+
+.key {
+  left: 0.4em;
+  top: 7em;
+  width: 6.4em;
+  height: 2.6em;
+  transform-origin: 1.3em 1.3em;
+  transform: rotate(-6deg);
+  animation: ce-key 6s var(--ce-io) infinite;
+}
+.keyHead {
+  left: 0;
+  top: 0;
+  width: 2.6em;
+  height: 2.6em;
+  border-radius: 50%;
+  --c: var(--ce-lilac);
+}
+.keyHead::after {
+  content: "";
+  position: absolute;
+  inset: 0.85em;
+  border-radius: 50%;
+  background: var(--ce-tile-hole);
+  box-shadow: inset 0.08em 0.12em 0.2em rgba(0, 0, 0, 0.3);
+}
+.keyShaft {
+  left: 2.2em;
+  top: 0.95em;
+  width: 4em;
+  height: 0.7em;
+  border-radius: 0.35em;
+  --c: var(--ce-lilac);
+}
+.keyTooth {
+  left: 4.6em;
+  top: 1.4em;
+  width: 0.55em;
+  height: 1em;
+  border-radius: 0.2em;
+  --c: var(--ce-lilac);
+}
+.keyTooth2 {
+  left: 5.5em;
+  height: 0.75em;
+}
+
+.walletFloat {
+  left: 5em;
+  top: 3.4em;
+  width: 14em;
+  height: 10.6em;
+  animation: ce-float 4s ease-in-out infinite;
+}
+.walletBody {
+  inset: 0;
+  border-radius: 2.2em;
+  --c: var(--ce-teal-deep);
+}
+.walletCoin {
+  left: 3.4em;
+  top: 2.2em;
+  width: 3.4em;
+  height: 3.4em;
+  z-index: 1;
+  transform: translate(var(--tx), var(--ty)) rotate(var(--rot));
+  animation: ce-w-coin 6s var(--ce-io) var(--d) infinite;
+}
+.walletPocket {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 62%;
+  z-index: 2;
+  border-radius: 1.4em 1.4em 2.2em 2.2em;
+  --c: var(--ce-teal);
+}
+.walletPocket::after {
+  content: "";
+  position: absolute;
+  inset: 0.7em;
+  border: 0.14em dashed rgba(255, 255, 255, 0.55);
+  border-radius: 1em 1em 1.6em 1.6em;
+}
+.walletFlap {
+  left: -0.2em;
+  right: -0.2em;
+  top: -0.3em;
+  height: 5em;
+  z-index: 3;
+  border-radius: 2.2em 2.2em 1.6em 1.6em;
+  --c: var(--ce-teal-flap);
+  transform-origin: 1em 1em;
+  transform: translateY(-1.4em) rotate(-7deg);
+  animation: ce-w-flap 6s var(--ce-io) infinite;
+}
+.walletClasp {
+  right: 1.2em;
+  top: 2.6em;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  --c: var(--ce-gold);
+}
+
+.badge {
+  right: 0.2em;
+  top: 0.4em;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.45em 0.5em 0.45em 0.45em;
+  border-radius: 99em;
+  --c: var(--ce-window);
+  color: var(--ce-window-ink);
+  font-size: 0.82em;
+  font-weight: 700;
+  white-space: nowrap;
+  animation: ce-w-badge 6s var(--ce-io) infinite;
+}
+.badgeText {
+  position: static;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ==========================================================================
+   02 · CADENA DE BLOQUES  (24 × 12)
+   ========================================================================== */
+.chainStage {
+  --sw: 24;
+  --sh: 12;
+  perspective: 40em;
+}
+.track {
+  left: 1.6em;
+  top: 4.6em;
+  width: 21em;
+  height: 3em;
+  transform-style: preserve-3d;
+  animation: ce-t-track 6s var(--ce-io) infinite;
+}
+.slot {
+  left: calc(var(--i) * 4.6em);
+  top: 0;
+  width: 3em;
+  height: 3em;
+  transform-style: preserve-3d;
+}
+.slotFirst {
+  animation: ce-t-leave 6s var(--ce-io) infinite;
+}
+.slotLast {
+  animation: ce-t-drop 6s cubic-bezier(0.3, 0.7, 0.4, 1) infinite;
+}
+.link {
+  left: -1.5em;
+  top: 1.2em;
+  width: 1.7em;
+  height: 0.65em;
+  border-radius: 0.35em;
+  --c: var(--ce-link);
+}
+.linkFirst {
+  animation: ce-t-link 6s var(--ce-io) infinite;
+}
+.blockGlow {
+  left: -1.2em;
+  top: -1.2em;
+  width: 5.4em;
+  height: 5.4em;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--ce-pulse), transparent);
+  opacity: 0;
+  animation: ce-t-glow 6s ease-in-out calc((var(--i) - 4) * 0.35s) infinite;
+}
+.slot .faceTop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--ce-pulse);
+  opacity: 0;
+  animation: ce-t-glow 6s ease-in-out calc((var(--i) - 4) * 0.35s) infinite;
+}
+
+.confirm {
+  /* font-size .8em → coordenadas locales = escena / 0.8 */
+  left: 18.6em;
+  top: 0.7em;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.35em 0.75em 0.35em 0.35em;
+  border-radius: 99em;
+  --c: var(--ce-window);
+  color: var(--ce-window-ink);
+  font-size: 0.8em;
+  font-weight: 700;
+  animation: ce-t-confirm 6s var(--ce-io) infinite;
+}
+
+/* ==========================================================================
+   03 · CONTRATO  (20 × 16)
+   ========================================================================== */
+.contractStage {
+  --sw: 20;
+  --sh: 16;
+}
+.gear {
+  filter: drop-shadow(0 0.3em 0.4em var(--ce-obj-shadow));
+}
+.gearBig {
+  left: 12em;
+  top: 0.4em;
+  width: 5.4em;
+  height: 5.4em;
+  fill: var(--ce-gold);
+  animation: ce-spin 9s linear infinite;
+}
+.gearSmall {
+  left: 16.1em;
+  top: 4.4em;
+  width: 3.4em;
+  height: 3.4em;
+  fill: var(--ce-teal);
+  animation: ce-spin 6s linear infinite reverse;
+}
+.docFloat {
+  left: 2.6em;
+  top: 1.6em;
+  width: 11.6em;
+  height: 12.6em;
+  animation: ce-float 4s ease-in-out -1s infinite;
+}
+.doc {
+  inset: 0;
+  border-radius: 1.4em;
+  --c: var(--ce-paper);
+}
+.doc * {
+  position: static;
+}
+.doc {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 1.3em 1.2em;
+}
+.docHead {
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+}
+.docDot {
+  width: 1.3em;
+  height: 1.3em;
+  border-radius: 0.4em;
+  background: var(--ce-code-1);
+}
+.docTitle {
+  width: 5em;
+  height: 0.55em;
+  border-radius: 0.3em;
+  background: var(--ce-skel);
+}
+.code {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+  animation: ce-c-type 6s infinite;
+}
+.codeLine {
+  display: block;
+  width: var(--w);
+  height: 0.5em;
+  margin-left: var(--indent);
+  border-radius: 0.3em;
+  background: var(--c);
+}
+.signLine {
+  margin-top: auto;
+  width: 5.4em;
+  height: 0.16em;
+  border-radius: 0.1em;
+  background: var(--ce-skel);
+}
+.seal {
+  left: 8.4em;
+  top: 8.6em;
+  width: 4.6em;
+  height: 4.6em;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  --c: var(--ce-coral);
+  transform: rotate(-10deg);
+  animation: ce-c-seal 6s var(--ce-io) infinite;
+}
+.seal::before {
+  content: "";
+  position: absolute;
+  inset: 0.45em;
+  border-radius: 50%;
+  border: 0.13em dashed rgba(255, 255, 255, 0.7);
+}
+.sealCheck {
+  width: 2.2em;
+  height: 2.2em;
+}
+.sealRing {
+  left: 8.4em;
+  top: 8.6em;
+  width: 4.6em;
+  height: 4.6em;
+  border-radius: 50%;
+  border: 0.25em solid var(--ce-coral);
+  opacity: 0;
+  animation: ce-c-ring 6s ease-out infinite;
+}
+
+/* ==========================================================================
+   04 · TOKENS  (20 × 16)
+   ========================================================================== */
+.tokensStage {
+  --sw: 20;
+  --sh: 16;
+}
+.tokenShadow {
+  animation: ce-k-shadow 6s var(--ce-io) infinite;
+}
+.stack {
+  left: 6em;
+  top: 1.6em;
+  width: 8em;
+  height: 12em;
+  animation: ce-float 4s ease-in-out -2s infinite;
+}
+.token {
+  left: 0;
+  width: 8em;
+  height: 4em;
+}
+.token1 {
+  top: 7.8em;
+  z-index: 1;
+  animation: ce-k-1 6s var(--ce-io) infinite;
+}
+.token2 {
+  top: 6.6em;
+  z-index: 2;
+  animation: ce-k-2 6s var(--ce-io) infinite;
+}
+.token3 {
+  top: 5.4em;
+  z-index: 3;
+  animation: ce-k-3 6s var(--ce-io) infinite;
+}
+.btc {
+  --tk: var(--ce-gold);
+  --tk-deep: var(--ce-gold-deep);
+  --tk-ink: rgba(120, 60, 0, 0.5);
+}
+.eth {
+  --tk: var(--ce-indigo);
+  --tk-deep: var(--ce-indigo-deep);
+  --tk-ink: rgba(25, 25, 90, 0.5);
+}
+.gem {
+  --tk: var(--ce-teal);
+  --tk-deep: var(--ce-teal-deep);
+  --tk-ink: rgba(0, 70, 60, 0.5);
+}
+.tokenEdge {
+  left: 0;
+  right: 0;
+  top: 1.5em;
+  height: 2.5em;
+  border-radius: 0 0 4em 4em / 0 0 1.5em 1.5em;
+  --c: var(--tk-deep);
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.13) 0 0.14em, transparent 0.14em 0.5em),
+    var(--tk-deep);
+}
+.tokenTop {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3em;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  --c: var(--tk);
+}
+.tokenGlyph {
+  position: static;
+  width: 2.6em;
+  height: 2.6em;
+  fill: var(--tk-ink);
+  transform: scaleY(0.55);
+}
+
+/* ==========================================================================
+   05 · UX  (26 × 13.6)
+   ========================================================================== */
+.uxStage {
+  --sw: 26;
+  --sh: 13.6;
+}
+.uxFloat {
+  left: 0.8em;
+  top: 0.6em;
+  width: 19.5em;
+  height: 11.4em;
+  animation: ce-float 4s ease-in-out -0.5s infinite;
+}
+.window {
+  inset: 0;
+  border-radius: 1.4em;
+  --c: var(--ce-window);
+  padding: 1em 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65em;
+}
+.windowBar,
+.skel,
+.balance,
+.balance * {
+  position: static;
+}
+.windowBar {
+  display: flex;
+  gap: 0.35em;
+}
+.windowBar span {
+  position: static;
+  width: 0.65em;
+  height: 0.65em;
+  border-radius: 50%;
+  background: var(--ce-coral);
+}
+.windowBar span:nth-child(2) {
+  background: var(--ce-gold);
+}
+.windowBar span:nth-child(3) {
+  background: var(--ce-teal);
+}
+.skel {
+  display: block;
+  width: var(--w);
+  height: 0.6em;
+  border-radius: 0.3em;
+  background: var(--ce-skel);
+}
+.balance {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin-top: 0.2em;
+}
+.balanceCoin {
+  width: 2em;
+  height: 2em;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  --c: var(--ce-indigo);
+}
+.balanceGlyph {
+  width: 1.1em;
+  height: 1.1em;
+  fill: rgba(25, 25, 90, 0.55);
+}
+.connect {
+  left: 1.2em;
+  top: 7.6em;
+  width: 10.4em;
+  height: 2.6em;
+  display: grid;
+  place-items: center;
+  border-radius: 99em;
+  --c: var(--ce-ok);
+  color: #053b34;
+  font-weight: 700;
+  animation: ce-u-btn 6s var(--ce-io) infinite;
+}
+.label {
+  position: static;
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+.labelIdle,
+.labelBusy {
+  opacity: 0;
+}
+.labelIdle {
+  animation: ce-u-idle 6s infinite;
+}
+.labelBusy {
+  animation: ce-u-busy 6s infinite;
+}
+.labelDone {
+  animation: ce-u-done 6s var(--ce-io) infinite;
+}
+.doneIcon {
+  width: 1.1em;
+  height: 1.1em;
+  stroke: currentColor;
+}
+.spinner {
+  position: static;
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 50%;
+  border: 0.2em solid rgba(5, 59, 52, 0.25);
+  border-top-color: #053b34;
+  animation: ce-spin 0.7s linear infinite;
+}
+.ripple {
+  left: 6.4em;
+  top: 8.9em;
+  width: 1em;
+  height: 1em;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 0.15em solid var(--ce-teal);
+  opacity: 0;
+  animation: ce-u-ripple 6s ease-out infinite;
+}
+.chip {
+  /* font-size .78em → coordenadas locales = escena / 0.78 */
+  left: 15.9em;
+  top: 10.2em;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.35em 0.65em 0.35em 0.35em;
+  border-radius: 99em;
+  background: var(--ce-skel);
+  color: var(--ce-window-ink);
+  font-size: 0.78em;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: nowrap;
+  animation: ce-u-chip 6s var(--ce-io) infinite;
+}
+.burst {
+  left: 6.05em;
+  top: 8.55em;
+  width: 0.7em;
+  height: 0.7em;
+  background: var(--ce-gold);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  opacity: 0;
+  animation: ce-u-burst 6s ease-out infinite;
+}
+.shield {
+  left: 21.2em;
+  top: 1.4em;
+  width: 4em;
+  height: 4.6em;
+  display: grid;
+  place-items: center;
+  border-radius: 1.3em;
+  --c: var(--ce-lilac);
+  animation: ce-float 4s ease-in-out -2s infinite;
+}
+.shield svg {
+  position: static;
+  width: 2.6em;
+  height: 2.6em;
+  fill: rgba(255, 255, 255, 0.9);
+}
+.shieldCheck {
+  fill: none;
+  stroke: var(--ce-lilac-deep);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cursor {
+  left: 0;
+  top: 0;
+  z-index: 6;
+  width: 2.2em;
+  height: 2.2em;
+  fill: var(--ce-window-ink);
+  stroke: var(--ce-window);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0.2em 0.3em rgba(0, 0, 0, 0.3));
+  transform: translate(8em, 10.4em);
+  animation: ce-u-cursor 6s var(--ce-io) infinite;
+}
+
+/* ==========================================================================
+   Objetos sueltos alrededor del grid
+   ========================================================================== */
+.decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+}
+.decor * {
+  position: absolute;
+}
+@media (min-width: 1100px) {
+  .decor {
+    display: block;
+  }
+}
+.decorItem {
+  animation: ce-float-lg 7s ease-in-out infinite;
+}
+.decorCoin {
+  left: -3.4rem;
+  top: 7rem;
+  width: 4.6rem;
+  height: 4.6rem;
+  rotate: -16deg;
+}
+.decorEth {
+  right: -2.8rem;
+  top: 34%;
+  width: 3.6rem;
+  height: 3.6rem;
+  rotate: 14deg;
+  animation-delay: -2.5s;
+}
+.decorCube {
+  right: -3.2rem;
+  bottom: 14%;
+  width: 3.4rem;
+  height: 3.4rem;
+  --half: 1.7rem;
+  perspective: 30rem;
+  animation-delay: -1.2s;
+}
+.decorOrb {
+  left: -1.8rem;
+  bottom: 8%;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  --c: var(--ce-coral);
+  animation-delay: -4s;
+}
+
+/* ---------- pausa fuera de pantalla ---------- */
+[data-paused] .stage,
+[data-paused] .stage *,
+[data-paused] .decor * {
+  animation-play-state: paused !important;
+}
+
+/* ==========================================================================
+   Keyframes
+   ========================================================================== */
+@keyframes ce-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.6em);
+  }
+}
+@keyframes ce-float-lg {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(-14px) rotate(8deg);
+  }
+}
+@keyframes ce-shadow {
+  50% {
+    transform: scale(0.82);
+    opacity: 0.6;
+  }
+}
+@keyframes ce-twinkle {
+  0%,
+  100% {
+    transform: scale(0.15) rotate(0deg);
+    opacity: 0;
+  }
+  45% {
+    transform: scale(1) rotate(45deg);
+    opacity: 1;
+  }
+  65% {
+    transform: scale(0.3) rotate(70deg);
+    opacity: 0;
+  }
+}
+@keyframes ce-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* wallet */
+@keyframes ce-w-flap {
+  0%,
+  14% {
+    transform: none;
+  }
+  22% {
+    transform: translateY(-1.6em) rotate(-9deg);
+  }
+  26%,
+  76% {
+    transform: translateY(-1.4em) rotate(-7deg);
+  }
+  86%,
+  100% {
+    transform: none;
+  }
+}
+@keyframes ce-w-coin {
+  0%,
+  18% {
+    transform: translate(0, 0) rotate(0) scale(0.85);
+  }
+  32% {
+    transform: translate(calc(var(--tx) * 0.6), calc(var(--ty) * 1.12))
+      rotate(calc(var(--rot) * 0.5)) scale(1);
+  }
+  42%,
+  74% {
+    transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(1);
+  }
+  86%,
+  100% {
+    transform: translate(0, 0) rotate(0) scale(0.85);
+  }
+}
+@keyframes ce-w-badge {
+  0%,
+  42% {
+    opacity: 0;
+    transform: translateY(0.8em) scale(0.6);
+  }
+  48% {
+    opacity: 1;
+    transform: translateY(0) scale(1.08);
+  }
+  52%,
+  78% {
+    opacity: 1;
+    transform: none;
+  }
+  86%,
+  100% {
+    opacity: 0;
+    transform: translateY(-0.5em) scale(0.9);
+  }
+}
+@keyframes ce-key {
+  0%,
+  30%,
+  100% {
+    transform: rotate(-10deg);
+  }
+  42% {
+    transform: translate(0.9em, -0.3em) rotate(14deg);
+  }
+  50% {
+    transform: translate(0.9em, -0.3em) rotate(-6deg);
+  }
+  62% {
+    transform: rotate(-10deg);
+  }
+}
+
+/* cadena */
+@keyframes ce-t-track {
+  0%,
+  68% {
+    transform: translateX(0);
+  }
+  92%,
+  100% {
+    transform: translateX(-4.6em);
+  }
+}
+@keyframes ce-t-leave {
+  0%,
+  68% {
+    opacity: 1;
+    transform: none;
+  }
+  90%,
+  100% {
+    opacity: 0;
+    transform: translateY(1em) scale(0.6);
+  }
+}
+@keyframes ce-t-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-6em);
+  }
+  6% {
+    opacity: 1;
+  }
+  16% {
+    transform: translateY(0.25em) scaleY(0.9);
+  }
+  20% {
+    transform: translateY(-0.15em);
+  }
+  24%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ce-t-link {
+  0%,
+  68% {
+    opacity: 1;
+  }
+  84%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes ce-t-glow {
+  0%,
+  44% {
+    opacity: 0;
+  }
+  52% {
+    opacity: 1;
+  }
+  62%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes ce-t-confirm {
+  0%,
+  54% {
+    opacity: 0;
+    transform: translateY(0.6em) scale(0.7);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  64%,
+  84% {
+    opacity: 1;
+    transform: none;
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translateY(-0.4em);
+  }
+}
+
+/* contrato */
+@keyframes ce-c-type {
+  0%,
+  6% {
+    clip-path: inset(0 0 100% 0);
+    animation-timing-function: steps(5, jump-end);
+  }
+  40%,
+  86% {
+    clip-path: inset(0 0 0 0);
+  }
+  94%,
+  100% {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+@keyframes ce-c-seal {
+  0%,
+  44% {
+    opacity: 0;
+    transform: translateY(-3.5em) scale(1.5) rotate(-30deg);
+  }
+  52% {
+    opacity: 1;
+    transform: translateY(0) scale(0.9) rotate(-8deg);
+  }
+  56% {
+    transform: scale(1.06) rotate(-10deg);
+  }
+  60%,
+  86% {
+    opacity: 1;
+    transform: rotate(-10deg);
+  }
+  94%,
+  100% {
+    opacity: 0;
+    transform: scale(0.9) rotate(-10deg);
+  }
+}
+@keyframes ce-c-ring {
+  0%,
+  51% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  53% {
+    opacity: 0.9;
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+/* tokens */
+@keyframes ce-k-1 {
+  0% {
+    opacity: 0;
+    transform: translateY(-9em);
+  }
+  4% {
+    opacity: 1;
+  }
+  14% {
+    transform: translateY(0.2em) scaleY(0.92);
+  }
+  18%,
+  64% {
+    transform: none;
+  }
+  74%,
+  84% {
+    transform: translate(-3.4em, -1.8em) rotate(-10deg);
+  }
+  94% {
+    opacity: 1;
+    transform: translate(-3.4em, -9em) rotate(-10deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-9em);
+  }
+}
+@keyframes ce-k-2 {
+  0%,
+  14% {
+    opacity: 0;
+    transform: translateY(-9em);
+  }
+  18% {
+    opacity: 1;
+  }
+  28% {
+    transform: translateY(0.2em) scaleY(0.92);
+  }
+  32%,
+  64% {
+    transform: none;
+  }
+  74%,
+  84% {
+    transform: translate(0, -3.6em) rotate(6deg);
+  }
+  94% {
+    opacity: 1;
+    transform: translate(0, -10em) rotate(6deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10em);
+  }
+}
+@keyframes ce-k-3 {
+  0%,
+  28% {
+    opacity: 0;
+    transform: translateY(-9em);
+  }
+  32% {
+    opacity: 1;
+  }
+  42% {
+    transform: translateY(0.2em) scaleY(0.92);
+  }
+  46%,
+  64% {
+    transform: none;
+  }
+  74%,
+  84% {
+    transform: translate(3.4em, -5.4em) rotate(12deg);
+  }
+  94% {
+    opacity: 1;
+    transform: translate(3.4em, -12em) rotate(12deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-12em);
+  }
+}
+@keyframes ce-k-shadow {
+  0%,
+  4% {
+    opacity: 0.2;
+    transform: scale(0.5);
+  }
+  18%,
+  64% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  80% {
+    opacity: 0.6;
+    transform: scale(1.3);
+  }
+  96%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.5);
+  }
+}
+
+/* UX */
+@keyframes ce-u-btn {
+  0%,
+  29% {
+    background-color: var(--ce-teal);
+    transform: none;
+  }
+  31% {
+    transform: scale(0.93);
+  }
+  35% {
+    transform: none;
+  }
+  50% {
+    background-color: var(--ce-teal);
+  }
+  55%,
+  90% {
+    background-color: var(--ce-ok);
+    transform: none;
+  }
+  97%,
+  100% {
+    background-color: var(--ce-teal);
+  }
+}
+@keyframes ce-u-idle {
+  0%,
+  33% {
+    opacity: 1;
+  }
+  36%,
+  94% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes ce-u-busy {
+  0%,
+  34% {
+    opacity: 0;
+  }
+  38%,
+  50% {
+    opacity: 1;
+  }
+  54%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes ce-u-done {
+  0%,
+  51% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  56% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  60%,
+  90% {
+    opacity: 1;
+    transform: none;
+  }
+  95%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes ce-u-ripple {
+  0%,
+  30% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  31% {
+    opacity: 1;
+  }
+  44%,
+  100% {
+    opacity: 0;
+    transform: scale(5);
+  }
+}
+@keyframes ce-u-chip {
+  0%,
+  53% {
+    opacity: 0;
+    transform: translateX(-0.6em) scale(0.8);
+  }
+  59%,
+  90% {
+    opacity: 1;
+    transform: none;
+  }
+  95%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes ce-u-burst {
+  0%,
+  53% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateX(0.5em) scale(0.4);
+  }
+  57% {
+    opacity: 1;
+  }
+  72%,
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateX(3.6em) scale(1);
+  }
+}
+@keyframes ce-u-cursor {
+  0%,
+  4% {
+    opacity: 0;
+    transform: translate(23em, 12.5em);
+  }
+  10% {
+    opacity: 1;
+  }
+  26%,
+  30% {
+    transform: translate(6.9em, 9.3em);
+  }
+  31% {
+    transform: translate(6.9em, 9.3em) scale(0.85);
+  }
+  34% {
+    transform: translate(6.9em, 9.3em) scale(1);
+  }
+  62% {
+    opacity: 1;
+    transform: translate(8em, 10.4em);
+  }
+  78%,
+  100% {
+    opacity: 0;
+    transform: translate(23em, 12.5em);
+  }
+}
+
+/* ---------- movimiento reducido: fotograma descriptivo, sin bucles ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .stage *,
+  .decor * {
+    animation: none;
+  }
+  .sparkle {
+    opacity: 0.9;
+  }
+}

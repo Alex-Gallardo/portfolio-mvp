@@ -1,90 +1,67 @@
-"use client";
+import { EDUCATION_CARDS, cardNumber } from "@/features/crypto/education";
 
-import { useEffect, useRef, useState } from "react";
+import { EducationGrid } from "./EducationGrid";
+import { EducationArt, EducationDecor } from "./illustrations";
 import styles from "./CryptoEducation.module.css";
 
-interface Step {
-  key: string;
-  icon: string;
-  title: string;
-  text: string;
-}
-
-const STEPS: Step[] = [
-  {
-    key: "wallet",
-    icon: "👛",
-    title: "Tu wallet, tu identidad",
-    text: "Una wallet es tu llave para firmar acciones y demostrar quién eres, sin contraseñas.",
-  },
-  {
-    key: "tx",
-    icon: "🔗",
-    title: "Transacciones transparentes",
-    text: "Cada acción queda registrada en la cadena: pública, verificable e inmutable.",
-  },
-  {
-    key: "contracts",
-    icon: "📜",
-    title: "Contratos inteligentes",
-    text: "Programas que se ejecutan solos cuando se cumplen las condiciones. Sin intermediarios.",
-  },
-  {
-    key: "ux",
-    icon: "✨",
-    title: "UX que no asusta",
-    text: "Mi trabajo: que todo esto se sienta tan simple como una app normal.",
-  },
-];
-
+/**
+ * "Web3, explicado simple": Bento Grid claymorphism con ilustraciones 3D
+ * en bucle (CSS). Se renderiza en el servidor; solo la inclinación con el
+ * puntero y la pausa fuera de pantalla viven en EducationGrid (cliente).
+ */
 export function CryptoEducation() {
-  const [active, setActive] = useState(0);
-  const refs = useRef<(HTMLDivElement | null)[]>([]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            const idx = Number((entry.target as HTMLElement).dataset.index);
-            setActive(idx);
-          }
-        }
-      },
-      { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
-    );
-    refs.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section className={styles.section} aria-label="Cómo funciona Web3">
-      <h2 className={styles.h2}>Web3, explicado simple</h2>
-      <div className={styles.layout}>
-        <div className={styles.visual} aria-hidden="true">
-          <div className={styles.card}>
-            <span className={styles.icon}>{STEPS[active]?.icon}</span>
-            <span className={styles.cardTitle}>{STEPS[active]?.title}</span>
-          </div>
-        </div>
+    <section className={styles.section} aria-labelledby="crypto-education-title">
+      <div className={styles.container}>
+        <header className={styles.head}>
+          <p className={styles.eyebrow}>
+            <span className={styles.eyebrowDot} aria-hidden="true" />
+            Web3 101
+          </p>
+          <h2 id="crypto-education-title" className={styles.h2}>
+            Web3, explicado <span className={styles.highlight}>simple</span>
+          </h2>
+          <p className={styles.sub}>
+            Cinco ideas clave para entender la web descentralizada, sin tecnicismos.
+          </p>
+        </header>
 
-        <div className={styles.steps}>
-          {STEPS.map((s, i) => (
-            <div
-              key={s.key}
-              data-index={i}
-              ref={(el) => {
-                refs.current[i] = el;
-              }}
-              className={`${styles.step} ${i === active ? styles.stepActive : ""}`}
-            >
-              <span className={styles.stepIcon} aria-hidden="true">
-                {s.icon}
-              </span>
-              <h3 className={styles.stepTitle}>{s.title}</h3>
-              <p className={styles.stepText}>{s.text}</p>
-            </div>
-          ))}
+        <div className={styles.stageWrap}>
+          <EducationDecor />
+          <EducationGrid className={styles.grid}>
+            {EDUCATION_CARDS.map((card, i) => (
+              <li
+                key={card.key}
+                className={`${styles.tile} ${styles[card.size] ?? ""} ${styles[card.key] ?? ""}`}
+                data-tilt
+              >
+                <div className={styles.art} aria-hidden="true">
+                  <EducationArt kind={card.key} />
+                </div>
+                <div className={styles.body}>
+                  <span className={styles.num}>
+                    <span className={styles.numValue}>{cardNumber(i)}</span>
+                    {card.tag}
+                  </span>
+                  <h3 className={styles.title}>{card.title}</h3>
+                  <p className={styles.text}>{card.text}</p>
+                  {card.points && (
+                    <ul className={styles.points}>
+                      {card.points.map((point) => (
+                        <li key={point} className={styles.point}>
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M5 12.5l4.2 4.2L19 7" />
+                          </svg>
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <span className={styles.glare} aria-hidden="true" />
+              </li>
+            ))}
+          </EducationGrid>
         </div>
       </div>
     </section>
