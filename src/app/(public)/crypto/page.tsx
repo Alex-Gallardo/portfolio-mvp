@@ -61,7 +61,7 @@ export default async function CryptoPage() {
     }));
 
   const hero = resolveBlock(content, "crypto.hero", {
-    title: "Web3 y blockchain sin fricción",
+    title: "Web3 y blockchain sin *fricción*",
     body: "Interfaces claras para un mundo complejo.",
   });
   const tPosts = resolveBlock(content, "crypto.posts", {
