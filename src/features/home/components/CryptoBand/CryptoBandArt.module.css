@@ -1,0 +1,464 @@
+/* ==========================================================================
+   Escena 3D clay de la banda crypto (home)
+   - Todo en `em`: .stage fija su font-size desde el ancho de su contenedor
+     (.art en CryptoBand.module.css, container-type: inline-size).
+   - Colores de objeto constantes; sombras, órbita y destellos usan los
+     tokens --cb-* de la banda (cambian con el tema).
+   - Los estilos base son un fotograma estático válido (reduced motion).
+   ========================================================================== */
+
+.stage {
+  position: relative;
+  width: 26em;
+  height: 20em;
+  margin-inline: auto;
+  font-size: min(calc(100cqi / 26), 19px);
+}
+.stage * {
+  position: absolute;
+}
+
+/* ---------- utilidades ---------- */
+.float {
+  animation: cb-float 4.4s ease-in-out var(--d, 0s) infinite;
+}
+.shadow {
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: 1.4em;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--cb-contact), transparent);
+  animation: cb-shadow 4.4s ease-in-out var(--d, 0s) infinite;
+}
+.sparkle {
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  translate: -50% -50%;
+  z-index: 6;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--cb-spark-core), transparent 70%);
+  animation: cb-twinkle 2.8s ease-in-out var(--d, 0s) infinite;
+}
+.sparkle::before,
+.sparkle::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+.sparkle::before {
+  inset: 0 44%;
+  background: linear-gradient(transparent, var(--cb-spark), transparent);
+}
+.sparkle::after {
+  inset: 44% 0;
+  background: linear-gradient(90deg, transparent, var(--cb-spark), transparent);
+}
+
+/* ---------- monedas con grosor (discos apilados) ---------- */
+.coin {
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateY(-14deg) rotateX(6deg);
+  animation: cb-sway 6s ease-in-out infinite alternate;
+  --edge: #c98712;
+  --face-1: #ffe9a6;
+  --face-2: #f7c04a;
+  --face-3: #d9951c;
+  --ink: rgba(120, 60, 0, 0.55);
+}
+.coinEth {
+  --edge: #4a58d6;
+  --face-1: #d4dbff;
+  --face-2: #8b9bff;
+  --face-3: #5b6cf0;
+  --ink: rgba(25, 25, 90, 0.5);
+}
+.disc {
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--edge), color-mix(in srgb, var(--edge) 70%, #fff));
+  transform: translateZ(calc(var(--k) * -0.09em));
+}
+.face {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    var(--face-1),
+    var(--face-2) 45%,
+    var(--face-3) 88%
+  );
+  box-shadow:
+    inset 0.22em 0.28em 0.45em rgba(255, 255, 255, 0.55),
+    inset -0.25em -0.32em 0.5em rgba(0, 0, 0, 0.2);
+  transform: translateZ(0.02em);
+}
+/* anillo interior */
+.face::before {
+  content: "";
+  position: absolute;
+  inset: 11%;
+  border-radius: 50%;
+  border: 0.12em solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0.1em 0.2em rgba(0, 0, 0, 0.12);
+}
+/* reflejo que cruza la cara */
+.face::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(
+    115deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 60%
+  );
+  transform: translateX(-70%);
+  animation: cb-glint 5s ease-in-out infinite;
+}
+.glyph {
+  position: static;
+  width: 50%;
+  height: 50%;
+  fill: var(--ink);
+  filter: drop-shadow(0 0.06em 0 rgba(255, 255, 255, 0.55));
+}
+
+/* ---------- moneda principal + órbita ---------- */
+.mainFloat {
+  left: 9.2em;
+  top: 5.4em;
+  width: 7.6em;
+  height: 7.6em;
+  perspective: 30em;
+}
+.coinMain {
+  z-index: 2;
+}
+.orbit {
+  left: -4.2em;
+  top: -4.2em;
+  width: 16em;
+  height: 16em;
+  transform: rotate(-14deg) scaleY(0.32);
+}
+.orbitBack {
+  z-index: 1;
+}
+.orbitFront {
+  z-index: 3;
+}
+.ring {
+  inset: 0;
+  border-radius: 50%;
+  border: 0.16em solid var(--cb-ring);
+}
+.orbitBack .ring {
+  clip-path: inset(0 0 50% 0);
+  opacity: 0.55;
+}
+.orbitFront .ring {
+  clip-path: inset(50% 0 0 0);
+}
+.arm {
+  inset: 0;
+  animation: cb-orbit 12s linear var(--o, 0s) infinite;
+}
+.node {
+  left: calc(50% - 0.45em);
+  top: -0.45em;
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 50%;
+  background: var(--cb-node);
+  box-shadow: 0 0 0.6em var(--cb-node);
+  /* deshace la rotación del brazo y el aplastado de la órbita */
+  transform: scaleY(3.125);
+}
+.orbitBack .node {
+  animation:
+    cb-node 12s linear var(--o, 0s) infinite,
+    cb-back 12s step-end var(--o, 0s) infinite;
+}
+.orbitFront .node {
+  opacity: 0;
+  animation:
+    cb-node 12s linear var(--o, 0s) infinite,
+    cb-front 12s step-end var(--o, 0s) infinite;
+}
+
+/* ---------- monedas secundarias ---------- */
+.smallFloat {
+  left: 2em;
+  top: 2.2em;
+  width: 3.4em;
+  height: 3.4em;
+  perspective: 20em;
+}
+.coinSmall {
+  animation-duration: 4.6s;
+  animation-delay: -2s;
+}
+.far {
+  left: 21.4em;
+  top: 14.8em;
+  width: 2.6em;
+  height: 2.6em;
+  perspective: 20em;
+  filter: blur(0.6px);
+  opacity: 0.85;
+}
+.coinFar {
+  animation-duration: 5.2s;
+}
+.tokenFar {
+  left: 23.6em;
+  top: 11.2em;
+  width: 1.8em;
+  height: 1.8em;
+  filter: blur(0.8px);
+  opacity: 0.8;
+}
+.gem {
+  inset: 0;
+  clip-path: polygon(50% 0, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  background: linear-gradient(150deg, #8ff5e6, #22c3ad 55%, #0f9f8f);
+}
+
+/* ---------- cristal de Ethereum facetado ---------- */
+.ethFloat {
+  left: 20.4em;
+  top: 2em;
+  width: 4.6em;
+  height: 7.6em;
+}
+.crystal {
+  inset: 0;
+  filter: drop-shadow(0 0.5em 0.7em var(--cb-obj-shadow));
+  transform-origin: 50% 70%;
+  animation: cb-crystal 7s ease-in-out infinite;
+}
+.facet {
+  inset: 0;
+}
+.f1 {
+  clip-path: polygon(50% 0, 0 57%, 50% 68%);
+  background: linear-gradient(160deg, #e1e6ff, #a5b1ff);
+}
+.f2 {
+  clip-path: polygon(50% 0, 100% 57%, 50% 68%);
+  background: linear-gradient(200deg, #9aa8ff, #7384f5);
+}
+.f3 {
+  clip-path: polygon(0 63%, 50% 74%, 50% 100%);
+  background: linear-gradient(160deg, #8b9bff, #6a7cf2);
+}
+.f4 {
+  clip-path: polygon(100% 63%, 50% 74%, 50% 100%);
+  background: linear-gradient(200deg, #6573ee, #4a58d6);
+}
+
+/* ---------- mini cadena de bloques ---------- */
+.chainFloat {
+  left: 0.8em;
+  top: 15.2em;
+  width: 11em;
+  height: 2.8em;
+  perspective: 30em;
+}
+.block {
+  left: calc(var(--i) * 3.9em);
+  top: 0;
+  width: 2.6em;
+  height: 2.6em;
+  transform-style: preserve-3d;
+}
+.link {
+  left: -1.35em;
+  top: 1em;
+  width: 1.5em;
+  height: 0.55em;
+  border-radius: 0.3em;
+  background: var(--cb-link);
+  box-shadow:
+    inset 0.08em 0.1em 0.15em rgba(255, 255, 255, 0.5),
+    inset -0.08em -0.1em 0.15em rgba(0, 0, 0, 0.2);
+}
+.cube {
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(-24deg) rotateY(-38deg);
+}
+.cubeFace {
+  inset: 0;
+  border-radius: 0.4em;
+}
+.cubeFront {
+  transform: translateZ(1.3em);
+  background: #8b9bff;
+  box-shadow:
+    inset 0.2em 0.25em 0.4em rgba(255, 255, 255, 0.4),
+    inset -0.2em -0.25em 0.4em rgba(0, 0, 0, 0.15);
+}
+.cubeSide {
+  transform: rotateY(90deg) translateZ(1.3em);
+  background: #6573ee;
+  box-shadow: inset -0.2em -0.25em 0.4em rgba(0, 0, 0, 0.2);
+}
+.cubeTop {
+  transform: rotateX(90deg) translateZ(1.3em);
+  background: #c8d0ff;
+  box-shadow: inset 0.2em 0.2em 0.4em rgba(255, 255, 255, 0.5);
+}
+/* pulso que recorre la cadena */
+.cubeTop::after,
+.cubeFront::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--cb-pulse);
+  opacity: 0;
+  animation: cb-pulse 3s ease-in-out calc(var(--i) * 0.35s) infinite;
+}
+
+/* ---------- pausa fuera de pantalla ---------- */
+[data-paused] .stage *,
+[data-paused] .stage *::before,
+[data-paused] .stage *::after {
+  animation-play-state: paused !important;
+}
+
+/* ==========================================================================
+   Keyframes
+   ========================================================================== */
+@keyframes cb-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.7em);
+  }
+}
+@keyframes cb-shadow {
+  50% {
+    transform: scale(0.82);
+    opacity: 0.6;
+  }
+}
+@keyframes cb-sway {
+  from {
+    transform: rotateY(-32deg) rotateX(8deg);
+  }
+  to {
+    transform: rotateY(32deg) rotateX(-4deg);
+  }
+}
+@keyframes cb-glint {
+  0%,
+  55% {
+    transform: translateX(-70%);
+  }
+  80%,
+  100% {
+    transform: translateX(70%);
+  }
+}
+@keyframes cb-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes cb-node {
+  from {
+    transform: rotate(0deg) scaleY(3.125);
+  }
+  to {
+    transform: rotate(-360deg) scaleY(3.125);
+  }
+}
+/* mitad trasera (arriba de la elipse): 0–25% y 75–100% del giro */
+@keyframes cb-back {
+  0% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0;
+  }
+  75% {
+    opacity: 1;
+  }
+}
+@keyframes cb-front {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0;
+  }
+}
+@keyframes cb-crystal {
+  0%,
+  100% {
+    transform: rotate(-7deg) scaleX(1);
+  }
+  25% {
+    transform: rotate(0deg) scaleX(0.84);
+  }
+  50% {
+    transform: rotate(7deg) scaleX(1);
+  }
+  75% {
+    transform: rotate(0deg) scaleX(0.84);
+  }
+}
+@keyframes cb-pulse {
+  0%,
+  12% {
+    opacity: 0;
+  }
+  24% {
+    opacity: 0.9;
+  }
+  42%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes cb-twinkle {
+  0%,
+  100% {
+    transform: scale(0.15) rotate(0deg);
+    opacity: 0;
+  }
+  45% {
+    transform: scale(1) rotate(45deg);
+    opacity: 1;
+  }
+  65% {
+    transform: scale(0.3) rotate(70deg);
+    opacity: 0;
+  }
+}
+
+/* ---------- movimiento reducido: escena estática ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .stage *,
+  .stage *::before,
+  .stage *::after {
+    animation: none;
+  }
+  .sparkle {
+    opacity: 0.9;
+  }
+}
