@@ -840,6 +840,8 @@
 /* ---------- pausa fuera de pantalla ---------- */
 [data-paused] .stage,
 [data-paused] .stage *,
+[data-paused] .stage *::before,
+[data-paused] .stage *::after,
 [data-paused] .decor * {
   animation-play-state: paused !important;
 }

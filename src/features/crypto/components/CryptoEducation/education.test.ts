@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 
-import { BENTO_CELLS, EDUCATION_CARDS, cardNumber } from "../../education";
+import { EDUCATION_CARDS, cardNumber, resolveActive } from "../../education";
 import { FLAT, computeTilt } from "./tilt";
 
 // ───────────── contenido ─────────────
@@ -16,14 +16,25 @@ test("las tarjetas tienen claves únicas y textos completos", () => {
   }
 });
 
-test("el bento llena el grid de 4 columnas sin huecos", () => {
-  const cells = EDUCATION_CARDS.reduce((sum, c) => {
-    const { cols, rows } = BENTO_CELLS[c.size];
-    return sum + cols * rows;
-  }, 0);
-  assert.equal(cells % 4, 0, `${cells} celdas no completan filas de 4`);
-  // una sola tarjeta protagonista
-  assert.equal(EDUCATION_CARDS.filter((c) => c.size === "hero").length, 1);
+// ───────────── tarjeta activa (scroll sticky) ─────────────
+
+test("resolveActive: sin tarjetas en la franja se mantiene la anterior", () => {
+  assert.equal(resolveActive([], 2), 2);
+});
+
+test("resolveActive: la que entra en la franja pasa a ser la activa", () => {
+  assert.equal(resolveActive([1], 0), 1);
+  assert.equal(resolveActive([0], 3), 0); // scroll hacia arriba
+});
+
+test("resolveActive: si solo está la actual, no cambia", () => {
+  assert.equal(resolveActive([2], 2), 2);
+});
+
+test("resolveActive: con varias, avanza paso a paso hacia la más cercana", () => {
+  assert.equal(resolveActive([2, 3], 2), 3);
+  assert.equal(resolveActive([1, 4], 2), 1);
+  assert.equal(resolveActive([3, 4], 1), 3);
 });
 
 test("cardNumber numera con dos dígitos", () => {
