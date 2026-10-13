@@ -1,9 +1,32 @@
 /* ==========================================================================
-   CryptoEducation · Bento Grid claymorphism
+   CryptoEducation · tarjetas claymorphism con scroll sticky
    - Tokens --ce-* (objetos clay) y --t-* (tinte de cada tarjeta) por tema.
-   - Desktop: 4 columnas  [wallet wallet tx tx] [wallet wallet contracts tokens] [ux ×4]
-   - Tablet: 2 columnas · Móvil: 1 columna.
+   - Desktop: panel sticky a la izquierda (ilustración de la tarjeta activa,
+     cambia de color) + tarjetas de texto que pasan por la derecha.
+   - Tablet/móvil: una columna; cada tarjeta lleva su ilustración.
    ========================================================================== */
+
+/* Tintes registrados: el panel sticky transiciona de color entre tarjetas */
+@property --t-bg1 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f3f4fb;
+}
+@property --t-bg2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #e6e8f5;
+}
+@property --t-ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #3b54e6;
+}
+@property --t-shadow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(79, 107, 255, 0.3);
+}
 
 @property --ce-angle {
   syntax: "<angle>";
@@ -146,37 +169,47 @@
   text-wrap: pretty;
 }
 
-/* ---------- grid ---------- */
+/* ---------- contenedor (decor + scroller) ---------- */
 .stageWrap {
   position: relative;
 }
-.grid {
+
+/* ---------- layout: scroll sticky ---------- */
+.scroller {
+  display: flex;
+  flex-direction: column;
+}
+.list {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: clamp(1rem, 2vw, 1.5rem);
 }
-@media (min-width: 700px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .hero,
-  .wide,
-  .banner {
-    grid-column: span 2;
-  }
+.aside {
+  display: none;
 }
+
 @media (min-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .scroller {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--sp-16);
   }
-  .hero {
-    grid-row: span 2;
+  /* panel fijo a la izquierda, como el layout original */
+  .aside {
+    display: block;
+    flex: 0 0 44%;
+    position: sticky;
+    top: 14vh;
   }
-  .banner {
-    grid-column: span 4;
+  /* las tarjetas pasan por la franja central con aire entre ellas */
+  .list {
+    flex: 1;
+    min-width: 0;
+    gap: var(--sp-24);
+    padding-block: 20vh;
   }
 }
 
@@ -312,37 +345,8 @@
   place-items: center;
   min-width: 0;
 }
-.hero .art {
-  --max-em: 19px;
-}
-@media (min-width: 1024px) {
-  .hero .art {
-    --max-em: 26px;
-  }
-}
-.wide .art {
+.card .art {
   --max-em: 15px;
-}
-.square .art {
-  --max-em: 12.5px;
-}
-.banner .art {
-  --max-em: 17px;
-}
-/* foco de luz que respira detrás de la ilustración protagonista */
-.hero .art::before {
-  content: "";
-  position: absolute;
-  inset: 8% 12%;
-  z-index: -1;
-  border-radius: 50%;
-  background: radial-gradient(
-    closest-side,
-    color-mix(in srgb, var(--t-ink) 28%, transparent),
-    transparent
-  );
-  filter: blur(10px);
-  animation: ce-breathe 5s ease-in-out infinite;
 }
 
 .body {
@@ -386,15 +390,6 @@
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
-.hero .title {
-  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem);
-}
-.square .title {
-  font-size: var(--fs-lg);
-}
-.square .text {
-  font-size: var(--fs-sm);
-}
 .text {
   color: var(--fg-muted);
   line-height: 1.55;
@@ -429,38 +424,52 @@
   stroke-linejoin: round;
 }
 
-/* ---------- layouts por tamaño ---------- */
-/* banner siempre en fila desde tablet; la ancha solo en tablet (en desktop
-   va en columna para que la cadena de bloques se vea grande) */
-@media (min-width: 700px) {
-  .banner {
-    flex-direction: row-reverse;
-    align-items: center;
-    gap: var(--sp-6);
-  }
-  .banner .body {
-    flex: 1 1 40%;
-  }
-  .banner .art {
-    flex: 1 1 60%;
-  }
-}
+/* ---------- tarjetas: tablet (ilustración al lado) ---------- */
 @media (min-width: 700px) and (max-width: 1023px) {
-  .wide {
+  .card {
     flex-direction: row-reverse;
     align-items: center;
     gap: var(--sp-6);
   }
-  .wide .body {
-    flex: 1 1 40%;
+  .card .body {
+    flex: 1 1 45%;
   }
-  .wide .art {
-    flex: 1 1 60%;
+  .card .art {
+    flex: 1 1 55%;
+    --max-em: 14px;
   }
 }
 
-/* tarjeta protagonista: borde de luz que gira sin parar */
-.hero::before {
+/* ---------- tarjetas: desktop (la ilustración vive en el panel) ---------- */
+@media (min-width: 1024px) {
+  .card .art {
+    display: none;
+  }
+  .card .title {
+    font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.1rem);
+  }
+  /* inactivas: un paso atrás, sin perder su color; la activa toma el foco */
+  .card {
+    opacity: 0.8;
+    scale: 0.95;
+    translate: 0.75rem 0;
+    transition:
+      transform 0.6s var(--ease),
+      box-shadow 0.6s var(--ease),
+      opacity 0.6s var(--ease),
+      scale 0.7s var(--ease),
+      translate 0.7s var(--ease);
+  }
+  .item[data-active] .card {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+/* ---------- borde de luz que gira: panel + tarjeta activa ---------- */
+.stageCard::before,
+.item[data-active] .card::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -483,16 +492,184 @@
   animation: ce-border 6s linear infinite;
   pointer-events: none;
 }
+.item[data-active] .card::before {
+  animation-duration: 4.5s;
+}
+
+/* ---------- panel sticky ---------- */
+.stageCard {
+  height: min(72vh, 620px);
+  min-height: 440px;
+  gap: var(--sp-4);
+  /* el tinte cambia suave al pasar de una tarjeta a otra */
+  transition:
+    transform 0.6s var(--ease),
+    box-shadow 0.6s var(--ease),
+    --t-bg1 0.8s var(--ease),
+    --t-bg2 0.8s var(--ease),
+    --t-ink 0.8s var(--ease),
+    --t-shadow 0.8s var(--ease);
+}
+.stageArts {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+/* foco de luz que respira detrás de la ilustración */
+.stageArts::before {
+  content: "";
+  position: absolute;
+  inset: 6% 10%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--t-ink) 28%, transparent),
+    transparent
+  );
+  filter: blur(10px);
+  animation: ce-breathe 5s ease-in-out infinite;
+}
+.stageLayer {
+  position: absolute;
+  inset: 0;
+  /* la ilustración cabe en el alto disponible del panel */
+  --max-em: clamp(12px, calc((min(72vh, 620px) - 230px) / 19), 22px);
+  opacity: 0;
+  transform: translateY(28px) scale(0.9);
+  filter: blur(8px);
+  transition:
+    opacity 0.55s var(--ease),
+    transform 0.75s cubic-bezier(0.2, 0.8, 0.2, 1.12),
+    filter 0.55s var(--ease);
+  pointer-events: none;
+}
+.stageLayer[data-state="before"] {
+  transform: translateY(-28px) scale(0.9);
+}
+.stageLayer[data-state="active"] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+.stageCaption {
+  position: relative;
+  z-index: 1;
+  display: grid;
+}
+.captionItem {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  opacity: 0;
+  translate: 0 10px;
+  transition:
+    opacity 0.45s var(--ease),
+    translate 0.55s var(--ease);
+}
+.captionItem[data-state="before"] {
+  translate: 0 -10px;
+}
+.captionItem[data-state="active"] {
+  opacity: 1;
+  translate: 0 0;
+  transition-delay: 0.12s;
+}
+.captionTitle {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* indicador de progreso, sutil */
+.progress {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+}
+.progressCount {
+  color: var(--t-ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+.progressDots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+.progressDot {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  cursor: pointer;
+  transition: width 0.45s var(--ease);
+}
+.progressDot::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--t-ink) 32%, transparent);
+  transition:
+    width 0.45s var(--ease),
+    background-color 0.3s var(--ease);
+}
+.progressDot:hover::before {
+  background: color-mix(in srgb, var(--t-ink) 65%, transparent);
+}
+.progressDot[data-active] {
+  width: 30px;
+}
+.progressDot[data-active]::before {
+  width: 20px;
+  background: var(--t-ink);
+}
+.progressDot:focus-visible {
+  outline: 2px solid var(--t-ink);
+  outline-offset: 1px;
+}
 
 /* ---------- entrada al hacer scroll (sin JS, donde se soporte) ---------- */
 @supports (animation-timeline: view()) {
-  .tile {
+  .item {
+    animation: ce-card-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 30%;
+  }
+  .aside {
     animation: ce-rise linear both;
     animation-timeline: view();
-    animation-range: entry 0% cover 22%;
+    animation-range: entry 0% cover 20%;
   }
 }
 
+@keyframes ce-card-in {
+  from {
+    opacity: 0;
+    transform: perspective(900px) translateY(80px) rotateX(12deg) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
 @keyframes ce-rise {
   from {
     opacity: 0;
@@ -536,13 +713,21 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tile,
-  .hero::before,
-  .hero .art::before,
+  .item,
+  .aside,
+  .stageCard::before,
+  .item[data-active] .card::before,
+  .stageArts::before,
   .highlight {
     animation: none;
   }
-  .tile {
+  .tile,
+  .card,
+  .stageCard,
+  .stageLayer,
+  .captionItem,
+  .progressDot,
+  .progressDot::before {
     transition: none;
   }
 }

@@ -1,13 +1,13 @@
-import { EDUCATION_CARDS, cardNumber } from "@/features/crypto/education";
+import { EDUCATION_CARDS } from "@/features/crypto/education";
 
-import { EducationGrid } from "./EducationGrid";
+import { EducationScroll } from "./EducationScroll";
 import { EducationArt, EducationDecor } from "./illustrations";
 import styles from "./CryptoEducation.module.css";
 
 /**
- * "Web3, explicado simple": Bento Grid claymorphism con ilustraciones 3D
- * en bucle (CSS). Se renderiza en el servidor; solo la inclinación con el
- * puntero y la pausa fuera de pantalla viven en EducationGrid (cliente).
+ * "Web3, explicado simple": tarjetas claymorphism con ilustraciones 3D en
+ * bucle (CSS) y scroll sticky en desktop. Las ilustraciones se renderizan
+ * aquí (servidor) y EducationScroll (cliente) solo decide cuál está activa.
  */
 export function CryptoEducation() {
   return (
@@ -28,40 +28,12 @@ export function CryptoEducation() {
 
         <div className={styles.stageWrap}>
           <EducationDecor />
-          <EducationGrid className={styles.grid}>
-            {EDUCATION_CARDS.map((card, i) => (
-              <li
-                key={card.key}
-                className={`${styles.tile} ${styles[card.size] ?? ""} ${styles[card.key] ?? ""}`}
-                data-tilt
-              >
-                <div className={styles.art} aria-hidden="true">
-                  <EducationArt kind={card.key} />
-                </div>
-                <div className={styles.body}>
-                  <span className={styles.num}>
-                    <span className={styles.numValue}>{cardNumber(i)}</span>
-                    {card.tag}
-                  </span>
-                  <h3 className={styles.title}>{card.title}</h3>
-                  <p className={styles.text}>{card.text}</p>
-                  {card.points && (
-                    <ul className={styles.points}>
-                      {card.points.map((point) => (
-                        <li key={point} className={styles.point}>
-                          <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M5 12.5l4.2 4.2L19 7" />
-                          </svg>
-                          {point}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-                <span className={styles.glare} aria-hidden="true" />
-              </li>
+          <EducationScroll
+            cards={EDUCATION_CARDS}
+            arts={EDUCATION_CARDS.map((card) => (
+              <EducationArt key={card.key} kind={card.key} />
             ))}
-          </EducationGrid>
+          />
         </div>
       </div>
     </section>
