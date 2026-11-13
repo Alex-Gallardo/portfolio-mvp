@@ -1,0 +1,106 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.btn {
+  --n: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 40px;
+  padding: 0 0.9rem 2px;
+  border: 0;
+  background: var(--tab-bg);
+  box-shadow:
+    inset 0 0 0 2px var(--px-outline),
+    inset 0 -3px 0 0 var(--px-lo);
+  clip-path: var(--px-clip);
+  color: var(--fg-muted);
+  font-family: var(--font-pixel), var(--font-display);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition:
+    transform var(--dur-fast) steps(2, end),
+    color var(--dur-fast) steps(2, end),
+    box-shadow var(--dur-fast) steps(2, end);
+}
+.btn:hover {
+  color: var(--fg);
+  transform: translateY(-2px);
+}
+.btn:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 0 0 2px var(--px-outline),
+    inset 0 -1px 0 0 var(--px-lo);
+}
+.btn[data-state="copied"] {
+  color: var(--success);
+}
+.btn:focus-visible {
+  clip-path: none;
+  outline: 3px solid var(--px-ink);
+  outline-offset: 2px;
+}
+
+/* Letrerito que brota del botón y se desvanece por fotogramas */
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  translate: -50% 0;
+  padding: 0.35rem 0.6rem;
+  background: var(--px-ink);
+  color: var(--bg);
+  font-family: var(--font-pixel), var(--font-display);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.toast::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 6px;
+  height: 4px;
+  translate: -50% 0;
+  background: var(--px-ink);
+  clip-path: polygon(0 0, 100% 0, 66% 50%, 66% 100%, 33% 100%, 33% 50%);
+}
+.toast[data-show] {
+  visibility: visible;
+  animation: sb-toast 2.2s steps(6, end) both;
+}
+@keyframes sb-toast {
+  0% {
+    opacity: 0;
+    translate: -50% 6px;
+  }
+  12%,
+  70% {
+    opacity: 1;
+    translate: -50% 0;
+  }
+  100% {
+    opacity: 0;
+    translate: -50% -8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:hover,
+  .btn:active {
+    transform: none;
+  }
+  .toast[data-show] {
+    animation: none;
+    opacity: 1;
+  }
+}

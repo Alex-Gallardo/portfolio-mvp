@@ -4,8 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+
 import { useDownloadModalStore } from "@/stores/useDownloadModalStore";
 import { requestDownload } from "@/features/resources/requestDownload";
+import { PixelSprite, UI_SPRITES } from "@/features/resources/detail/sprites";
+import { pixelFont } from "@/features/resources/pixelFont";
+import { VoxelChest, type ChestState } from "./VoxelChest";
 import styles from "./DownloadModal.module.css";
 
 const schema = z.object({
@@ -27,11 +31,17 @@ function triggerDownload(url: string) {
   a.remove();
 }
 
+/**
+ * Diálogo de descarga: el mostrador de la tienda. Cofre voxel que se abre
+ * cuando el botín está listo, formulario en casillas pixel, barra de
+ * progreso por pasos y estado de éxito con el archivo y un "+1".
+ */
 export function DownloadModal() {
   const { isOpen, target, close } = useDownloadModalStore();
   const [status, setStatus] = useState<Status>("idle");
   const [serverError, setServerError] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string>("");
+  const [fileName, setFileName] = useState("");
+  const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -46,6 +56,7 @@ export function DownloadModal() {
     setStatus("idle");
     setServerError(null);
     setFileName("");
+    setSignedUrl(null);
     close();
   }, [reset, close]);
 
@@ -108,6 +119,7 @@ export function DownloadModal() {
         website: values.website,
       });
       setFileName(res.fileName);
+      setSignedUrl(res.signedUrl);
       triggerDownload(res.signedUrl);
       setStatus("success");
     } catch (e) {
@@ -116,61 +128,129 @@ export function DownloadModal() {
     }
   });
 
+  const chest: ChestState = status;
+  const emailError = errors.email?.message;
+
   return (
-    <div className={styles.overlay} onClick={handleClose}>
+    <div className={`${styles.overlay} ${pixelFont.variable}`} onClick={handleClose}>
       <div
         ref={sheetRef}
         className={styles.sheet}
         role="dialog"
         aria-modal="true"
         aria-labelledby="download-modal-title"
+        aria-describedby="download-modal-desc"
+        data-status={status}
         onClick={(e) => e.stopPropagation()}
       >
+        <span className={styles.chassis} aria-hidden="true" />
+
         <button type="button" className={styles.closeBtn} onClick={handleClose} aria-label="Cerrar">
-          ✕
+          <svg
+            viewBox="0 0 7 7"
+            width="14"
+            height="14"
+            fill="currentColor"
+            shapeRendering="crispEdges"
+          >
+            <path d="M0 0h2v1h-2zM5 0h2v1h-2zM1 1h2v1h-2zM4 1h2v1h-2zM2 2h3v1h-3zM2 3h3v1h-3zM1 4h2v1h-2zM4 4h2v1h-2zM0 5h2v1h-2zM5 5h2v1h-2z" />
+          </svg>
         </button>
 
+        <div className={styles.counter}>
+          <VoxelChest state={chest} />
+          {target.resourceTitle ? (
+            <p className={styles.item}>
+              <span className={styles.itemLabel}>Botín</span>
+              <span className={styles.itemName}>{target.resourceTitle}</span>
+            </p>
+          ) : null}
+        </div>
+
         {status === "success" ? (
-          <div className={styles.success}>
+          <div className={styles.success} role="status" aria-live="polite">
             <h2 id="download-modal-title" className={styles.title}>
-              ¡Listo! Tu descarga empieza ahora 🎉
+              ¡Botín conseguido!
             </h2>
-            <p>{fileName ? `Archivo: ${fileName}` : "Revisa tu navegador."}</p>
-            <button type="button" className={styles.submit} onClick={handleClose}>
-              Cerrar
-            </button>
+            <p id="download-modal-desc" className={styles.sub}>
+              Tu descarga ya empezó. Si el navegador la bloqueó, vuelve a pedirla aquí abajo.
+            </p>
+            {fileName ? (
+              <p className={styles.fileChip}>
+                <PixelSprite sprite={UI_SPRITES.download} scale={1.5} />
+                <span>{fileName}</span>
+                <span className={styles.plusOne} aria-hidden="true">
+                  +1
+                </span>
+              </p>
+            ) : null}
+            <div className={styles.actions}>
+              <button type="button" className={styles.submit} onClick={handleClose}>
+                Seguir explorando
+              </button>
+              {signedUrl ? (
+                <button
+                  type="button"
+                  className={styles.ghost}
+                  onClick={() => triggerDownload(signedUrl)}
+                >
+                  Descargar de nuevo
+                </button>
+              ) : null}
+            </div>
           </div>
         ) : (
           <form onSubmit={onSubmit} className={styles.form} noValidate>
             <h2 id="download-modal-title" className={styles.title}>
               ¿A dónde te lo envío?
             </h2>
-            <p className={styles.sub}>Déjame tu correo y la descarga empieza al instante.</p>
+            <p id="download-modal-desc" className={styles.sub}>
+              Déjame tu correo y el cofre se abre al instante.
+            </p>
 
-            <label className={styles.label}>
-              Email
-              <input
-                type="email"
-                className={styles.input}
-                autoComplete="email"
-                {...register("email")}
-              />
+            <label className={styles.field} data-invalid={emailError ? "" : undefined}>
+              <span className={styles.fieldLabel}>Email</span>
+              <span className={styles.control}>
+                <PixelSprite sprite={UI_SPRITES.mail} className={styles.controlIcon} />
+                <input
+                  type="email"
+                  className={styles.input}
+                  autoComplete="email"
+                  placeholder="tu@correo.com"
+                  aria-invalid={emailError ? true : undefined}
+                  aria-describedby={emailError ? "download-email-error" : undefined}
+                  {...register("email")}
+                />
+              </span>
+              {emailError ? (
+                <span id="download-email-error" className={styles.error}>
+                  {emailError}
+                </span>
+              ) : null}
             </label>
-            {errors.email ? <p className={styles.error}>{errors.email.message}</p> : null}
 
-            <label className={styles.label}>
-              Nombre (opcional)
-              <input
-                type="text"
-                className={styles.input}
-                autoComplete="name"
-                {...register("name")}
-              />
+            <label className={styles.field}>
+              <span className={styles.fieldLabel}>
+                Nombre <span className={styles.optional}>(opcional)</span>
+              </span>
+              <span className={styles.control}>
+                <PixelSprite sprite={UI_SPRITES.user} className={styles.controlIcon} />
+                <input
+                  type="text"
+                  className={styles.input}
+                  autoComplete="name"
+                  placeholder="¿Cómo te llamas?"
+                  {...register("name")}
+                />
+              </span>
             </label>
 
             <label className={styles.checkRow}>
-              <input type="checkbox" {...register("consent")} />
-              Acepto recibir correos. Sin spam, puedes darte de baja cuando quieras.
+              <input type="checkbox" className={styles.checkbox} {...register("consent")} />
+              <span className={styles.checkBox} aria-hidden="true">
+                <PixelSprite sprite={UI_SPRITES.check} scale={1.5} />
+              </span>
+              <span>Acepto recibir correos. Sin spam, puedes darte de baja cuando quieras.</span>
             </label>
 
             <input
@@ -182,11 +262,32 @@ export function DownloadModal() {
               {...register("website")}
             />
 
-            {serverError ? <p className={styles.error}>{serverError}</p> : null}
+            {serverError ? (
+              <p className={styles.serverError} role="alert">
+                {serverError}
+              </p>
+            ) : null}
 
             <button type="submit" className={styles.submit} disabled={status === "loading"}>
-              {status === "loading" ? "Preparando…" : "Descargar ahora"}
+              {status === "loading" ? (
+                <>
+                  <span className={styles.progress} aria-hidden="true">
+                    <span />
+                  </span>
+                  Abriendo el cofre…
+                </>
+              ) : (
+                <>
+                  <PixelSprite sprite={UI_SPRITES.download} />
+                  Descargar ahora
+                </>
+              )}
             </button>
+
+            <p className={styles.trust}>
+              <PixelSprite sprite={UI_SPRITES.shield} className={styles.trustIcon} />
+              <span>Gratis · Sin spam · 30 seg</span>
+            </p>
           </form>
         )}
       </div>
