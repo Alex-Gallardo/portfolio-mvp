@@ -1,0 +1,288 @@
+/* =====================================================
+   Showcase — la pieza en su vitrina (ficha de recurso)
+   Marco pixel con inclinación 3D por pasos, reflejo que
+   sigue al puntero, destellos y sombra de suelo tramada.
+   ===================================================== */
+
+.stage {
+  position: relative;
+  padding-bottom: 22px; /* sitio para la sombra de suelo */
+}
+
+.frame {
+  --n: 4px;
+  --rx: 0deg;
+  --ry: 0deg;
+  --gx: 50%;
+  --gy: 50%;
+  position: relative;
+  isolation: isolate;
+  padding: 8px 8px 14px;
+  transform: perspective(1000px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 160ms steps(3, end);
+  animation: sc-float 4s steps(2, end) infinite;
+}
+
+/* Chasis: grosor + contorno escalonado + bisel (misma gramática que las cards) */
+.chassis {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--px-depth);
+  clip-path: var(--px-clip);
+  pointer-events: none;
+}
+.chassis::before,
+.chassis::after {
+  content: "";
+  position: absolute;
+  clip-path: var(--px-clip);
+}
+.chassis::before {
+  inset: 0 0 6px;
+  background: var(--px-outline);
+}
+.chassis::after {
+  inset: 2px 2px 8px;
+  background: var(--panel-bg);
+  box-shadow:
+    inset 2px 2px 0 0 var(--px-hi),
+    inset -2px -2px 0 0 var(--px-lo);
+}
+.frame:hover .chassis::before {
+  background: var(--px-grad-diag);
+}
+
+.media {
+  --n: 2px;
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--resource-soft);
+  clip-path: var(--px-clip);
+}
+
+.cover {
+  object-fit: cover;
+  transition:
+    transform var(--dur-slow) steps(3, end),
+    filter var(--dur) steps(2, end);
+}
+.frame:hover .cover {
+  transform: scale(1.04);
+  filter: saturate(1.08);
+}
+
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    conic-gradient(var(--px-dither) 25%, transparent 0 50%, var(--px-dither) 0 75%, transparent 0) 0
+      0 / 8px 8px,
+    var(--resource-soft);
+}
+.fallbackIcon {
+  --file-accent: var(--resource-2);
+  color: var(--px-ink);
+  opacity: 0.7;
+}
+
+/* Pantalla: contorno, bisel interior y scanlines */
+.screen {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: repeating-linear-gradient(0deg, rgb(0 0 0 / 0.05) 0 1px, transparent 1px 3px);
+  box-shadow:
+    inset 0 0 0 2px var(--px-media-line),
+    inset 4px 4px 0 0 rgb(255 255 255 / 0.16),
+    inset -4px -4px 0 0 rgb(0 0 0 / 0.22);
+  pointer-events: none;
+}
+
+/* Reflejo tramado que sigue al puntero */
+.glare {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: conic-gradient(
+      rgb(255 255 255 / 0.55) 25%,
+      transparent 0 50%,
+      rgb(255 255 255 / 0.55) 0 75%,
+      transparent 0
+    )
+    0 0 / 4px 4px;
+  -webkit-mask-image: radial-gradient(circle at var(--gx) var(--gy), #000 0 12%, transparent 42%);
+  mask-image: radial-gradient(circle at var(--gx) var(--gy), #000 0 12%, transparent 42%);
+  opacity: 0;
+  transition: opacity var(--dur) steps(2, end);
+  pointer-events: none;
+}
+.frame:hover .glare {
+  opacity: 0.5;
+}
+
+.tags {
+  position: absolute;
+  z-index: 3;
+  inset: var(--sp-3) var(--sp-3) auto;
+  display: flex;
+  gap: var(--sp-2);
+}
+.badge,
+.badgeNew {
+  --n: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.65rem 0.36rem;
+  clip-path: var(--px-clip);
+  font-family: var(--font-pixel), var(--font-display);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.badge {
+  background: rgb(18 12 9 / 0.82);
+  box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.14);
+  color: #fff;
+}
+.badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--resource-3);
+  box-shadow: inset -2px -2px 0 0 var(--resource-1);
+  animation: sc-gem 3.1s step-end infinite;
+}
+.badgeNew {
+  background: var(--px-grad);
+  box-shadow:
+    inset 0 2px 0 0 rgb(255 255 255 / 0.45),
+    inset 0 -2px 0 0 rgb(122 38 20 / 0.3);
+  color: #1a0f08;
+}
+
+/* Sombra de suelo tramada: se encoge cuando la pieza sube */
+.ground {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: 0;
+  height: 14px;
+  background: conic-gradient(
+      var(--px-depth) 25%,
+      transparent 0 50%,
+      var(--px-depth) 0 75%,
+      transparent 0
+    )
+    0 0 / 4px 4px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 20% 80%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 20% 80%, transparent);
+  animation: sc-ground 4s steps(2, end) infinite;
+}
+
+/* ---------- Destellos 8-bit ---------- */
+.sparks {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.spark {
+  --p: 2px;
+  --p2: calc(var(--p) * 2);
+  --f-plus:
+    var(--p) 0 var(--spark-1), calc(-1 * var(--p)) 0 var(--spark-1), 0 var(--p) var(--spark-1),
+    0 calc(-1 * var(--p)) var(--spark-1);
+  --f-star:
+    var(--p) 0 var(--spark-1), calc(-1 * var(--p)) 0 var(--spark-1), 0 var(--p) var(--spark-1),
+    0 calc(-1 * var(--p)) var(--spark-1), var(--p2) 0 var(--spark-2),
+    calc(-1 * var(--p2)) 0 var(--spark-2), 0 var(--p2) var(--spark-2),
+    0 calc(-1 * var(--p2)) var(--spark-2);
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--p);
+  height: var(--p);
+  margin: calc(var(--p) / -2) 0 0 calc(var(--p) / -2);
+  opacity: 0;
+  filter: drop-shadow(0 0 3px var(--spark-glow));
+  animation: sc-twinkle var(--d, 4.3s) step-end var(--delay, 0s) infinite;
+}
+.spark[data-big] {
+  --p: 3px;
+}
+
+@keyframes sc-twinkle {
+  0% {
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+    background: var(--spark-1);
+    box-shadow: none;
+  }
+  4% {
+    background: #fff;
+    box-shadow: var(--f-plus);
+  }
+  7% {
+    background: #fff;
+    box-shadow: var(--f-star);
+  }
+  10% {
+    background: #fff;
+    box-shadow: var(--f-plus);
+  }
+  12%,
+  100% {
+    opacity: 0;
+    box-shadow: none;
+  }
+}
+@keyframes sc-gem {
+  0% {
+    background-color: #fff;
+  }
+  7% {
+    background-color: var(--resource-3);
+  }
+}
+@keyframes sc-float {
+  50% {
+    translate: 0 -4px;
+  }
+}
+@keyframes sc-ground {
+  50% {
+    transform: scaleX(0.92);
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame,
+  .ground,
+  .spark,
+  .badge::before {
+    animation: none;
+  }
+  .frame {
+    transition: none;
+    transform: none;
+  }
+  .frame:hover .cover {
+    transform: none;
+  }
+  .spark[data-big] {
+    opacity: 0.75;
+    background: #fff;
+    box-shadow: var(--f-plus);
+  }
+}
