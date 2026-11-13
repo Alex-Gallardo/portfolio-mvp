@@ -116,7 +116,7 @@
   font-size: var(--fs-sm);
   font-weight: 700;
   line-height: 1.2;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 .meta {
   display: flex;
@@ -281,13 +281,15 @@
   }
 }
 
-@media (max-width: 480px) {
+/* Casilla estrecha: icono + texto arriba, botón debajo a todo el ancho */
+@media (max-width: 560px) {
   .slot {
     grid-template-columns: auto minmax(0, 1fr);
   }
-  .slotBtn {
-    grid-column: 2;
-    justify-self: start;
+  .slot .primary,
+  .slot .slotBtn {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 }
 
