@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getPublishedPosts } from "@/features/blog/queries";
 import { BlogList } from "@/features/blog/components/BlogList/BlogList";
+import { BlogHero } from "@/features/blog/components/BlogHero/BlogHero";
 import { type PostListItem } from "@/features/blog/types";
 import styles from "./blog.module.css";
 import { Badge } from "@/components/ui/Badge/Badge";
@@ -32,11 +33,8 @@ export default async function BlogPage() {
   const [featured, ...rest] = items;
 
   return (
-    <main className={styles.wrap}>
-      <header className={styles.hero}>
-        <h1 className={styles.h1}>Blog</h1>
-        <p className={styles.sub}>Ideas sobre desarrollo web, performance y SEO.</p>
-      </header>
+    <div className={styles.wrap}>
+      <BlogHero />
 
       {items.length === 0 ? (
         <p className={styles.empty}>Aún no hay artículos aquí, pero pronto.</p>
@@ -70,6 +68,6 @@ export default async function BlogPage() {
           <BlogList posts={rest} />
         </>
       )}
-    </main>
+    </div>
   );
 }
