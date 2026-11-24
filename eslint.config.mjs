@@ -24,6 +24,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Worktrees y config locales de Claude: código de otras ramas, no del proyecto.
+    ".claude/**",
   ]),
   eslintConfigPrettier, // ← AÑADE esta línea (la última del array)
 ]);
