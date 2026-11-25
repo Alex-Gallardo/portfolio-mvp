@@ -2,7 +2,7 @@
   max-width: var(--container);
   margin-inline: auto;
   padding-inline: var(--gutter);
-  padding-block: var(--sp-24) var(--sp-16);
+  padding-block: var(--sp-12) var(--sp-16);
 }
 .empty {
   color: var(--fg-muted);
