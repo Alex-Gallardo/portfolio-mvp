@@ -33,41 +33,42 @@ export default async function BlogPage() {
   const [featured, ...rest] = items;
 
   return (
-    <div className={styles.wrap}>
+    <>
       <BlogHero />
+      <div className={styles.wrap}>
+        {items.length === 0 ? (
+          <p className={styles.empty}>Aún no hay artículos aquí, pero pronto.</p>
+        ) : (
+          <>
+            {featured ? (
+              <Link
+                href={`/blog/${featured.slug}`}
+                className={styles.featured}
+                data-track={`blog-featured:${featured.slug}`}
+              >
+                {featured.coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={featured.coverUrl} alt="" className={styles.featuredCover} />
+                ) : (
+                  <div className={styles.featuredPlaceholder} aria-hidden="true" />
+                )}
+                <div className={styles.featuredBody}>
+                  <Badge variant="brand">Más reciente</Badge>
+                  <h2 className={styles.featuredTitle}>{featured.title}</h2>
+                  {featured.excerpt ? (
+                    <p className={styles.featuredExcerpt}>{featured.excerpt}</p>
+                  ) : null}
+                  <span className={styles.meta}>
+                    {featured.dateLabel} · {featured.readMinutes} min
+                  </span>
+                </div>
+              </Link>
+            ) : null}
 
-      {items.length === 0 ? (
-        <p className={styles.empty}>Aún no hay artículos aquí, pero pronto.</p>
-      ) : (
-        <>
-          {featured ? (
-            <Link
-              href={`/blog/${featured.slug}`}
-              className={styles.featured}
-              data-track={`blog-featured:${featured.slug}`}
-            >
-              {featured.coverUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={featured.coverUrl} alt="" className={styles.featuredCover} />
-              ) : (
-                <div className={styles.featuredPlaceholder} aria-hidden="true" />
-              )}
-              <div className={styles.featuredBody}>
-                <Badge variant="brand">Más reciente</Badge>
-                <h2 className={styles.featuredTitle}>{featured.title}</h2>
-                {featured.excerpt ? (
-                  <p className={styles.featuredExcerpt}>{featured.excerpt}</p>
-                ) : null}
-                <span className={styles.meta}>
-                  {featured.dateLabel} · {featured.readMinutes} min
-                </span>
-              </div>
-            </Link>
-          ) : null}
-
-          <BlogList posts={rest} />
-        </>
-      )}
-    </div>
+            <BlogList posts={rest} />
+          </>
+        )}
+      </div>
+    </>
   );
 }
